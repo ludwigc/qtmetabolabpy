@@ -1,0 +1,2 @@
+[console_scripts]
+metabolabpy = qtmetabolabpy.__main__:main

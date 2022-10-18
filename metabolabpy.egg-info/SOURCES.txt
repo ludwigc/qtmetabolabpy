@@ -1,0 +1,14 @@
+LICENSE
+MANIFEST.in
+README.rst
+requirements.txt
+setup.py
+metabolabpy.egg-info/PKG-INFO
+metabolabpy.egg-info/SOURCES.txt
+metabolabpy.egg-info/dependency_links.txt
+metabolabpy.egg-info/entry_points.txt
+metabolabpy.egg-info/requires.txt
+metabolabpy.egg-info/top_level.txt
+qtmetabolabpy/__init__.py
+qtmetabolabpy/__main__.py
+qtmetabolabpy/ui/metabolabpy_mainwindow.ui

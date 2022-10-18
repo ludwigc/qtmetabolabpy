@@ -1,0 +1,13 @@
+# Use this file to create a conda environment using:
+# conda create -n metabolabpy python=3.9 --file conda-requirements.txt -c bioconda
+#
+
+numpy
+scipy
+matplotlib
+pyside2
+openpyxl
+pyautogui
+qtmodern
+xlsxwriter
+pandas
