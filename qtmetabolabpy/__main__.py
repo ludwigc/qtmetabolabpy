@@ -1433,7 +1433,7 @@ class main_w(object):  # pragma: no cover
         f.write('#!/bin/bash\n')
         f.write('\n')
         f.write('export QT_XCB_GL_INTEGRATION=none\n')
-        f.write('metabolabpy')
+        f.write('qtmetabolabpy')
         f.close()
         os.chmod(mlpy_file, 0o775)
 
