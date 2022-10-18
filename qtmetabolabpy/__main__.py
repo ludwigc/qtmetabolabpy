@@ -1459,7 +1459,7 @@ class main_w(object):  # pragma: no cover
         else:
             idx = sys.prefix.rfind('\\') + 1
             env = sys.prefix[idx:]
-            f.write(cnda[:-2] + ' activate ' + env + ' && metabolabpy && exit')
+            f.write(cnda[:-2] + ' activate ' + env + ' && qtmetabolabpy && exit')
 
         f.close()
         subprocess.os.system('pip install pylnk3')
