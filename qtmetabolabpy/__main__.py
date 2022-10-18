@@ -1455,7 +1455,7 @@ class main_w(object):  # pragma: no cover
         venv = sys.prefix.find('env')
         cnda = subprocess.check_output('where conda').decode()
         if venv == -1:
-            f.write('metabolabpy && exit')
+            f.write('qtmetabolabpy && exit')
         else:
             idx = sys.prefix.rfind('\\') + 1
             env = sys.prefix[idx:]
