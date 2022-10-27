@@ -7109,11 +7109,11 @@ class main_w(object):  # pragma: no cover
         jupyter_path = os.path.join(base_dir, "nmr", "jupyter")
         jobs = []
         self.p = multiprocess.Process(target=notebookapp.main,
-                                      args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997'],))
+                                      args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997', '--NotebookApp.token=''', '--NotebookApp.password='''],))
         jobs.append(self.p)
         self.p.start()
         sleep(2)
-        self.w.helpView.setUrl("http://127.0.0.1:9997")
+        self.w.helpView.setUrl('http://127.0.0.1:9997')
         self.w.nmrSpectrum.setCurrentIndex(12)
         # end startNotebook
 
