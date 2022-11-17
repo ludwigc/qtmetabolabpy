@@ -30,6 +30,7 @@ try:
 except:
     pass
 
+import darkdetect
 import matplotlib.pyplot as pl  # pragma: no cover
 
 if "linux" in sys.platform:  # pragma: no cover
@@ -285,6 +286,7 @@ class main_w(object):  # pragma: no cover
         self.hide_pre_processing()
         self.hide_peak_picking()
         self.w.preprocessing.setVisible(False)
+        self.w.splinebaseline.setVisible(False)
         self.w.peakPicking.setVisible(False)
         self.w.preProcPeak.setVisible(False)
         self.w.hsqcAnalysis.setVisible(False)
@@ -574,6 +576,7 @@ class main_w(object):  # pragma: no cover
         self.w.exitZoomPhCorr2d.setVisible(False)
         self.w.actionSet_light_mode_requires_restart.triggered.connect(self.set_light_mode)
         self.w.actionSet_dark_mode_requires_restart.triggered.connect(self.set_dark_mode)
+        self.w.actionSet_system_mode_requires_restart.triggered.connect(self.set_system_mode)
         self.w.MplWidget.canvas.draw()
         self.w.setStyleSheet("font-size: " + str(self.cf.font_size) + "pt")
         self.w.actionreInitialise_pre_processing_plot_colours.triggered.connect(self.nd.pp.init_plot_colours)
@@ -603,7 +606,12 @@ class main_w(object):  # pragma: no cover
 
         self.emp_ref_shift = 0.0
         self.p = []
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'system':
+            if darkdetect.isDark():
+                self.load_dark_mode()
+            else:
+                self.load_light_mode()
+        elif self.cf.mode == 'dark':
             self.load_dark_mode()
         else:
             self.load_light_mode()
@@ -1305,6 +1313,12 @@ class main_w(object):  # pragma: no cover
         self.w.displaySelectedMetabolite.setVisible(False)
         self.w.hsqcAnalysis.setChecked(False)
         self.w.hsqcAnalysis.setVisible(False)
+        self.w.preprocessing.setChecked(False)
+        self.w.preprocessing.setVisible(False)
+        self.w.peakPicking.setChecked(False)
+        self.w.peakPicking.setVisible(False)
+        self.w.splinebaseline.setChecked(False)
+        self.w.splinebaseline.setVisible(False)
         self.w.MplWidget.canvas.axes.clear()
         self.w.MplWidget.canvas.draw()
         self.zero_disp_pars()
@@ -3378,6 +3392,9 @@ class main_w(object):  # pragma: no cover
         self.w.intAllExps.setHidden(True)
         self.w.intAllDS.setHidden(True)
         self.w.exportFormatCB.setHidden(True)
+
+    #def hide_spline_baseline(self):
+
 
     def html(self, url=''):
         if len(url) == 0:
@@ -6431,6 +6448,14 @@ class main_w(object):  # pragma: no cover
         self.plot_spc()
         # end set_standard_colours
 
+    def set_system_mode(self):
+        self.cf.read_config()
+        self.cf.mode = 'system'
+        self.cf.save_config()
+        # restart program
+        # os.execv(sys.executable, ['python'] + sys.argv)
+        # end save_config
+
     def update_assigned_metabolites(self):
         model = QtGui.QStandardItemModel()
         for l in sorted(self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.hsqc_data.keys()):
@@ -7274,11 +7299,14 @@ class main_w(object):  # pragma: no cover
         if (self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1):
             self.w.preprocessing.setVisible(True)
             self.w.peakPicking.setVisible(True)
+            self.w.splinebaseline.setVisible(True)
         else:
             self.w.preprocessing.setChecked(False)
             self.w.preprocessing.setVisible(False)
             self.w.peakPicking.setChecked(False)
             self.w.peakPicking.setVisible(False)
+            self.w.splinebaseline.setChecked(False)
+            self.w.splinebaseline.setVisible(False)
 
         if self.nd.nmrdat[self.nd.s][self.nd.e].dim > 1:
             if self.nd.nmrdat[self.nd.s][self.nd.e].acq.pul_prog_name.find("hsqc") > 0 or self.nd.nmrdat[self.nd.s][
@@ -7640,7 +7668,12 @@ def main():  # pragma: no cover
         p_name = os.path.join(base_dir, "png")
         cf = nmrConfig.NmrConfig()
         cf.read_config()
-        if cf.mode == 'dark':
+        if cf.mode == 'system':
+            if darkdetect.isDark():
+                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
+            else:
+                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))
+        elif cf.mode == 'dark':
             splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
         else:
             splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))
@@ -7675,7 +7708,12 @@ def main():  # pragma: no cover
             w.script_editor()
             w.exec_script()
 
-    if cf.mode == 'light':
+    if cf.mode == 'system':
+        if darkdetect.isDark():
+            qtmodern.styles.dark(app)
+        else:
+            qtmodern.styles.light(app)
+    elif cf.mode == 'light':
         qtmodern.styles.light(app)
     else:
         qtmodern.styles.dark(app)
