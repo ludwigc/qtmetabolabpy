@@ -266,6 +266,7 @@ class main_w(object):  # pragma: no cover
         self.xy = [[]]
         self.xdata = []
         self.ydata = []
+        self.temp_shift = 0.0
         self.nd = nmrDataSet.NmrDataSet()
         self.__version__ = self.nd.__version__
         self.ph_corr = phCorr.PhCorr()
@@ -606,12 +607,7 @@ class main_w(object):  # pragma: no cover
 
         self.emp_ref_shift = 0.0
         self.p = []
-        if self.cf.mode == 'system':
-            if darkdetect.isDark():
-                self.load_dark_mode()
-            else:
-                self.load_light_mode()
-        elif self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             self.load_dark_mode()
         else:
             self.load_light_mode()
@@ -782,7 +778,7 @@ class main_w(object):  # pragma: no cover
         # end apply_2d_ph_corr
 
     def autobaseline(self):
-        print(self.nd.nmrdat[self.nd.s][self.nd.e].dim)
+        #print(self.nd.nmrdat[self.nd.s][self.nd.e].dim)
         if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
             self.autobaseline1d()
         elif self.nd.nmrdat[self.nd.s][self.nd.e].dim == 2:
@@ -824,7 +820,7 @@ class main_w(object):  # pragma: no cover
         self.plot_spc()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -852,7 +848,7 @@ class main_w(object):  # pragma: no cover
         self.plot_spc()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -887,7 +883,7 @@ class main_w(object):  # pragma: no cover
         self.plot_spc()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -922,7 +918,7 @@ class main_w(object):  # pragma: no cover
         self.plot_spc()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -957,7 +953,7 @@ class main_w(object):  # pragma: no cover
         self.plot_spc()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -1367,7 +1363,7 @@ class main_w(object):  # pragma: no cover
         self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite = ''
         self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak = -1
         self.w.hsqcSpinSys.setRowCount(0)
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             colour = [180, 180, 180]
         else:
             colour = [0, 0, 0]
@@ -1497,7 +1493,7 @@ class main_w(object):  # pragma: no cover
             dsmwo = True
 
         if self.w.displayAssignedMetabolites.isChecked() == True:
-            if self.cf.mode == 'dark':
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 col1 = 'yellow'
                 col2 = 'gray'
             else:
@@ -1566,7 +1562,7 @@ class main_w(object):  # pragma: no cover
             self.w.displayAssignedMetabolites.setChecked(False)
 
         if self.w.displayLibraryShifts.isChecked() == True:
-            if self.cf.mode == 'dark':
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 col1 = 'yellow'
                 col2 = 'gray'
             else:
@@ -1648,7 +1644,7 @@ class main_w(object):  # pragma: no cover
 
     def display_selected_metabolite(self):
         if self.w.displaySelectedMetabolite.isChecked() == True:
-            if self.cf.mode == 'dark':
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 col1 = 'lime'
                 col2 = 'gray'
             else:
@@ -1729,7 +1725,7 @@ class main_w(object):  # pragma: no cover
 
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -2046,7 +2042,7 @@ class main_w(object):  # pragma: no cover
         # end enableBaseline
 
     def exec_cmd(self):
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -2091,7 +2087,7 @@ class main_w(object):  # pragma: no cover
         # end execCmd
 
     def exec_script(self):
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
             scr_col = QColor.fromRgbF(0.5, 0.5, 1.0, 1.0)
@@ -2981,6 +2977,44 @@ class main_w(object):  # pragma: no cover
             self.ydata = []
             self.show_console()
 
+    def on_g_input_spline_baseline_click(self, event):
+        if event.button == 3:
+            print(self.xdata)
+            cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_spline_baseline_click)
+            cid = self.w.MplWidget.canvas.mpl_disconnect(cid)
+            cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_spline_baseline_click)
+            cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+            self.xdata = []
+            self.ydata = []
+        else:
+            self.xdata.append(event.xdata)
+            self.ydata.append(event.ydata)
+            print(self.xdata)
+            #self.xdata.append(event.xdata)
+            #self.ydata.append(event.ydata)
+            #self.n_clicks = 1
+            #self.cur_clicks = 0
+            #code_out = io.StringIO()
+            #code_err = io.StringIO()
+            #sys.stdout = code_out
+            #sys.stderr = code_err
+            #print("x-values: {} / xDiff [ppm]: {} / xDiff [Hz]: {}".format(self.xdata, np.abs(np.diff(self.xdata)),
+            #                                                               np.abs(np.diff(self.xdata)) *
+            #                                                               self.nd.nmrdat[self.nd.s][
+            #                                                                   self.nd.e].acq.sfo1))
+            #if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
+            #    print("y-values: {} / yDiff: {}".format(self.ydata, -np.diff(self.ydata)))
+            #else:
+            #    print("y-values: {} / yDiff: {} / yDiff [Hz]: {}".format(self.ydata, np.abs(np.diff(self.ydata)),
+            #                                                             np.abs(np.diff(self.ydata)) *
+            #                                                             self.nd.nmrdat[self.nd.s][self.nd.e].acq.sfo2))
+            #
+            #self.w.console.append(code_out.getvalue())
+            #sys.stdout = sys.__stdout__
+            #sys.stderr = sys.__stderr__
+            #code_out.close()
+            #code_err.close()
+
     def on_g_input_click_add_peak(self, event):
         self.cur_clicks += 1
         if self.cur_clicks < self.n_clicks:
@@ -3108,6 +3142,23 @@ class main_w(object):  # pragma: no cover
             self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[0] = self.temp_ref_shift
             self.nd.nmrdat[self.nd.s][self.nd.e].calc_ppm()
             self.reset_plot()
+
+    def on_g_input_click_ref_1d_all(self, event):
+        self.cur_clicks += 1
+        if self.cur_clicks < self.n_clicks:
+            self.xdata.append(event.xdata)
+            self.ydata.append(event.ydata)
+        else:
+            self.xdata.append(event.xdata)
+            self.ydata.append(event.ydata)
+            self.n_clicks = 1
+            self.cur_clicks = 0
+            cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_click_ref_1d_all)
+            cid = self.w.MplWidget.canvas.mpl_disconnect(cid)
+            cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_click_ref_1d_all)
+            cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+            self.reference1d_all_2()
+
 
     def on_g_input_click_compress(self, event):
         self.cur_clicks += 1
@@ -3281,6 +3332,14 @@ class main_w(object):  # pragma: no cover
         cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
         # end ginput
 
+    def ginput_spline_baseline(self):
+        self.w.MplWidget.canvas.setFocus()
+        self.show_nmr_spectrum()
+        cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_spline_baseline_click)
+        cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_spline_baseline_click)
+        cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+        # end ginput
+
     def ginput_hsqc(self, n_clicks=1):
         self.w.hsqcPeak.canvas.setFocus()
         self.n_clicks = n_clicks
@@ -3313,6 +3372,16 @@ class main_w(object):  # pragma: no cover
         # print("ginput_ref_1d")
         cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_click_ref_1d)
         cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_click_ref_1d)
+        cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+        # end ginput
+
+    def ginput_ref_1d_all(self, n_clicks=1):
+        self.w.MplWidget.canvas.setFocus()
+        self.show_nmr_spectrum()
+        self.n_clicks = n_clicks
+        # print("ginput_ref_1d")
+        cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_click_ref_1d_all)
+        cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_click_ref_1d_all)
         cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
         # end ginput
 
@@ -4502,7 +4571,7 @@ class main_w(object):  # pragma: no cover
         self.w.hsqcPeak.canvas.axes.invert_yaxis()
         xlim = self.w.hsqcPeak.canvas.axes.get_xlim()
         ylim = self.w.hsqcPeak.canvas.axes.get_ylim()
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             col1 = 'w'
             col2 = 'yellow'
         else:
@@ -4572,7 +4641,7 @@ class main_w(object):  # pragma: no cover
             self.nd.hsqc_spin_sys_connected = True
 
         self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.autosim = my_autosim
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             n_colour = [180, 180, 180]
         else:
             n_colour = [0, 0, 0]
@@ -4581,7 +4650,7 @@ class main_w(object):  # pragma: no cover
         if len(hsqc.hsqc_data[hsqc.cur_metabolite].sim_spc[hsqc.cur_peak - 1]) == 0:
             hsqc.hsqc_data[hsqc.cur_metabolite].cod[hsqc.cur_peak - 1] = -1
 
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             if hsqc.hsqc_data[hsqc.cur_metabolite].cod[hsqc.cur_peak - 1] > hsqc.cod_high:
                 colour = [0, 255, 0]
             elif hsqc.hsqc_data[hsqc.cur_metabolite].cod[hsqc.cur_peak - 1] == -1:
@@ -4614,7 +4683,7 @@ class main_w(object):  # pragma: no cover
         self.w.coefficientOfDetermination.setPalette(palette)
         # end
 
-    def plot_spc(self, hide_pre_processing=False):
+    def plot_spc(self, hide_pre_processing=False, spline_baseline=False):
         self.keep_zoom = self.w.keepZoom.isChecked()
         xlim = self.w.MplWidget.canvas.axes.get_xlim()
         ylim = self.w.MplWidget.canvas.axes.get_ylim()
@@ -4660,6 +4729,8 @@ class main_w(object):  # pragma: no cover
                     neg_col = matplotlib.colors.to_hex(neg_col)
                     self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][k].ppm1,
                                                       self.nd.nmrdat[self.nd.s][k].spc[0].real, color=pos_col)
+                    if spline_baseline:
+                        print("spline!")
 
             d = self.nd.nmrdat[self.nd.s][self.nd.e].display
             if (d.pos_col == "RGB"):
@@ -5020,6 +5091,20 @@ class main_w(object):  # pragma: no cover
 
         # end reference1d
 
+    def reference1d_all(self, new_shift):
+        self.w.nmrSpectrum.setCurrentIndex(0)
+        self.temp_shift = new_shift
+        self.ginput_ref_1d_all(1)
+        # end reference1d_all
+
+    def reference1d_all_2(self):
+        self.nd.reference1d_all(self.xdata[0], self.temp_shift)
+        self.xdata = []
+        self.ydata = []
+        self.temp_shift = 0.0
+        self.plot_spc()
+        # end reference1d_all_2
+
     def reference2d(self, ref_shift=[0.0, 0.0], peak_number=-1):
         if peak_number == -1 and not isinstance(ref_shift, str):
             self.temp_ref_shift = ref_shift
@@ -5071,7 +5156,7 @@ class main_w(object):  # pragma: no cover
         self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite = ''
         self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak = -1
         self.w.hsqcSpinSys.setRowCount(0)
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             colour = [180, 180, 180]
         else:
             colour = [0, 0, 0]
@@ -5120,7 +5205,7 @@ class main_w(object):  # pragma: no cover
     def reset_help(self):
         nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         base_dir = os.path.split(nmr_dir)[0]
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             f_name = os.path.join(base_dir, "nmr", "web", "introductionDark", "index.html")
         else:
             f_name = os.path.join(base_dir, "nmr", "web", "introduction", "index.html")
@@ -6088,7 +6173,7 @@ class main_w(object):  # pragma: no cover
         idx = self.w.helpComboBox.currentIndex()
         nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         base_dir = os.path.split(nmr_dir)[0]
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             f_name = os.path.join(base_dir, "nmr", "web", "introductionDark", "index.html")
         else:
             f_name = os.path.join(base_dir, "nmr", "web", "introduction", "index.html")
@@ -6438,7 +6523,7 @@ class main_w(object):  # pragma: no cover
 
     def set_standard_colours(self):
         for k in range(len(self.nd.nmrdat[self.nd.s])):
-            if self.cf.mode == 'dark':
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 self.nd.nmrdat[self.nd.s][k].display.pos_col_rgb = self.std_pos_col2
                 self.nd.nmrdat[self.nd.s][k].display.neg_col_rgb = self.std_neg_col2
             else:
@@ -6540,7 +6625,7 @@ class main_w(object):  # pragma: no cover
             self.w.codLow.textChanged.connect(self.get_hsqc_pars19)
             self.w.nmrSpectrum.setCurrentIndex(1)
             self.activate_command_line()
-            if self.cf.mode == 'dark':
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 colour = [180, 180, 180]
             else:
                 colour = [0, 0, 0]
@@ -7097,7 +7182,12 @@ class main_w(object):  # pragma: no cover
         p_name = os.path.join(base_dir, "png")
         cf = nmrConfig.NmrConfig()
         cf.read_config()
-        if cf.mode == 'dark':
+        if cf.mode == 'system':
+            if darkdetect.isDark():
+                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
+            else:
+                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))
+        elif cf.mode == 'dark':
             splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
         else:
             splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))
@@ -7124,7 +7214,7 @@ class main_w(object):  # pragma: no cover
         except:
             pass
 
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             jupyterthemes.install_theme('chesterish')
         else:
             jupyterthemes.install_theme('grade3')
@@ -7156,7 +7246,7 @@ class main_w(object):  # pragma: no cover
         s = self.nd.s
         e = self.nd.e
         if self.nd.nmrdat[s][e].projected_j_res:
-            if self.cf.mode == 'dark':
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
                 err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
             else:
@@ -7331,7 +7421,7 @@ class main_w(object):  # pragma: no cover
         code_err = io.StringIO()
         sys.stdout = code_out
         sys.stderr = code_err
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -7569,7 +7659,7 @@ class main_w(object):  # pragma: no cover
 
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -7607,7 +7697,7 @@ class main_w(object):  # pragma: no cover
 
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark':
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
             err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
@@ -7668,12 +7758,7 @@ def main():  # pragma: no cover
         p_name = os.path.join(base_dir, "png")
         cf = nmrConfig.NmrConfig()
         cf.read_config()
-        if cf.mode == 'system':
-            if darkdetect.isDark():
-                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
-            else:
-                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))
-        elif cf.mode == 'dark':
+        if cf.mode == 'dark' or (cf.mode == 'system' and darkdetect.isDark()):
             splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
         else:
             splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))

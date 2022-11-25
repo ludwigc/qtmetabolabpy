@@ -260,7 +260,7 @@
            </font>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="preProcessingTab">
            <attribute name="title">
@@ -2186,7 +2186,7 @@
            <attribute name="title">
             <string/>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_33">
+           <layout class="QGridLayout" name="gridLayout_34">
             <item row="0" column="0">
              <layout class="QVBoxLayout" name="verticalLayout_24">
               <item>
@@ -2203,6 +2203,30 @@
                </spacer>
               </item>
               <item>
+               <layout class="QGridLayout" name="gridLayout_33">
+                <item row="0" column="0" colspan="2">
+                 <widget class="QLabel" name="label_99">
+                  <property name="text">
+                   <string>Average Points</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QLineEdit" name="averagePoints"/>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_98">
+                  <property name="text">
+                   <string>Linear Spline</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" colspan="2">
+                 <widget class="QLineEdit" name="linearSpinePoints"/>
+                </item>
+               </layout>
+              </item>
+              <item>
                <widget class="QPushButton" name="addSplineBaselineButton">
                 <property name="text">
                  <string>Add</string>
@@ -2217,16 +2241,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="correctCurrentButton">
-                <property name="text">
-                 <string>Correct current spectrum</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QPushButton" name="correctAllButton">
                 <property name="text">
-                 <string>Correct all spectra</string>
+                 <string>Spline Baseline Correction</string>
                 </property>
                </widget>
               </item>
