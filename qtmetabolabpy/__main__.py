@@ -2978,42 +2978,41 @@ class main_w(object):  # pragma: no cover
             self.show_console()
 
     def on_g_input_spline_baseline_click(self, event):
-        if event.button == 3:
+        if event.button != 1 or event.dblclick == True:
+            if event.dblclick == True:
+                self.xdata.pop()
+
+            xdata1 = set(self.xdata)  # remove duplicate values
+            self.xdata = list(xdata1)
+            self.xdata.sort()
             print(self.xdata)
             cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_spline_baseline_click)
             cid = self.w.MplWidget.canvas.mpl_disconnect(cid)
             cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_spline_baseline_click)
             cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                    self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = self.xdata
+
             self.xdata = []
             self.ydata = []
+            self.show_version()
+            self.plot_spc(True, True)
+
         else:
             self.xdata.append(event.xdata)
             self.ydata.append(event.ydata)
-            print(self.xdata)
-            #self.xdata.append(event.xdata)
-            #self.ydata.append(event.ydata)
-            #self.n_clicks = 1
-            #self.cur_clicks = 0
-            #code_out = io.StringIO()
-            #code_err = io.StringIO()
-            #sys.stdout = code_out
-            #sys.stderr = code_err
-            #print("x-values: {} / xDiff [ppm]: {} / xDiff [Hz]: {}".format(self.xdata, np.abs(np.diff(self.xdata)),
-            #                                                               np.abs(np.diff(self.xdata)) *
-            #                                                               self.nd.nmrdat[self.nd.s][
-            #                                                                   self.nd.e].acq.sfo1))
-            #if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
-            #    print("y-values: {} / yDiff: {}".format(self.ydata, -np.diff(self.ydata)))
-            #else:
-            #    print("y-values: {} / yDiff: {} / yDiff [Hz]: {}".format(self.ydata, np.abs(np.diff(self.ydata)),
-            #                                                             np.abs(np.diff(self.ydata)) *
-            #                                                             self.nd.nmrdat[self.nd.s][self.nd.e].acq.sfo2))
-            #
-            #self.w.console.append(code_out.getvalue())
-            #sys.stdout = sys.__stdout__
-            #sys.stderr = sys.__stderr__
-            #code_out.close()
-            #code_err.close()
+            xdata1 = set(self.xdata)  # remove duplicate values
+            self.xdata = list(xdata1)
+            self.xdata.sort()
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                    self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = self.xdata
+
+            print("plotted")
+            self.plot_spc(True, True)
+
+        # end on_g_input_spline_baseline_click
 
     def on_g_input_click_add_peak(self, event):
         self.cur_clicks += 1
@@ -3333,6 +3332,7 @@ class main_w(object):  # pragma: no cover
         # end ginput
 
     def ginput_spline_baseline(self):
+        self.show_spline_baseline_pick()
         self.w.MplWidget.canvas.setFocus()
         self.show_nmr_spectrum()
         cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_spline_baseline_click)
@@ -4729,6 +4729,7 @@ class main_w(object):  # pragma: no cover
                     neg_col = matplotlib.colors.to_hex(neg_col)
                     self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][k].ppm1,
                                                       self.nd.nmrdat[self.nd.s][k].spc[0].real, color=pos_col)
+                    print(f"spbl: {spline_baseline}")
                     if spline_baseline:
                         print("spline!")
 
@@ -4758,6 +4759,11 @@ class main_w(object):  # pragma: no cover
 
             self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1,
                                               self.nd.nmrdat[self.nd.s][self.nd.e].spc[0].real, color=pos_col)
+
+            print(f"spbl: {spline_baseline}")
+            if spline_baseline:
+                print("spline (curExp)!")
+
             self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
             self.w.MplWidget.canvas.axes.autoscale()
             self.w.MplWidget.canvas.axes.invert_xaxis()
@@ -5570,7 +5576,9 @@ class main_w(object):  # pragma: no cover
         if auto_plot_spc:
             self.plot_spc()
 
-        self.fill_pre_processing_numbers()
+        if self.w.preprocessing.isChecked():
+            self.fill_pre_processing_numbers()
+
         return "select_plot_list"
         # end select_plot_list
 
@@ -7164,6 +7172,10 @@ class main_w(object):  # pragma: no cover
     def show_pulse_program(self):
         self.w.nmrSpectrum.setCurrentIndex(9)
         # end show_pulse_program
+
+    def show_spline_baseline_pick(self):
+        self.w.statusBar().clearMessage()
+        self.w.statusBar().showMessage("Left click to add baseline point, ricght click or double click to exit peak picking mode")
 
     def show_title_file_information(self):
         self.w.nmrSpectrum.setCurrentIndex(8)
