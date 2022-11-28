@@ -817,7 +817,7 @@ class main_w(object):  # pragma: no cover
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -845,7 +845,7 @@ class main_w(object):  # pragma: no cover
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -880,7 +880,7 @@ class main_w(object):  # pragma: no cover
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -915,7 +915,7 @@ class main_w(object):  # pragma: no cover
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -945,12 +945,12 @@ class main_w(object):  # pragma: no cover
         self.w.baselineCorrection.setCurrentIndex(1)
         self.nd.ft()
         self.nd.baseline1d()
-        self.plot_spc()
+        self.plot_spc(True)
         self.set_proc_pars()
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -982,7 +982,15 @@ class main_w(object):  # pragma: no cover
         self.nd.auto_ref(tmsp)
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
+        return "autoref"
+        # end autoref
+
+    def auto_ref_all(self, tmsp=True):
+        self.nd.auto_ref_all(tmsp)
+        self.w.nmrSpectrum.setCurrentIndex(0)
+        self.change_data_set_exp()
+        self.plot_spc(True)
         return "autoref"
         # end autoref
 
@@ -990,21 +998,21 @@ class main_w(object):  # pragma: no cover
         self.nd.auto_ref(True)
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         # end automatic_referencing
 
     def baseline1d(self):
         self.nd.baseline1d()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         # end baseline1d
 
     def baseline1d_all(self):
         self.nd.baseline1d_all()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
-        self.plot_spc()
+        self.plot_spc(True)
         # end baseline1d
 
     def cancel_2d_ph_corr(self):
@@ -1070,12 +1078,6 @@ class main_w(object):  # pragma: no cover
             hac = True
             self.w.hsqcAnalysis.setChecked(False)
 
-        # if self.w.hsqcAnalysis.isChecked() == True:
-        #    hsqc_analysis_checked = True
-        #    self.w.hsqcAnalysis.setChecked(False)
-        # else:
-        #    hsqc_analysis_checked = False
-
         if (len(self.nd.nmrdat) > 0):
             if (len(self.nd.nmrdat[self.nd.s]) > 0):
                 self.keep_zoom = self.w.keepZoom.isChecked()
@@ -1109,16 +1111,16 @@ class main_w(object):  # pragma: no cover
                     self.set_pulse_program()
                     if (self.ph_corr_active == False):
                         if (self.w.autoPlot.isChecked()):
-                            self.plot_spc()
+                            self.plot_spc(True)
                         elif (self.w.nmrSpectrum.currentIndex() == 0):
-                            self.plot_spc()
+                            self.plot_spc(True)
 
                     else:
                         if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
                             self.ph_corr.spc = self.nd.nmrdat[self.nd.s][self.nd.e].spc
                             self.ph_corr_plot_spc()
                         else:
-                            self.plot_spc()
+                            self.plot_spc(True)
                             self.plot_2d_col_row()
 
                     self.keep_zoom = keep_zoom
