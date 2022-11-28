@@ -2984,10 +2984,9 @@ class main_w(object):  # pragma: no cover
             if event.dblclick == True:
                 self.xdata.pop()
 
-            xdata1 = set(self.xdata)  # remove duplicate values
-            self.xdata = list(xdata1)
-            self.xdata.sort()
-            print(self.xdata)
+            #xdata1 = set(self.xdata)  # remove duplicate values
+            #self.xdata = list(xdata1)
+            #self.xdata.sort()
             cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_spline_baseline_click)
             cid = self.w.MplWidget.canvas.mpl_disconnect(cid)
             cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_spline_baseline_click)
@@ -2995,25 +2994,24 @@ class main_w(object):  # pragma: no cover
             for k in range(len(self.nd.nmrdat[self.nd.s])):
                 if self.nd.nmrdat[self.nd.s][k].display.display_spc:
                     self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = self.xdata
+                    self.nd.nmrdat[self.nd.s][k].add_baseline_points()
 
             self.xdata = []
             self.ydata = []
             self.show_version()
-            self.plot_spc(True, True)
 
         else:
             self.xdata.append(event.xdata)
             self.ydata.append(event.ydata)
-            xdata1 = set(self.xdata)  # remove duplicate values
-            self.xdata = list(xdata1)
-            self.xdata.sort()
+            #xdata1 = set(self.xdata)  # remove duplicate values
+            #self.xdata = list(xdata1)
+            #self.xdata.sort()
             for k in range(len(self.nd.nmrdat[self.nd.s])):
                 if self.nd.nmrdat[self.nd.s][k].display.display_spc:
                     self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = self.xdata
+                    self.nd.nmrdat[self.nd.s][k].add_baseline_points()
 
-            print("plotted")
-            self.plot_spc(True, True)
-
+        self.plot_spc(True, True)
         # end on_g_input_spline_baseline_click
 
     def on_g_input_click_add_peak(self, event):
@@ -3340,6 +3338,11 @@ class main_w(object):  # pragma: no cover
         cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_spline_baseline_click)
         cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_spline_baseline_click)
         cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = []
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points_pts = []
+
         # end ginput
 
     def ginput_hsqc(self, n_clicks=1):
@@ -4686,17 +4689,19 @@ class main_w(object):  # pragma: no cover
         # end
 
     def plot_spc(self, hide_pre_processing=False, spline_baseline=False):
+        s = self.nd.s
+        e = self.nd.e
         self.keep_zoom = self.w.keepZoom.isChecked()
         xlim = self.w.MplWidget.canvas.axes.get_xlim()
         ylim = self.w.MplWidget.canvas.axes.get_ylim()
         self.w.nmrSpectrum.setCurrentIndex(0)
-        if (len(self.nd.nmrdat[self.nd.s]) == 0):
+        if (len(self.nd.nmrdat[s]) == 0):
             return
 
-        if (len(self.nd.nmrdat[self.nd.s][self.nd.e].spc) == 0):
+        if (len(self.nd.nmrdat[s][e].spc) == 0):
             return
 
-        d = self.nd.nmrdat[self.nd.s][self.nd.e].display
+        d = self.nd.nmrdat[s][e].display
         if d.pos_col == "RGB":
             pos_col = d.pos_col_rgb
         else:
@@ -4712,11 +4717,11 @@ class main_w(object):  # pragma: no cover
         xlabel = d.x_label + " [" + d.axis_type1 + "]"
         ylabel = d.y_label + " [" + d.axis_type2 + "]"
         # print(self.nd.nmrdat[self.nd.s][self.nd.e].dim)
-        if (self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1):
+        if (self.nd.nmrdat[s][e].dim == 1):
             self.w.MplWidget.canvas.axes.clear()
-            for k in range(len(self.nd.nmrdat[self.nd.s])):
-                if ((k != self.nd.e) and (self.nd.nmrdat[self.nd.s][k].display.display_spc == True)):
-                    d = self.nd.nmrdat[self.nd.s][k].display
+            for k in range(len(self.nd.nmrdat[s])):
+                if ((k != e) and (self.nd.nmrdat[s][k].display.display_spc == True)):
+                    d = self.nd.nmrdat[s][k].display
                     if (d.pos_col == "RGB"):
                         pos_col = d.pos_col_rgb
                     else:
@@ -4729,13 +4734,12 @@ class main_w(object):  # pragma: no cover
 
                     pos_col = matplotlib.colors.to_hex(pos_col)
                     neg_col = matplotlib.colors.to_hex(neg_col)
-                    self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][k].ppm1,
-                                                      self.nd.nmrdat[self.nd.s][k].spc[0].real, color=pos_col)
-                    print(f"spbl: {spline_baseline}")
+                    self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
+                                                      self.nd.nmrdat[s][k].spc[0].real, color=pos_col)
                     if spline_baseline:
-                        print("spline!")
+                        print("spline")
 
-            d = self.nd.nmrdat[self.nd.s][self.nd.e].display
+            d = self.nd.nmrdat[s][e].display
             if (d.pos_col == "RGB"):
                 pos_col = d.pos_col_rgb
             else:
@@ -4750,10 +4754,8 @@ class main_w(object):  # pragma: no cover
             neg_col = matplotlib.colors.to_hex(neg_col)
             xlabel = d.x_label + " [" + d.axis_type1 + "]"
             ylabel = d.y_label + " [" + d.axis_type2 + "]"
-            if len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) > 0:
+            if len(self.nd.nmrdat[s][e].start_peak) > 0:
                 if self.w.peakPicking.isChecked() == True:
-                    s = self.nd.s
-                    e = self.nd.e
                     for k in range(len(self.nd.nmrdat[s][e].start_peak)):
                         self.w.MplWidget.canvas.axes.axvspan(self.nd.nmrdat[s][e].start_peak[k],
                                                              self.nd.nmrdat[s][e].end_peak[k],
@@ -4762,9 +4764,9 @@ class main_w(object):  # pragma: no cover
             self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1,
                                               self.nd.nmrdat[self.nd.s][self.nd.e].spc[0].real, color=pos_col)
 
-            print(f"spbl: {spline_baseline}")
             if spline_baseline:
-                print("spline (curExp)!")
+                print("spline")
+                #self.nd.nmrdat[s][e].add_baseline_points()
 
             self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
             self.w.MplWidget.canvas.axes.autoscale()
