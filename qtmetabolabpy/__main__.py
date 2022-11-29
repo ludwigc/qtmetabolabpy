@@ -334,6 +334,13 @@ class main_w(object):  # pragma: no cover
         self.w.scaleSpectra.stateChanged.connect(self.set_scale_spectra)
         self.w.pqnButton.clicked.connect(self.set_pqn_tsa_scaling)
         self.w.tsaButton.clicked.connect(self.set_pqn_tsa_scaling)
+        self.w.addSplineBaselineButton.clicked.connect(self.ginput_spline_baseline)
+        self.w.clearSplineBaselineButton.clicked.connect(self.clear_spline_points)
+        self.w.resetSplineBaselineButton.clicked.connect(self.reset_spline_points)
+        self.w.correctAllButton.clicked.connect(self.corr_spline_baseline)
+        self.w.plotBaselineButton.clicked.connect(self.plot_spline_baseline)
+        self.w.averagePoints.textChanged.connect(self.get_spline_average_points)
+        self.w.linearSplinePoints.textChanged.connect(self.set_linear_spline_points)
         self.w.fitUpToBonds.currentIndexChanged.connect(self.set_up_to_bonds)
         self.w.autoScaling.clicked.connect(self.set_variance_stabilisation_options)
         self.w.paretoScaling.clicked.connect(self.set_variance_stabilisation_options)
@@ -341,6 +348,7 @@ class main_w(object):  # pragma: no cover
         self.w.varianceStabilisation.stateChanged.connect(self.set_variance_stabilisation)
         self.w.exportDataSet.stateChanged.connect(self.set_export_data_set)
         self.w.excludeRegionTW.cellChanged.connect(self.set_exclude_pre_proc)
+        self.w.splineBaselineTW.cellChanged.connect(self.set_spline_baseline_tw)
         self.w.segAlignTW.cellChanged.connect(self.set_seg_align_pre_proc)
         self.w.selectClassTW.itemSelectionChanged.connect(self.set_plot_pre_proc)
         self.w.selectClassTW.cellChanged.connect(self.set_change_pre_proc)
@@ -374,6 +382,7 @@ class main_w(object):  # pragma: no cover
         self.w.actionPlot_spc.triggered.connect(self.plot_spc)
         self.w.actionSave.triggered.connect(self.save_button)
         self.w.actionLoad.triggered.connect(self.load_button)
+
         self.w.actionOpen_NMRPipe.triggered.connect(self.read_nmrpipe_spc)
         self.w.actionActivate_Command_Line.triggered.connect(self.activate_command_line)
         self.w.actionPrevious_command.triggered.connect(self.previous_command)
@@ -391,6 +400,7 @@ class main_w(object):  # pragma: no cover
         self.w.actionRead_NMR_Spectrum.triggered.connect(self.read_nmr_spc)
         self.w.preprocessing.stateChanged.connect(self.set_pre_processing)
         self.w.peakPicking.stateChanged.connect(self.set_peak_picking)
+        self.w.splinebaseline.stateChanged.connect(self.set_spline_baseline)
         self.w.peakAddButton.clicked.connect(self.add_peak)
         self.w.peakClearButton.clicked.connect(self.clear_peak)
         self.w.peakWidget.cellChanged.connect(self.set_add_peak)
@@ -1383,9 +1393,39 @@ class main_w(object):  # pragma: no cover
         self.w.coefficientOfDetermination.setPalette(palette)
         # end clear_assigned_hsqc
 
+    def clear_spline_points(self):
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            self.xdata = []
+            self.ydata = []
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = []
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points_pts = []
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_values = []
+
+        self.fill_spline_baseline_tw()
+        self.plot_spc(True)
+        # end clear_spline_points
+
+    def reset_spline_points(self):
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
+                self.nd.nmrdat[self.nd.s][k].proc_spc1d()
+                self.nd.nmrdat[self.nd.s][k].add_baseline_points()
+
+        self.plot_spc(True)
+        # end clear_spline_points
+
     def cnst(self, index=0):
         print("cnst({}) = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.cnst[index]))
         # end cnst
+
+    def corr_spline_baseline(self):
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
+                self.nd.nmrdat[self.nd.s][k].corr_spline_baseline()
+
+        self.plot_spc(True)
+        # end corr_spline_baseline
 
     def create_icon_mac(self):
         home_dir = os.path.expanduser('~')
@@ -1480,7 +1520,7 @@ class main_w(object):  # pragma: no cover
         # end create_icon_win
 
     def data_pre_processing(self):
-        self.reset_data_pre_processing()
+        self.nd.reset_data_pre_processing()
         self.nd.data_pre_processing()
         self.plot_spc_pre_proc()
         self.vertical_auto_scale()
@@ -2992,7 +3032,7 @@ class main_w(object):  # pragma: no cover
             cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_spline_baseline_click)
             cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
             for k in range(len(self.nd.nmrdat[self.nd.s])):
-                if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
                     self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = self.xdata
                     self.nd.nmrdat[self.nd.s][k].add_baseline_points()
 
@@ -3001,17 +3041,18 @@ class main_w(object):  # pragma: no cover
             self.show_version()
 
         else:
-            self.xdata.append(event.xdata)
+            self.xdata.append(np.round(1e4 * event.xdata) / 1e4)
             self.ydata.append(event.ydata)
             #xdata1 = set(self.xdata)  # remove duplicate values
             #self.xdata = list(xdata1)
             #self.xdata.sort()
             for k in range(len(self.nd.nmrdat[self.nd.s])):
-                if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
                     self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = self.xdata
                     self.nd.nmrdat[self.nd.s][k].add_baseline_points()
 
-        self.plot_spc(True, True)
+        self.fill_spline_baseline_tw()
+        self.plot_spc(True)
         # end on_g_input_spline_baseline_click
 
     def on_g_input_click_add_peak(self, event):
@@ -3332,16 +3373,17 @@ class main_w(object):  # pragma: no cover
         # end ginput
 
     def ginput_spline_baseline(self):
+        self.xdata = list(self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.baseline_points)
         self.show_spline_baseline_pick()
         self.w.MplWidget.canvas.setFocus()
         self.show_nmr_spectrum()
         cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_spline_baseline_click)
         cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_spline_baseline_click)
         cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
-        for k in range(len(self.nd.nmrdat[self.nd.s])):
-            if self.nd.nmrdat[self.nd.s][k].display.display_spc:
-                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = []
-                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points_pts = []
+        #for k in range(len(self.nd.nmrdat[self.nd.s])):
+        #    if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+        #        self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = []
+        #        self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points_pts = []
 
         # end ginput
 
@@ -3466,9 +3508,23 @@ class main_w(object):  # pragma: no cover
         self.w.intAllExps.setHidden(True)
         self.w.intAllDS.setHidden(True)
         self.w.exportFormatCB.setHidden(True)
+        # end hide_peak_picking
 
-    #def hide_spline_baseline(self):
-
+    def hide_spline_baseline(self):
+        self.w.preProcPeak.setHidden(True)
+        self.w.peakPickingTab.setHidden(True)
+        self.w.preProcPeak.setTabEnabled(2, False)
+        self.w.splineBaselineTW.setHidden(True)
+        self.w.label_98.setHidden(True)
+        self.w.label_99.setHidden(True)
+        self.w.averagePoints.setHidden(True)
+        self.w.linearSplinePoints.setHidden(True)
+        self.w.addSplineBaselineButton.setHidden(True)
+        self.w.clearSplineBaselineButton.setHidden(True)
+        self.w.resetSplineBaselineButton.setHidden(True)
+        self.w.plotBaselineButton.setHidden(True)
+        self.w.correctAllButton.setHidden(True)
+        # end hide_spline_baseline
 
     def html(self, url=''):
         if len(url) == 0:
@@ -3486,6 +3542,7 @@ class main_w(object):  # pragma: no cover
         self.w.peakPickingTab.setHidden(False)
         self.w.preProcPeak.setTabEnabled(0, False)
         self.w.preProcPeak.setTabEnabled(1, True)
+        self.w.preProcPeak.setTabEnabled(2, False)
         self.w.peakWidget.setHidden(False)
         self.w.peakAddButton.setHidden(False)
         self.w.peakClearButton.setHidden(False)
@@ -3493,6 +3550,30 @@ class main_w(object):  # pragma: no cover
         self.w.intAllExps.setHidden(False)
         self.w.intAllDS.setHidden(False)
         self.w.exportFormatCB.setHidden(False)
+        # end show_peak_picking
+
+    def show_spline_baseline(self):
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc or self.nd.e == k:
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.baseline_points
+                self.nd.nmrdat[self.nd.s][k].add_baseline_points()
+
+        self.w.preProcPeak.setHidden(False)
+        self.w.splineBaselineTab.setHidden(False)
+        self.w.preProcPeak.setTabEnabled(0, False)
+        self.w.preProcPeak.setTabEnabled(1, False)
+        self.w.preProcPeak.setTabEnabled(2, True)
+        self.w.splineBaselineTW.setHidden(False)
+        self.w.label_98.setHidden(False)
+        self.w.label_99.setHidden(False)
+        self.w.averagePoints.setHidden(False)
+        self.w.linearSplinePoints.setHidden(False)
+        self.w.addSplineBaselineButton.setHidden(False)
+        self.w.clearSplineBaselineButton.setHidden(False)
+        self.w.resetSplineBaselineButton.setHidden(False)
+        self.w.plotBaselineButton.setHidden(False)
+        self.w.correctAllButton.setHidden(False)
+        # show_spline_baseline
 
     def hilbert(self, mat):
         npts = len(mat[0])
@@ -4688,7 +4769,7 @@ class main_w(object):  # pragma: no cover
         self.w.coefficientOfDetermination.setPalette(palette)
         # end
 
-    def plot_spc(self, hide_pre_processing=False, spline_baseline=False):
+    def plot_spc(self, hide_pre_processing=False, plot_spline_baseline=False):
         s = self.nd.s
         e = self.nd.e
         self.keep_zoom = self.w.keepZoom.isChecked()
@@ -4736,8 +4817,14 @@ class main_w(object):  # pragma: no cover
                     neg_col = matplotlib.colors.to_hex(neg_col)
                     self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
                                                       self.nd.nmrdat[s][k].spc[0].real, color=pos_col)
-                    if spline_baseline:
-                        print("spline")
+                    if self.w.splinebaseline.isChecked():
+                        print("isChecked1")
+                        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].spline_baseline.baseline_points,
+                                                          self.nd.nmrdat[s][k].spline_baseline.baseline_values, 'o', color="lightgreen")
+                        if plot_spline_baseline:
+                            self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
+                                                              self.nd.nmrdat[s][k].calc_spline_baseline(),
+                                                              color="lightgreen")
 
             d = self.nd.nmrdat[s][e].display
             if (d.pos_col == "RGB"):
@@ -4764,9 +4851,12 @@ class main_w(object):  # pragma: no cover
             self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1,
                                               self.nd.nmrdat[self.nd.s][self.nd.e].spc[0].real, color=pos_col)
 
-            if spline_baseline:
-                print("spline")
-                #self.nd.nmrdat[s][e].add_baseline_points()
+            if self.w.splinebaseline.isChecked():
+                self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].spline_baseline.baseline_points,
+                                                  self.nd.nmrdat[s][e].spline_baseline.baseline_values, 'o', color="lightgreen")
+                if plot_spline_baseline:
+                    baseline = self.nd.nmrdat[s][e].calc_spline_baseline()
+                    self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].ppm1, baseline, color="lightgreen")
 
             self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
             self.w.MplWidget.canvas.axes.autoscale()
@@ -4910,6 +5000,10 @@ class main_w(object):  # pragma: no cover
 
         # self.w.MplWidget.canvas.toolbar.update()
         self.w.MplWidget.canvas.draw()
+
+    def plot_spline_baseline(self):
+        self.plot_spc(True, True)
+        # end plot_spline_baseline
 
     def previous_command(self):
         if (self.w.cmdLine.hasFocus() == True):
@@ -5408,6 +5502,61 @@ class main_w(object):  # pragma: no cover
     def set_fit_zero_percentages(self):
         hsqc = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc
         hsqc.fit_zero_percentages = not self.w.doNotFitZeroPercentages.isChecked()
+
+    def set_spline_average_points(self):
+        self.w.averagePoints.setText(str(self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.average_points))
+        self.nd.nmrdat[self.nd.s][self.nd.e].add_baseline_points()
+        self.plot_spc(True)
+        # end set_spline_average_points
+
+    def get_spline_average_points(self):
+        try:
+            self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.average_points = int(self.w.averagePoints.text())
+        except:
+            self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.average_points = 20
+
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.average_points = self.nd.nmrdat[self.nd.s][
+                    self.nd.e].spline_baseline.average_points
+
+        self.set_spline_average_points()
+        # end set_spline_average_points
+
+    def set_linear_spline_points(self):
+        self.w.linearSplinePoints.setText(str(self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.linear_spline))
+        self.nd.nmrdat[self.nd.s][self.nd.e].add_baseline_points()
+        self.plot_spc(True)
+        # end set_spline_average_points
+
+    def get_linear_spline_points(self):
+        try:
+            self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.linear_spline = int(self.w.linearSplinePoints.text())
+        except:
+            self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.linear_spline = 200
+
+        for k in len(self.nd.nmrdat[self.nd.s]):
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.linear_spline = self.nd.nmrdat[self.nd.s][
+                    self.nd.e].spline_baseline.linear_spline
+
+        self.set_spline_average_points()
+        # end set_spline_average_points
+
+    def set_spline_baseline(self):
+        if self.w.splinebaseline.isChecked():
+            self.w.peakPicking.setChecked(False)
+            self.w.preprocessing.setChecked(False)
+            self.show_spline_baseline()
+            self.set_spline_average_points()
+            self.set_linear_spline_points()
+            self.fill_spline_baseline_tw()
+        else:
+            self.hide_spline_baseline()
+
+        self.plot_spc(True)
+
+        # end set_spline_baseline
 
     def select_add_compress_pre_proc(self):
         self.ginput_compress(2)
@@ -5985,6 +6134,38 @@ class main_w(object):  # pragma: no cover
 
         # end set_exclude_pre_proc
 
+    def fill_spline_baseline_tw(self):
+        self.w.splineBaselineTW.cellChanged.disconnect()
+        n_rows = len(self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.baseline_points)
+        self.w.splineBaselineTW.setRowCount(0)
+        self.w.splineBaselineTW.setRowCount(n_rows)
+        for k in range(n_rows):
+            baseline_number = QTableWidgetItem(k)
+            baseline_number.setTextAlignment(QtCore.Qt.AlignHCenter)
+            self.w.splineBaselineTW.setItem(k, 0, baseline_number)
+            self.w.splineBaselineTW.item(k, 0).setText(str(self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.baseline_points[k]))
+
+        self.w.splineBaselineTW.cellChanged.connect(self.set_spline_baseline_tw)
+        # end fill_spline_baseline_tw
+
+    def set_spline_baseline_tw(self):
+        n_rows = self.w.excludeRegionTW.rowCount()
+        baseline_pts = np.array([])
+        for k in range(n_rows):
+            try:
+                baseline_pts = np.append(baseline_pts, float(self.w.splineBaselineTW.item(k, 0).text()))
+            except:
+                pass
+
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
+                self.nd.nmrdat[self.nd.s][k].spline_baseline.baseline_points = baseline_pts
+                self.nd.nmrdat[self.nd.s][k].add_baseline_points()
+
+        self.fill_spline_baseline_tw()
+        self.plot_spc(True)
+        # end set_spline_baseline_tw
+
     def set_exclude_region(self):
         if (self.nd.pp.pre_proc_fill == False):
             if (self.w.excludeRegion.isChecked() == True):
@@ -6488,6 +6669,7 @@ class main_w(object):  # pragma: no cover
     def set_pre_processing(self):
         if (self.w.preprocessing.isChecked() == True):
             self.w.peakPicking.setChecked(False)
+            self.w.splinebaseline.setChecked(False)
             # self.w.peakPickingTab.setHidden(True)
             self.w.preProcPeak.setCurrentIndex(0)
             if len(self.nd.nmrdat[self.nd.s]) != len(self.nd.pp.class_select):
@@ -6505,6 +6687,7 @@ class main_w(object):  # pragma: no cover
     def set_peak_picking(self):
         if (self.w.peakPicking.isChecked() == True):
             self.w.preprocessing.setChecked(False)
+            self.w.splinebaseline.setChecked(False)
             # self.w.preProcessingTab.setHidden(True)
             self.w.preProcPeak.setCurrentIndex(1)
             if self.nd.int_all_data_sets == True:
@@ -7162,6 +7345,7 @@ class main_w(object):  # pragma: no cover
         self.w.peakPickingTab.setHidden(True)
         self.w.preProcPeak.setTabEnabled(0, True)
         self.w.preProcPeak.setTabEnabled(1, False)
+        self.w.preProcPeak.setTabEnabled(2, False)
         self.w.preProcessingGroupBox.setHidden(False)
         self.w.preProcessingSelect.setHidden(False)
         self.w.preProcessingWidget.setHidden(False)
@@ -7179,7 +7363,7 @@ class main_w(object):  # pragma: no cover
 
     def show_spline_baseline_pick(self):
         self.w.statusBar().clearMessage()
-        self.w.statusBar().showMessage("Left click to add baseline point, ricght click or double click to exit peak picking mode")
+        self.w.statusBar().showMessage("Left click to add baseline point, right click or double click to exit peak picking mode")
 
     def show_title_file_information(self):
         self.w.nmrSpectrum.setCurrentIndex(8)
