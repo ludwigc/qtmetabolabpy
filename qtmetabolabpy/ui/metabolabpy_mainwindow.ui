@@ -3252,6 +3252,13 @@
                   </property>
                  </widget>
                 </item>
+                <item row="10" column="4">
+                 <widget class="QPushButton" name="exportHsqcData">
+                  <property name="text">
+                   <string>Export all</string>
+                  </property>
+                 </widget>
+                </item>
                </layout>
               </widget>
               <widget class="QWidget" name="hsqcSetupTab">

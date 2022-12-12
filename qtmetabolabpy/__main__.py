@@ -354,6 +354,7 @@ class main_w(object):  # pragma: no cover
         self.w.selectClassTW.cellChanged.connect(self.set_change_pre_proc)
         self.w.hsqcSpinSys.cellChanged.connect(self.hsqc_spin_sys_change)
         self.nd.hsqc_spin_sys_connected = True
+        self.w.exportHsqcData.clicked.connect(self.save_hsqc_data)
         self.w.excludeClearButton.clicked.connect(self.select_clear_exclude_pre_proc)
         self.w.segAlignClearButton.clicked.connect(self.select_clear_seg_align_pre_proc)
         self.w.compressClearButton.clicked.connect(self.select_clear_compress_pre_proc)
@@ -5024,6 +5025,46 @@ class main_w(object):  # pragma: no cover
         self.w.close()
         # end quit_app
 
+    def set_title_information(self, rack_label='', pos_label='', replace_orig_title=False, sfile=False):
+        if len(rack_label) == 0 or len(pos_label) == 0:
+            msg = ''
+            msg += '_____________________________________________________________________________MetaboLabPy Help__\n\n'
+            msg += '    Usage:\n'
+            msg += '        set_title_file_information(rack_label=<string>, pos_label=<string>,\n'
+            msg += '           replace_origFile=True/False, sfile=False/<string>\n\n\n'
+            msg += '        <string> for rack_label and pos_label refers to the Excel column headers. Both\n'
+            msg += '        arguments are mandatory. replace_orig_file can be set to either True or False.\n'
+            msg += '        If the argument is True, the previously exsisting title file information will be\n'
+            msg += '        discarded, if the argument if False, the previous title file information will be\n'
+            msg += '        added to the end of the new title file information. This argument is optional, the\n'
+            msg += '        default value is to keep the original title file information.\n\n'
+            msg += '        The sfile argument should be either False or be a string containing path and file\n'
+            msg += '        name information for the Excel spreadsheet. If the argument is False, a GUI element\n'
+            msg += '        pops up where the user can graphically choose the excel file. This is the default\n'
+            msg += '\n_______________________________________________________________________________________________\n'
+            print(msg)
+            return
+
+        if sfile == False:
+            selected_file = QFileDialog.getOpenFileName()
+            if len(selected_file[0]) == 0:
+                return
+
+        else:
+            selected_file = (sfile, '')
+
+        # print(selected_file)
+        excel_name = os.path.split(selected_file[0])[1]
+        data_path = os.path.split(selected_file[0])[0]
+        #print(f'data_path: {data_path}, excel_name: {excel_name}')
+        self.nd.set_title_information(rack_label=rack_label, pos_label=pos_label, data_path=data_path,
+                                      excel_name=excel_name, replace_orig_title=replace_orig_title)
+        self.update_gui()
+        self.w.nmrSpectrum.setCurrentIndex(8)
+        # end set_title_information
+
+
+
     def read_nmr_spc(self):
         kz = self.w.keepZoom.isChecked()
         if (len(self.nd.nmrdat[0]) == 0):
@@ -5364,6 +5405,12 @@ class main_w(object):  # pragma: no cover
 
         self.nd.save(f_name)
         # end save_button
+
+    def save_hsqc_data(self):
+        pf_name = QFileDialog.getSaveFileName(None, "Save HSQC Data", "", "*.xlsx", "*.xlsx")
+        f_name = pf_name[0].rstrip('.xlsx').rstrip(' ').rstrip('/').rstrip('.xlsx') + '.xlsx'
+        self.nd.export_hsqc_data(f_name)
+        # end save_hsqc_data
 
     def save_config(self):
         self.cf.auto_plot = self.w.autoPlot.isChecked()
