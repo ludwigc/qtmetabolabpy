@@ -31,7 +31,7 @@ except:
     pass
 
 import darkdetect
-import matplotlib.pyplot as pl  # pragma: no cover
+#import matplotlib.pyplot as pl  # pragma: no cover
 
 if "linux" in sys.platform:  # pragma: no cover
     gui_env = ['TkAgg', 'GTKAgg', 'Qt5Agg', 'WXAgg']  # pragma: no cover
