@@ -31,6 +31,8 @@ except:
     pass
 
 import darkdetect
+import webbrowser
+import pandas as pd
 #import matplotlib.pyplot as pl  # pragma: no cover
 
 if "linux" in sys.platform:  # pragma: no cover
@@ -340,7 +342,7 @@ class main_w(object):  # pragma: no cover
         self.w.correctAllButton.clicked.connect(self.corr_spline_baseline)
         self.w.plotBaselineButton.clicked.connect(self.plot_spline_baseline)
         self.w.averagePoints.textChanged.connect(self.get_spline_average_points)
-        self.w.linearSplinePoints.textChanged.connect(self.set_linear_spline_points)
+        self.w.linearSplinePoints.textChanged.connect(self.get_linear_spline_points)
         self.w.fitUpToBonds.currentIndexChanged.connect(self.set_up_to_bonds)
         self.w.autoScaling.clicked.connect(self.set_variance_stabilisation_options)
         self.w.paretoScaling.clicked.connect(self.set_variance_stabilisation_options)
@@ -517,6 +519,7 @@ class main_w(object):  # pragma: no cover
         self.w.maFitButton.clicked.connect(self.ma_fit_hsqc_1d)
         # self.w.helpComboBox.currentIndexChanged.connect(self.set_help)
         self.w.helpComboBox.activated.connect(self.set_help)
+        self.w.tutorialComboBox.activated.connect(self.set_tutorial)
         # Quit Button
         self.w.quitButton.clicked.connect(self.quit_app)
         self.w.saveButton.clicked.connect(self.save_button)
@@ -617,7 +620,7 @@ class main_w(object):  # pragma: no cover
             self.w.actionCreate.setVisible(True)
 
         self.emp_ref_shift = 0.0
-        self.p = []
+        self.process = []
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             self.load_dark_mode()
         else:
@@ -1410,14 +1413,18 @@ class main_w(object):  # pragma: no cover
     def reset_spline_points(self):
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
-                self.nd.nmrdat[self.nd.s][k].proc_spc1d()
+                self.nd.nmrdat[self.nd.s][k].proc_spc1d(reset_spline=True)
                 self.nd.nmrdat[self.nd.s][k].add_baseline_points()
 
         self.plot_spc(True)
         # end clear_spline_points
 
-    def cnst(self, index=0):
-        print("cnst({}) = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.cnst[index]))
+    def cnst(self, index=-1):
+        if index == -1:
+            print(f'cnst = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.cnst}')
+        else:
+            print("cnst({}) = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.cnst[index]))
+
         # end cnst
 
     def corr_spline_baseline(self):
@@ -1519,6 +1526,178 @@ class main_w(object):  # pragma: no cover
         subprocess.os.system('pylnk3 create ' + ml_bat + ' ' + link_file + ' -m Minimized --icon ' + icon_file)
         subprocess.os.system('pip uninstall pylnk3 --yes')
         # end create_icon_win
+
+    def create_titles(self, excel_name='', dataset_label='', pos_label='', rack_label='', replace_title=False):
+        if dataset_label == '' or pos_label == '' or rack_label == '':
+            print(f'Usage: create_titles(dataset_label="dataset_label", pos_label="pos_label", rack_label="rack_label", replace_title=False)')
+            return
+
+        if excel_name == '':
+            answer = QFileDialog.getOpenFileName(None, 'Load Excel File', '', '*.xlsx')
+            if answer[0] == '':
+                return
+            else:
+                excel_name = answer[0]
+
+        else:
+            if not os.path.isfile(excel_name):
+                return
+
+        xls = pd.read_excel(excel_name).fillna('')
+        something_not_found = False
+        if len(np.where(xls.columns.str.contains(dataset_label))[0]) == 0:
+            something_not_found = True
+            print(f'dataset_label: {dataset_label} not found.')
+
+        if len(np.where(xls.columns.str.contains(pos_label))[0]) == 0:
+            something_not_found = True
+            print(f'pos_label: {pos_label} not found.')
+
+        if len(np.where(xls.columns.str.contains(rack_label))[0]) == 0:
+            something_not_found = True
+            print(f'rack_label: {rack_label} not found.')
+
+        if something_not_found:
+            return
+
+        self.nd.create_titles(xls, dataset_label, pos_label, rack_label, replace_title, excel_name)
+        self.update_gui()
+        # end create_titles
+
+    def d(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.delay) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'd = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.delay}')
+        else:
+            print("d{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.delay[index]))
+
+        # end d
+
+    def pl(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'pl = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level} dB')
+        else:
+            print("pl{} = {} dB".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level[index]))
+
+        # end pl
+
+    def plw(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level_watt) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'plw = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level_watt}')
+        else:
+            print("plw{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level_watt[index]))
+
+        # end plw
+
+    def pulprog(self):
+        print(f'pulprog: {self.nd.nmrdat[self.nd.s][self.nd.e].acq.pul_prog_name}')
+
+    def sp(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'sp = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power}')
+        else:
+            print("sp{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power[index]))
+
+        # end sp
+
+    def spw(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power_watt) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'spw = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power_watt}')
+        else:
+            print("spw{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power_watt[index]))
+
+        # end spw
+
+    def spoal(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.spoal) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'spoal = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.spoal}')
+        else:
+            print("spoal{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.spoal[index]))
+
+        # end spoal
+
+    def spoffs(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.spoffs) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'spoffs = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.spoffs}')
+        else:
+            print("spoffs{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.spoffs[index]))
+
+        # end spoffs
+
+    def cpdprg(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.cpd_prog) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'cpdprg = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.cpd_prog}')
+        else:
+            print("cpdprg{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.cpd_prog[index]))
+
+        # end cpdprg
+
+    def gpnam(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.gp_name) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'gpnam = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.gp_name}')
+        else:
+            print("gpnam{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.gp_name[index]))
+
+        # end gpnam
+
+    def gpx(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpx) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'gpx = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpx}')
+        else:
+            print("gpx{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpx[index]))
+
+        # end gpx
+
+    def gpy(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpy) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'gpy = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpy}')
+        else:
+            print("gpy{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpy[index]))
+
+        # end gpy
+
+    def gpz(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpz) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'gpz = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpz}')
+        else:
+            print("gpz{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.gpz[index]))
+
+        # end gpz
 
     def data_pre_processing(self):
         self.nd.reset_data_pre_processing()
@@ -2112,7 +2291,9 @@ class main_w(object):  # pragma: no cover
                 cmd_text2 = "self." + cmd_text
                 try:
                     output = eval(cmd_text2)
-                    print(output)
+                    if cmd_text2.find('self.nd') > -1:
+                        print(output)
+
                     self.w.console.setTextColor(txt_col)
                     self.w.console.append(code_out.getvalue())
                 except:
@@ -3752,6 +3933,10 @@ class main_w(object):  # pragma: no cover
         # end iter_all_strings+
 
     def load_button(self):
+        if len(self.cf.current_directory) > 0:
+            if os.path.isdir(self.cf.current_directory):
+                os.chdir(self.cf.current_directory)
+
         selectedDirectory = QFileDialog.getExistingDirectory()
         if (len(selectedDirectory) > 0):
             self.clear()
@@ -3775,7 +3960,7 @@ class main_w(object):  # pragma: no cover
         else:
             self.w.maAutoSim.setChecked(False)
 
-        # end save_button
+        # end load_button
 
     def load_config(self):
         self.cf.read_config()
@@ -3988,6 +4173,18 @@ class main_w(object):  # pragma: no cover
         # end load_light_mode
 
     def ma_fit_hsqc_1d(self):
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        else:
+            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+
+        code_out = io.StringIO()
+        code_err = io.StringIO()
+        sys.stdout = code_out
+        sys.stderr = code_err
+        print('fitting multiplet...')
         fit_again_counter = 0
         auto_scale = self.w.maAutoScale.isChecked()
         if self.w.maAutoScale.isChecked():
@@ -4001,10 +4198,8 @@ class main_w(object):  # pragma: no cover
         while self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_again:
             if fit_again_counter < 3:
                 fit_again_counter += 1
-                print("self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_again[iteration: {}]: {}".format(fit_again_counter,
-                                                                                                      self.nd.nmrdat[
-                                                                                                          self.nd.s][
-                                                                                                          self.nd.e].fit_hsqc_again))
+                print(f'self.nd.nmrdat[{self.nd.s}][{self.nd.e}].fit_hsqc_again[iteration: {fit_again_counter}]: '
+                      f'{self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_again}')
                 self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_again = False
                 self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_1d()
             else:
@@ -4013,6 +4208,13 @@ class main_w(object):  # pragma: no cover
         # self.hsqc_spin_sys_change()
         self.w.maAutoScale.setChecked(auto_scale)
         self.ma_sim_hsqc_1d()
+        self.w.console.setTextColor(txt_col)
+        self.w.console.append(code_out.getvalue())
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        code_out.close()
+        code_err.close()
+        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
         # end ma_fit_hsqc_1d
 
     def ma_sim_hsqc_1d(self):
@@ -4429,6 +4631,28 @@ class main_w(object):  # pragma: no cover
         self.w.nmrSpectrum.setCurrentIndex(10)
         # end open_script
 
+    def p(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.pulse) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print("p = {}".format(self.nd.nmrdat[self.nd.s][self.nd.e].acq.pulse))
+        else:
+            print("p{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.pulse[index]))
+
+        # end p
+
+    def pcpd(self, index=-1):
+        if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.pcpd) - 1 or index < -1:
+            index = -1
+
+        if index == -1:
+            print(f'pcpd = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.pcpd}')
+        else:
+            print(f'pcpd({index}) = {self.nd.nmrdat[self.nd.s][self.nd.e].acq.pcpd[index]}')
+
+        # end pcpd
+
     def ph_corr_plot_spc(self):
         xlim = self.w.MplWidget.canvas.axes.get_xlim()
         ylim = self.w.MplWidget.canvas.axes.get_ylim()
@@ -4818,14 +5042,15 @@ class main_w(object):  # pragma: no cover
                     neg_col = matplotlib.colors.to_hex(neg_col)
                     self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
                                                       self.nd.nmrdat[s][k].spc[0].real, color=pos_col)
+
                     if self.w.splinebaseline.isChecked():
-                        print("isChecked1")
-                        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].spline_baseline.baseline_points,
-                                                          self.nd.nmrdat[s][k].spline_baseline.baseline_values, 'o', color="lightgreen")
-                        if plot_spline_baseline:
-                            self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
-                                                              self.nd.nmrdat[s][k].calc_spline_baseline(),
-                                                              color="lightgreen")
+                        if len(self.nd.nmrdat[s][k].spline_baseline.baseline_points) > 0:
+                            self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].spline_baseline.baseline_points,
+                                                              self.nd.nmrdat[s][k].spline_baseline.baseline_values, 'o', color="lightgreen")
+                            if plot_spline_baseline:
+                                self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
+                                                                  self.nd.nmrdat[s][k].calc_spline_baseline(),
+                                                                  color="lightgreen")
 
             d = self.nd.nmrdat[s][e].display
             if (d.pos_col == "RGB"):
@@ -4853,11 +5078,12 @@ class main_w(object):  # pragma: no cover
                                               self.nd.nmrdat[self.nd.s][self.nd.e].spc[0].real, color=pos_col)
 
             if self.w.splinebaseline.isChecked():
-                self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].spline_baseline.baseline_points,
-                                                  self.nd.nmrdat[s][e].spline_baseline.baseline_values, 'o', color="lightgreen")
-                if plot_spline_baseline:
-                    baseline = self.nd.nmrdat[s][e].calc_spline_baseline()
-                    self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].ppm1, baseline, color="lightgreen")
+                if len(self.nd.nmrdat[s][k].spline_baseline.baseline_points) > 0:
+                    self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].spline_baseline.baseline_points,
+                                                      self.nd.nmrdat[s][e].spline_baseline.baseline_values, 'o', color="lightgreen")
+                    if plot_spline_baseline:
+                        baseline = self.nd.nmrdat[s][e].calc_spline_baseline()
+                        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].ppm1, baseline, color="lightgreen")
 
             self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
             self.w.MplWidget.canvas.axes.autoscale()
@@ -5389,9 +5615,15 @@ class main_w(object):  # pragma: no cover
         # end reset_plot
 
     def save_button(self):
-        pf_name = QFileDialog.getSaveFileName(None, "Save MetaboLabPy DataSet", "", "*.mlpy", "*.mlpy")
-        f_name = pf_name[0].rstrip('.mlpy').rstrip(' ').rstrip('/').rstrip('.mlpy') + '.mlpy'
+        if len(self.cf.current_directory) > 0:
+            if os.path.isdir(self.cf.current_directory):
+                os.chdir(self.cf.current_directory)
 
+        pf_name = QFileDialog.getSaveFileName(None, "Save MetaboLabPy DataSet","", "*.mlpy", "*.mlpy")
+        if len(pf_name[0]) == 0:
+            return
+
+        f_name = pf_name[0].rstrip('.mlpy').rstrip(' ').rstrip('/').rstrip('.mlpy') + '.mlpy'
         if (os.path.isfile(f_name)):
             os.remove(f_name)
 
@@ -5582,7 +5814,7 @@ class main_w(object):  # pragma: no cover
         except:
             self.nd.nmrdat[self.nd.s][self.nd.e].spline_baseline.linear_spline = 200
 
-        for k in len(self.nd.nmrdat[self.nd.s]):
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
             if self.nd.nmrdat[self.nd.s][k].display.display_spc:
                 self.nd.nmrdat[self.nd.s][k].spline_baseline.linear_spline = self.nd.nmrdat[self.nd.s][
                     self.nd.e].spline_baseline.linear_spline
@@ -6430,6 +6662,14 @@ class main_w(object):  # pragma: no cover
         self.w.helpView.setUrl(url[idx])
         # end set_help
 
+    def set_tutorial(self):
+        url = []
+        idx = self.w.tutorialComboBox.currentIndex()
+        url.append("https://youtu.be/uUNRintjUIo")
+        url.append("https://youtu.be/AeEoq0bwLJg")
+        webbrowser.open(url[idx], new=2)
+        # end set_help
+
     def set_hsqc_pars1(self):
         self.w.h1Range.setText(str(self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_h))
         # end set_hsqc_pars1
@@ -6942,13 +7182,12 @@ class main_w(object):  # pragma: no cover
         # end set_hsqc_assigned_metabolite
 
     def set_hsqc_metabolite(self):
-        print("set_hsqc_metabolite")
+        #print("set_hsqc_metabolite")
         my_autosim = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.autosim
         self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.autosim = False
         self.w.openWeb.clear()
         idx = self.w.hsqcMetabolites.currentIndex().row()
         if idx == -1:
-            print("/////////////")
             return
 
         if self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.j_scale == -1:
@@ -7470,10 +7709,10 @@ class main_w(object):  # pragma: no cover
         base_dir = os.path.split(nmr_dir)[0]
         jupyter_path = os.path.join(base_dir, "nmr", "jupyter")
         jobs = []
-        self.p = multiprocess.Process(target=notebookapp.main,
+        self.process = multiprocess.Process(target=notebookapp.main,
                                       args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997', '--NotebookApp.token=''', '--NotebookApp.password='''],))
-        jobs.append(self.p)
-        self.p.start()
+        jobs.append(self.process)
+        self.process.start()
         sleep(2)
         self.w.helpView.setUrl('http://127.0.0.1:9997')
         self.w.nmrSpectrum.setCurrentIndex(12)
@@ -7481,7 +7720,7 @@ class main_w(object):  # pragma: no cover
 
     def stop_notebook(self):
         try:
-            self.p.terminate()
+            self.process.terminate()
             sleep(2)
         except:
             pass
