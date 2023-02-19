@@ -5,8 +5,8 @@ import inspect
 
 matplotlib.use("Agg")
 matplotlib.rcParams['agg.path.chunksize'] = 64000  # 64_000_000_000
-# matplotlib.rc('xtick', labelsize=8)
-# matplotlib.rc('ytick', labelsize=8)
+## matplotlib.rc('xtick', labelsize=8)
+## matplotlib.rc('ytick', labelsize=8)
 
 try:
     from PySide2.QtUiTools import QUiLoader  # pragma: no cover
