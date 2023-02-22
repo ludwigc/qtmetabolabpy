@@ -1438,9 +1438,6 @@ class main_w(object):  # pragma: no cover
     def create_icon_mac(self):
         home_dir = os.path.expanduser('~')
         app_dir2 = os.path.join(home_dir, 'Applications')
-        if not os.path.isdir(app_dir2):
-            os.makedirs(app_dir2)
-
         app_dir = os.path.join(app_dir2, 'QtMetaboLabPy.app')
         app_dir1 = 'QtMetaboLabPy'
         try:
@@ -1464,12 +1461,12 @@ class main_w(object):  # pragma: no cover
         starter = os.path.join(app_dir2, 'createStarter')
         f = open(starter, 'w')
         f.write('#!/usr/bin/env bash\n\n')
-        f.write(appify.replace(' ', '\ ') + ' $(which qtmetabolabpy) ' + app_dir2.replace(' ', '\ ') + ' ' + app_dir1.replace(' ', '\ ') + '\n')
-        f.write('cp -r ' + contents.replace(' ', '\ ') + ' ' + app_dir.replace(' ', '\ ') + '\n')
-        f.write("cp " + icon.replace(' ', '\ ') + " " + app_dir.replace(' ', '\ ') + "/Icon$'\\r'\n")
+        f.write(appify + ' $(which qtmetabolabpy) ' + app_dir2 + ' ' + app_dir1 + '\n')
+        f.write('cp -r ' + contents + ' ' + app_dir + '\n')
+        f.write("cp " + icon + " " + app_dir + "/Icon$'\\r'\n")
         f.close()
         os.chmod(starter, 0o777)
-        subprocess.os.system(starter.replace(' ', '\ '))
+        subprocess.os.system(starter)
         os.remove(appify)
         os.remove(starter)
         # end create_icon_mac
