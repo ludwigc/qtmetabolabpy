@@ -254,7 +254,7 @@ except:
     pass
 
 
-class main_w(object):  # pragma: no cover
+class QtMetaboLabPy(object):  # pragma: no cover
     def __init__(self):
         self.exited_peak_picking = False
         self.zoom_was_on = True
