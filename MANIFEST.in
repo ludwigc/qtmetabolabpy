@@ -3,6 +3,7 @@ include LICENSE
 include requirements.txt
 include README.md
 include qtmetabolabpy/ui/*
+include qtmetabolabpy/bash/*
 include qtmetabolabpy/mlStarter
 include qtmetabolabpy/mlStarter/Contents
 include qtmetabolabpy/mlStarter/Icon

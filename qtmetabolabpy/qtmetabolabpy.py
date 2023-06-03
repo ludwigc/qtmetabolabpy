@@ -1,12 +1,17 @@
 #!/usr/bin/env ython
 import sys  # pragma: no cover
 import matplotlib  # pragma: no cover
-import inspect
+import inspect   # pragma: no cover
+import importlib   # pragma: no cover
 
-matplotlib.use("Agg")
-matplotlib.rcParams['agg.path.chunksize'] = 64000  # 64_000_000_000
+matplotlib.use("Agg")  # pragma: no cover
+matplotlib.rcParams['agg.path.chunksize'] = 64000  # pragma: no cover
 ## matplotlib.rc('xtick', labelsize=8)
 ## matplotlib.rc('ytick', labelsize=8)
+import platform  # pragma: no cover
+import os  # pragma: no cover
+
+
 
 try:
     from PySide2.QtUiTools import QUiLoader  # pragma: no cover
@@ -20,7 +25,7 @@ try:
     from PySide2.QtWidgets import QFileDialog  # pragma: no cover
     from PySide2 import QtWidgets  # pragma: no cover
     from PySide2.QtCore import SIGNAL  # pragma: no cover
-    from PySide2.QtWebEngineWidgets import QWebEngineView  # , QWebEngineProfile, QWebEnginePage, \
+    from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings  # , QWebEngineProfile, QWebEnginePage, \
     #    QWebEngineSettings  # pragma: no cover
     from PySide2.QtCore import QUrl, Qt  # pragma: no cover
     from PySide2.QtWebEngineCore import QWebEngineUrlSchemeHandler  # pragma: no cover
@@ -28,7 +33,41 @@ try:
     import qtmodern.styles  # pragma: no cover
     from PySide2.QtGui import QPixmap
 except:
-    pass
+    if platform.system() == 'Darwin' and platform.machine() == 'arm64':
+        find_pyside2 = importlib.util.find_spec('PySide2')
+        if find_pyside2.__str__() == None:
+            print('PySide2 not installed!')
+            sys.exit()
+        else:
+            script_name = os.path.join(os.path.dirname(__file__), 'bash', 'fix_pyside2')
+            print('Error: Could not load QWebEngineView')
+            answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")
+            while answer not in ['y', 'Y', 'n', 'N', 'd', 'D']:
+                print('Please input y, n or d only')
+                answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")
+
+            if answer in ['n', 'N']:
+                print('Good luck!')
+                sys.exit()
+
+            if answer in ['d', 'D']:
+                print('\n=== Bash script to fix the issue ========================================================\n')
+                os.system('cat ' + script_name)
+                print('\n=== End of bash script ==================================================================\n')
+                while answer not in ['y', 'Y', 'n', 'N']:
+                    answer = input("Do you want to fix the issue automatically? [y, n]: ")
+                    if answer not in ['y', 'Y', 'n', 'N']:
+                        print('Please input y or n only')
+
+            if answer in ['n', 'N']:
+                print('Good luck!')
+                sys.exit()
+
+            print('Fixing issue (PySide2/Darwin arm64 anaconda3)...')
+
+            os.system(script_name)
+            print('Fixed M1/M2 mac arm64 anaconda PySide2 issue, please start qtmetabolabpy again!')
+            sys.exit()
 
 import darkdetect
 import webbrowser
@@ -79,11 +118,10 @@ import time  # pragma: no cover
 ##import platform  # pragma: no cover
 import math  # pragma: no cover
 from metabolabpy.nmr import nmrConfig  # pragma: no cover
-import os  # pragma: no cover
 import traceback  # pragma: no cover
 import shutil  # pragma: no cover
 import scipy.io  # pragma: no cover
-##import inspect
+#import inspect
 from io import StringIO
 import contextlib
 import zipfile
@@ -269,6 +307,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.xdata = []
         self.ydata = []
         self.temp_shift = 0.0
+        self.find_maximum = True
         self.nd = nmrDataSet.NmrDataSet()
         self.__version__ = self.nd.__version__
         self.ph_corr = phCorr.PhCorr()
@@ -562,6 +601,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.MplWidget.toolbar.setVisible(False)
         self.w.hsqcMultiplet.toolbar.setVisible(False)
         self.w.hsqcPeak.toolbar.setVisible(False)
+        self.w.startNotebookButton.setVisible(False)
+        self.w.stopNotebookButton.setVisible(False)
         # self.w.isotopomerHsqcPeak.toolbar.setVisible(False)
         # self.w.isotopomerMultiplet.toolbar.setVisible(False)
         self.w.MplWidget.setFocus()
@@ -4688,7 +4729,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                               color=pos_col)
             self.w.MplWidget.canvas.axes.plot([self.ph_corr.pivot, self.ph_corr.pivot],
                                               [2.0 * self.ph_corr.spc_max, -2.0 * self.ph_corr.spc_max], color='r')
-            self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+                bg = (42 / 255, 42 / 255, 42 / 255)
+                fg = (255 / 255, 255 / 255, 255 / 255)
+            else:
+                bg = (255 / 255, 255 / 255, 255 / 255)
+                fg = (0 / 255, 0 / 255, 0 / 255)
+
+            self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
             self.w.MplWidget.canvas.axes.invert_xaxis()
             self.w.MplWidget.canvas.axes.set_xlim(xlim)
             self.w.MplWidget.canvas.axes.set_ylim(ylim)
@@ -4733,7 +4781,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.MplWidget.canvas.axes.plot(
             [self.ph_corr.pivot2d[self.ph_corr.dim], self.ph_corr.pivot2d[self.ph_corr.dim]],
             [2.0 * self.ph_corr.spc_max, -2.0 * self.ph_corr.spc_max], color='r')
-        self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
+
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            bg = (42 / 255, 42 / 255, 42 / 255)
+            fg = (255 / 255, 255 / 255, 255 / 255)
+        else:
+            bg = (255 / 255, 255 / 255, 255 / 255)
+            fg = (0 / 255, 0 / 255, 0 / 255)
+
+        self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
         self.w.MplWidget.canvas.axes.invert_xaxis()
         self.w.MplWidget.canvas.axes.set_xlim(xlim)
         self.w.MplWidget.canvas.axes.set_ylim(ylim)
@@ -4919,8 +4975,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         else:
             xlabel += " (Peak {}, {} signals picked)".format(spin_number, len(h1_picked[spin_number - 1]))
 
-        self.w.hsqcPeak.canvas.axes.set_xlabel(xlabel)
-        self.w.hsqcPeak.canvas.axes.set_ylabel(ylabel)
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            bg = (42 / 255, 42 / 255, 42 / 255)
+            fg = (255 / 255, 255 / 255, 255 / 255)
+        else:
+            bg = (255 / 255, 255 / 255, 255 / 255)
+            fg = (0 / 255, 0 / 255, 0 / 255)
+
+        self.w.hsqcPeak.canvas.axes.set_xlabel(xlabel, color=fg)
+        self.w.hsqcPeak.canvas.axes.set_ylabel(ylabel, color=fg)
         self.w.hsqcPeak.canvas.draw()
         self.w.hsqcMultiplet.canvas.axes.clear()
         if len(h1_picked[spin_number - 1]) > 0:
@@ -4938,7 +5001,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                                   hd.sim_spc[spin_number - 1][c13_pts1:c13_pts2], color=col2,
                                                   linewidth=2)
 
-        self.w.hsqcMultiplet.canvas.axes.set_xlabel(ylabel)
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            bg = (42 / 255, 42 / 255, 42 / 255)
+            fg = (255 / 255, 255 / 255, 255 / 255)
+        else:
+            bg = (255 / 255, 255 / 255, 255 / 255)
+            fg = (0 / 255, 0 / 255, 0 / 255)
+
+        self.w.hsqcMultiplet.canvas.axes.set_xlabel(ylabel, color=fg)
         self.w.hsqcMultiplet.canvas.axes.autoscale()
         self.w.hsqcMultiplet.canvas.axes.invert_xaxis()
         self.w.hsqcMultiplet.canvas.draw()
@@ -5088,7 +5158,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
                         baseline = self.nd.nmrdat[s][e].calc_spline_baseline()
                         self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].ppm1, baseline, color="lightgreen")
 
-            self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+                bg = (42 / 255, 42 / 255, 42 / 255)
+                fg = (255 / 255, 255 / 255, 255 / 255)
+            else:
+                bg = (255 / 255, 255 / 255, 255 / 255)
+                fg = (0 / 255, 0 / 255, 0 / 255)
+
+            self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
             self.w.MplWidget.canvas.axes.autoscale()
             self.w.MplWidget.canvas.axes.invert_xaxis()
             if (self.keep_zoom == True):
@@ -5116,8 +5193,16 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                                  self.nd.nmrdat[self.nd.s][self.nd.e].ppm2,
                                                  self.nd.nmrdat[self.nd.s][self.nd.e].spc.real, neg_lev, colors=neg_col,
                                                  linestyles='solid', antialiased=True)
-            self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
-            self.w.MplWidget.canvas.axes.set_ylabel(ylabel)
+
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+                bg = (42 / 255, 42 / 255, 42 / 255)
+                fg = (255 / 255, 255 / 255, 255 / 255)
+            else:
+                bg = (255 / 255, 255 / 255, 255 / 255)
+                fg = (0 / 255, 0 / 255, 0 / 255)
+
+            self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
+            self.w.MplWidget.canvas.axes.set_ylabel(ylabel, color=fg)
             self.w.MplWidget.canvas.axes.autoscale()
             self.w.MplWidget.canvas.axes.invert_xaxis()
             self.w.MplWidget.canvas.axes.invert_yaxis()
@@ -5221,7 +5306,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
         xlabel = d.x_label + " [" + d.axis_type1 + "]"
-        self.w.MplWidget.canvas.axes.set_xlabel(xlabel)
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            bg = (42 / 255, 42 / 255, 42 / 255)
+            fg = (255 / 255, 255 / 255, 255 / 255)
+        else:
+            bg = (255 / 255, 255 / 255, 255 / 255)
+            fg = (0 / 255, 0 / 255, 0 / 255)
+
+        self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
         self.w.MplWidget.canvas.axes.autoscale()
         self.w.MplWidget.canvas.axes.invert_xaxis()
         if (self.keep_zoom == True):
@@ -5465,14 +5557,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end reference1d
 
-    def reference1d_all(self, new_shift):
+    def reference1d_all(self, new_shift, find_maximum=True):
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.temp_shift = new_shift
+        self.find_maximum = find_maximum
         self.ginput_ref_1d_all(1)
         # end reference1d_all
 
     def reference1d_all_2(self):
-        self.nd.reference1d_all(self.xdata[0], self.temp_shift)
+        self.nd.reference1d_all(self.xdata[0], self.temp_shift, self.find_maximum)
         self.xdata = []
         self.ydata = []
         self.temp_shift = 0.0
@@ -6810,10 +6903,17 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             j_cc = QTableWidgetItem(' '.join(str(e) for e in spin_sys['j_cc'][k]))
             perc = QTableWidgetItem(str(spin_sys['contribution'][k]))
-            idx.setTextAlignment(QtCore.Qt.AlignLeft)
-            offset.setTextAlignment(QtCore.Qt.AlignHCenter)
-            j_cc.setTextAlignment(QtCore.Qt.AlignLeft)
-            perc.setTextAlignment(QtCore.Qt.AlignHCenter)
+            try:
+                idx.setTextAlignment(QtCore.Qt.AlignLeft)
+                offset.setTextAlignment(QtCore.Qt.AlignHCenter)
+                j_cc.setTextAlignment(QtCore.Qt.AlignLeft)
+                perc.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+            except:
+                idx.setTextAlignment(0) #QtCore.Qt.AlignLeft)
+                offset.setTextAlignment(4) #QtCore.Qt.AlignHCenter)
+                j_cc.setTextAlignment(0) #QtCore.Qt.AlignLeft)
+                perc.setTextAlignment(4) #QtCore.Qt.AlignmentFlag.AlignHCenter)
+
             self.w.hsqcSpinSys.setItem(k, 0, idx)
             self.w.hsqcSpinSys.setItem(k, 1, offset)
             self.w.hsqcSpinSys.setItem(k, 2, j_cc)
@@ -7712,11 +7812,16 @@ class QtMetaboLabPy(object):  # pragma: no cover
         base_dir = os.path.split(nmr_dir)[0]
         jupyter_path = os.path.join(base_dir, "nmr", "jupyter")
         jobs = []
-        self.process = multiprocess.Process(target=notebookapp.main,
-                                      args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997', '--NotebookApp.token=''', '--NotebookApp.password='''],))
+        print("-----------------")
+        self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--ip=127.0.0.1', '--port=9997'],))
+        #self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997', '--NotebookApp.token=''', '--NotebookApp.password='''],))
+        print('=======================')
         jobs.append(self.process)
+        print('#########################')
         self.process.start()
+        print('//////////////////////////')
         sleep(2)
+        print('__________________________')
         self.w.helpView.setUrl('http://127.0.0.1:9997')
         self.w.nmrSpectrum.setCurrentIndex(12)
         # end startNotebook

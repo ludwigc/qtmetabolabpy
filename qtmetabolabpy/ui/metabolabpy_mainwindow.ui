@@ -6108,7 +6108,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="phRefExp"/>
+           <widget class="QSpinBox" name="phRefExp">
+            <property name="maximum">
+             <number>99999</number>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_49">
@@ -6435,7 +6439,25 @@
          </widget>
         </item>
         <item row="0" column="0" colspan="6">
-         <widget class="QWebEngineView2" name="helpView" native="true"/>
+         <widget class="QWebEngineView2" name="helpView" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+         </widget>
         </item>
         <item row="1" column="4">
          <spacer name="horizontalSpacer_24">
