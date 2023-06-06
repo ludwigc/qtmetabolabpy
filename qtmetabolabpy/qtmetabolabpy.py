@@ -25,49 +25,51 @@ try:
     from PySide2.QtWidgets import QFileDialog  # pragma: no cover
     from PySide2 import QtWidgets  # pragma: no cover
     from PySide2.QtCore import SIGNAL  # pragma: no cover
-    from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings  # , QWebEngineProfile, QWebEnginePage, \
-    #    QWebEngineSettings  # pragma: no cover
     from PySide2.QtCore import QUrl, Qt  # pragma: no cover
-    from PySide2.QtWebEngineCore import QWebEngineUrlSchemeHandler  # pragma: no cover
     import PySide2  # pragma: no cover
     import qtmodern.styles  # pragma: no cover
     from PySide2.QtGui import QPixmap
 except:
-    if platform.system() == 'Darwin' and platform.machine() == 'arm64':
-        find_pyside2 = importlib.util.find_spec('PySide2')
-        if find_pyside2.__str__() == None:
-            print('PySide2 not installed!')
-            sys.exit()
-        else:
-            script_name = os.path.join(os.path.dirname(__file__), 'bash', 'fix_pyside2')
-            print('Error: Could not load QWebEngineView')
-            answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")
-            while answer not in ['y', 'Y', 'n', 'N', 'd', 'D']:
-                print('Please input y, n or d only')
-                answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")
+    pass
 
-            if answer in ['n', 'N']:
-                print('Good luck!')
-                sys.exit()
+try:
+    from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings  # pragma: no cover
+    from PySide2.QtWebEngineCore import QWebEngineUrlSchemeHandler  # pragma: no cover
+except:
+    if platform.system() == 'Darwin' and platform.machine() == 'arm64':  # pragma: no cover
+        find_pyside2 = importlib.util.find_spec('PySide2')  # pragma: no cover
+        if find_pyside2.__str__() == None:  # pragma: no cover
+            print('PySide2 not installed!')  # pragma: no cover
+            sys.exit()  # pragma: no cover
+        else:  # pragma: no cover
+            script_name = os.path.join(os.path.dirname(__file__), 'bash', 'fix_pyside2')  # pragma: no cover
+            print('Error: Could not load QWebEngineView')  # pragma: no cover
+            answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")  # pragma: no cover
+            while answer not in ['y', 'Y', 'n', 'N', 'd', 'D']:  # pragma: no cover
+                print('Please input y, n or d only')  # pragma: no cover
+                answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")  # pragma: no cover
 
-            if answer in ['d', 'D']:
-                print('\n=== Bash script to fix the issue ========================================================\n')
-                os.system('cat ' + script_name)
-                print('\n=== End of bash script ==================================================================\n')
-                while answer not in ['y', 'Y', 'n', 'N']:
-                    answer = input("Do you want to fix the issue automatically? [y, n]: ")
-                    if answer not in ['y', 'Y', 'n', 'N']:
-                        print('Please input y or n only')
+            if answer in ['n', 'N']:  # pragma: no cover
+                print('Good luck!')  # pragma: no cover
+                sys.exit()  # pragma: no cover
 
-            if answer in ['n', 'N']:
-                print('Good luck!')
-                sys.exit()
+            if answer in ['d', 'D']:  # pragma: no cover
+                print('\n=== Bash script to fix the issue ========================================================\n')  # pragma: no cover
+                os.system('cat ' + script_name)  # pragma: no cover
+                print('\n=== End of bash script ==================================================================\n')  # pragma: no cover
+                while answer not in ['y', 'Y', 'n', 'N']:  # pragma: no cover
+                    answer = input("Do you want to fix the issue automatically? [y, n]: ")  # pragma: no cover
+                    if answer not in ['y', 'Y', 'n', 'N']:  # pragma: no cover
+                        print('Please input y or n only')  # pragma: no cover
 
-            print('Fixing issue (PySide2/Darwin arm64 anaconda3)...')
+            if answer in ['n', 'N']:  # pragma: no cover
+                print('Good luck!')  # pragma: no cover
+                sys.exit()  # pragma: no cover
 
-            os.system(script_name)
-            print('Fixed M1/M2 mac arm64 anaconda PySide2 issue, please start qtmetabolabpy again!')
-            sys.exit()
+            print('Fixing issue (PySide2/Darwin arm64 anaconda3)...')  # pragma: no cover
+            os.system(script_name)  # pragma: no cover
+            print('Fixed M1/M2 mac arm64 anaconda PySide2 issue, please start qtmetabolabpy again!')  # pragma: no cover
+            sys.exit()  # pragma: no cover
 
 import darkdetect
 import webbrowser
@@ -408,12 +410,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.selectClassButton.clicked.connect(self.select_class_pre_proc)
         self.w.selectClassLE.textChanged.connect(self.select_class_pre_proc)
         self.w.cmdLine.returnPressed.connect(self.exec_cmd)
-        self.w.noiseThresholdLE.textChanged.connect(self.set_noise_reg_pre_proc)
-        self.w.noiseRegionStartLE.textChanged.connect(self.set_noise_reg_pre_proc)
-        self.w.noiseRegionEndLE.textChanged.connect(self.set_noise_reg_pre_proc)
-        self.w.thLineWidthLE.textChanged.connect(self.set_noise_reg_pre_proc)
-        self.w.bucketPpmLE.textChanged.connect(self.set_bucket_ppm_pre_proc)
-        self.w.bucketDataPointsLE.textChanged.connect(self.set_bucket_points_pre_proc)
+        self.w.noiseThresholdLE.returnPressed.connect(self.set_noise_reg_pre_proc)
+        self.w.noiseRegionStartLE.returnPressed.connect(self.set_noise_reg_pre_proc)
+        self.w.noiseRegionEndLE.returnPressed.connect(self.set_noise_reg_pre_proc)
+        self.w.thLineWidthLE.returnPressed.connect(self.set_noise_reg_pre_proc)
+        self.w.bucketPpmLE.returnPressed.connect(self.set_bucket_ppm_pre_proc)
+        self.w.bucketDataPointsLE.returnPressed.connect(self.set_bucket_points_pre_proc)
         self.w.actionAutomatic_Referencing.triggered.connect(self.automatic_referencing)
         self.w.actionVertical_AutoScale.triggered.connect(self.vertical_auto_scale)
         self.w.actionHorizontal_AutoScale.triggered.connect(self.horizontal_auto_scale)
@@ -437,8 +439,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.exitZoomPhCorr1d.clicked.connect(self.zoom_ph_corr)
         self.w.exitPhCorr1d.clicked.connect(self.start_stop_ph_corr)
         self.w.actionClear.triggered.connect(self.clear)
-        self.w.lambdaLE.textChanged.connect(self.set_var_lambda)
-        self.w.y0LE.textChanged.connect(self.set_var_y0)
+        self.w.lambdaLE.returnPressed.connect(self.set_var_lambda)
+        self.w.y0LE.returnPressed.connect(self.set_var_y0)
         self.w.actionRead_NMR_Spectrum.triggered.connect(self.read_nmr_spc)
         self.w.preprocessing.stateChanged.connect(self.set_pre_processing)
         self.w.peakPicking.stateChanged.connect(self.set_peak_picking)
