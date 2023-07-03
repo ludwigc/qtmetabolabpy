@@ -872,6 +872,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end apply_2d_ph_corr
 
     def autobaseline(self):
+        #print("autobaseline")
         #print(self.nd.nmrdat[self.nd.s][self.nd.e].dim)
         if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
             self.autobaseline1d()
@@ -894,7 +895,40 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end autobaseline
 
-    def autobaseline1d(self):
+    def autobaseline1d(self, alg='jbcd', lam=1000000, max_iter=50, alpha=0.1, beta=10, gamma=15, beta_mult=0.98, gamma_mult=0.94, half_window=None):
+        code_out = io.StringIO()
+        code_err = io.StringIO()
+        sys.stdout = code_out
+        sys.stderr = code_err
+        self.show_auto_baseline()
+        self.nd.ft()
+        self.nd.auto_ref()
+        self.nd.autobaseline1d(alg=alg, lam=lam, max_iter=max_iter, alpha=alpha, beta=beta, gamma=gamma, beta_mult=beta_mult, gamma_mult=gamma_mult, half_window=half_window)
+        self.nd.auto_ref()
+        self.show_version()
+        self.w.nmrSpectrum.setCurrentIndex(0)
+        self.change_data_set_exp()
+        self.plot_spc(True)
+        self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline = True
+        self.set_autobaseline()
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        else:
+            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+
+        self.w.console.setTextColor(txt_col)
+        self.w.console.append(code_out.getvalue())
+        self.w.console.setTextColor(err_col)
+        self.w.console.append(code_err.getvalue())
+        code_out.close()
+        code_err.close()
+        # end autobaseline1d
+
+    def autobaseline1d_old(self):
         code_out = io.StringIO()
         code_err = io.StringIO()
         sys.stdout = code_out
@@ -927,7 +961,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.console.append(code_err.getvalue())
         code_out.close()
         code_err.close()
-        # end autobaseline1d
+        # end autobaseline1d_old
 
     def autobaseline2d(self, poly_order=[16, 16], threshold=0.05):
         code_out = io.StringIO()
@@ -963,12 +997,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
         sys.stdout = code_out
         sys.stderr = code_err
         self.show_auto_baseline()
-        self.nd.ft()
-        self.nd.auto_ref()
+        self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline = True
+        self.set_autobaseline()
+        self.nd.ft_all()
+        self.nd.auto_ref_all()
         self.nd.autobaseline1d_all()
-        self.w.baselineCorrection.setCurrentIndex(1)
-        self.nd.ft()
-        self.nd.baseline1d()
+        #self.w.baselineCorrection.setCurrentIndex(1)
+        #self.nd.ft()
+        #self.nd.baseline1d()
         # self.w.baselineCorrection.setCurrentIndex(1)
         self.set_proc_pars()
         self.show_version()
@@ -993,10 +1029,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end autobaseline1d_all
 
     def autophase1d(self):
-        code_out = io.StringIO()
-        code_err = io.StringIO()
-        sys.stdout = code_out
-        sys.stderr = code_err
+        #code_out = io.StringIO()
+        #code_err = io.StringIO()
+        #sys.stdout = code_out
+        #sys.stderr = code_err
         self.show_auto_phase()
         self.nd.ft()
         self.nd.auto_ref()
@@ -1010,21 +1046,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
         self.plot_spc(True)
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
-        else:
-            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+        #sys.stdout = sys.__stdout__
+        #sys.stderr = sys.__stderr__
+        #if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+        #    txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+        #    err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        #else:
+        #    txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+        #    err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
 
-        self.w.console.setTextColor(txt_col)
-        self.w.console.append(code_out.getvalue())
-        self.w.console.setTextColor(err_col)
-        self.w.console.append(code_err.getvalue())
-        code_out.close()
-        code_err.close()
+        #self.w.console.setTextColor(txt_col)
+        #self.w.console.append(code_out.getvalue())
+        #self.w.console.setTextColor(err_col)
+        #self.w.console.append(code_err.getvalue())
+        #code_out.close()
+        #code_err.close()
         # end autophase1d
 
     def autophase1d_all(self):
@@ -3149,7 +3185,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
         p.strip_end = int(self.w.stripTransformEnd.text())
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
-        # end get_proc_pars25
+        # end get_proc_pars26
+
+    def get_proc_pars27(self):
+        p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
+        p.autobaseline = self.w.autobaselineBox.isChecked()
+        self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
+        # end get_proc_pars27
 
     def get_bottom_top(self, line):
         margin = 0.1
@@ -5137,32 +5179,34 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # print(self.nd.nmrdat[self.nd.s][self.nd.e].dim)
         if (self.nd.nmrdat[s][e].dim == 1):
             self.w.MplWidget.canvas.axes.clear()
-            for k in range(len(self.nd.nmrdat[s])):
-                if ((k != e) and (self.nd.nmrdat[s][k].display.display_spc == True)):
-                    d = self.nd.nmrdat[s][k].display
-                    if (d.pos_col == "RGB"):
-                        pos_col = d.pos_col_rgb
-                    else:
-                        pos_col = d.pos_col
+            for s1 in range(len(self.nd.nmrdat)):
+                for k in range(len(self.nd.nmrdat[s1])):
+                    if ((k != e) or (s1 != s)) and (self.nd.nmrdat[s1][k].display.display_spc == True):
+                        #d = self.nd.nmrdat[s1][k].display
+                        if (self.nd.nmrdat[s1][k].display.pos_col == "RGB"):
+                            pos_col = self.nd.nmrdat[s1][k].display.pos_col_rgb
+                        else:
+                            pos_col = self.nd.nmrdat[s1][k].display.pos_col
 
-                    if (d.neg_col == "RGB"):
-                        neg_col = d.neg_col_rgb
-                    else:
-                        neg_col = d.neg_col
+                        if (self.nd.nmrdat[s1][k].display.neg_col == "RGB"):
+                            neg_col = self.nd.nmrdat[s1][k].display.neg_col_rgb
+                        else:
+                            neg_col = self.nd.nmrdat[s1][k].display.neg_col
 
-                    pos_col = matplotlib.colors.to_hex(pos_col)
-                    neg_col = matplotlib.colors.to_hex(neg_col)
-                    self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
-                                                      self.nd.nmrdat[s][k].spc[0].real, color=pos_col)
+                        pos_col = matplotlib.colors.to_hex(pos_col)
+                        neg_col = matplotlib.colors.to_hex(neg_col)
+                        #print(f'Dataset: {s1}, Exp: {k}, pos_col: {pos_col}')
+                        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s1][k].ppm1,
+                                                          self.nd.nmrdat[s1][k].spc[0].real, color=pos_col)
 
-                    if self.w.splinebaseline.isChecked():
-                        if len(self.nd.nmrdat[s][k].spline_baseline.baseline_points) > 0:
-                            self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].spline_baseline.baseline_points,
-                                                              self.nd.nmrdat[s][k].spline_baseline.baseline_values, 'o', color="lightgreen")
-                            if plot_spline_baseline:
-                                self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
-                                                                  self.nd.nmrdat[s][k].calc_spline_baseline(),
-                                                                  color="lightgreen")
+                        if self.w.splinebaseline.isChecked() and s1 == s:
+                            if len(self.nd.nmrdat[s][k].spline_baseline.baseline_points) > 0:
+                                self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].spline_baseline.baseline_points,
+                                                                  self.nd.nmrdat[s][k].spline_baseline.baseline_values, 'o', color="lightgreen")
+                                if plot_spline_baseline:
+                                    self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
+                                                                      self.nd.nmrdat[s][k].calc_spline_baseline(),
+                                                                      color="lightgreen")
 
             d = self.nd.nmrdat[s][e].display
             if (d.pos_col == "RGB"):
@@ -6214,6 +6258,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         acq_str += "temperature          [K]      " + "% 9.2f\n" % a.temperature
         self.w.acqPars.setText(acq_str)
         # end set_acq_pars
+
+    def set_autobaseline(self):
+        self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
+        # end set_autobaseline
 
     def set_avoid_neg_values(self):
         if (self.nd.pp.pre_proc_fill == False):
