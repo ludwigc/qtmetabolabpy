@@ -6,7 +6,6 @@ setup.py
 qtmetabolabpy/__init__.py
 qtmetabolabpy/__main__.py
 qtmetabolabpy/qtMetaboLabPy.py
-qtmetabolabpy/qtmetabolabpy.py
 qtmetabolabpy.egg-info/PKG-INFO
 qtmetabolabpy.egg-info/SOURCES.txt
 qtmetabolabpy.egg-info/dependency_links.txt

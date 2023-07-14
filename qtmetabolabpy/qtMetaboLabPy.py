@@ -1227,6 +1227,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     self.w.expBox.setValue(len(self.nd.nmrdat[self.nd.s]))
 
                 self.nd.e = self.w.expBox.value() - 1
+                if len(self.nd.nmrdat) > (self.nd.s + 1):
+                    if self.nd.nmrdat[self.nd.s][old_exp].display.display_spc != True and self.nd.nmrdat[self.nd.s+1][old_exp].display.display_spc == True:
+                        self.nd.nmrdat[self.nd.s+1][old_exp].display.display_spc = False
+                        self.nd.nmrdat[self.nd.s+1][self.nd.e].display.display_spc = True
                 keep_zoom = self.w.keepZoom.isChecked()
                 if not ((old_set == self.nd.s) and (old_exp == self.nd.e)):
                     if (self.nd.nmrdat[old_set][old_exp].dim != self.nd.nmrdat[self.nd.s][self.nd.e].dim):
@@ -3837,7 +3841,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if len(url) == 0:
             nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
             base_dir = os.path.split(nmr_dir)[0]
-            f_name = os.path.join(base_dir, "nmr", "web", "introductionDark", "index.html")
+            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
             url = "file:///" + f_name.replace('\\', '/')
 
         self.w.helpView.setUrl(url)
@@ -4137,7 +4141,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         url = []
         nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         base_dir = os.path.split(nmr_dir)[0]
-        f_name = os.path.join(base_dir, "nmr", "web", "introductionDark", "index.html")
+        f_name = os.path.join(base_dir, "nmr", "web", "index.html")
         url.append("file:///" + f_name.replace('\\', '/'))
         url.append("http://www.bml-nmr.org")
         url.append("https://www.hmdb.ca")
@@ -4232,7 +4236,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         url = []
         nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         base_dir = os.path.split(nmr_dir)[0]
-        f_name = os.path.join(base_dir, "nmr", "web", "introduction", "index.html")
+        f_name = os.path.join(base_dir, "nmr", "web", "index.html")
         url.append("file:///" + f_name.replace('\\', '/'))
         url.append("http://www.bml-nmr.org")
         url.append("https://www.hmdb.ca")
@@ -5756,9 +5760,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         base_dir = os.path.split(nmr_dir)[0]
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            f_name = os.path.join(base_dir, "nmr", "web", "introductionDark", "index.html")
+            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
         else:
-            f_name = os.path.join(base_dir, "nmr", "web", "introduction", "index.html")
+            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
 
         url = "file:///" + f_name.replace('\\', '/')
         self.w.helpView.setUrl(url)
@@ -6829,9 +6833,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         base_dir = os.path.split(nmr_dir)[0]
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            f_name = os.path.join(base_dir, "nmr", "web", "introductionDark", "index.html")
+            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
         else:
-            f_name = os.path.join(base_dir, "nmr", "web", "introduction", "index.html")
+            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
 
         url.append("file:///" + f_name.replace('\\', '/'))
         url.append("http://www.bml-nmr.org")

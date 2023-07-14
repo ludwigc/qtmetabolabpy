@@ -7043,7 +7043,7 @@
     <string>Execute Script</string>
    </property>
    <property name="shortcut">
-    <string>Meta+X</string>
+    <string>Ctrl+X</string>
    </property>
   </action>
   <action name="actionScale_2D_Spectrum_Up">
