@@ -112,7 +112,7 @@ def main():  # pragma: no cover
 
     screen_width = app.desktop().screenGeometry().width()
     screen_height = app.desktop().screenGeometry().height()
-    w_width = w.w.size().width()
+    w_width = 1600 #w.w.size().width()
     w_height = w.w.size().height()
     ww = min(w_width, screen_width)
     wh = min(w_height, screen_height)
