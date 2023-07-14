@@ -72,7 +72,7 @@
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Data Pre-Processing</string>
+         <string>Data PreProc</string>
         </property>
         <property name="tristate">
          <bool>false</bool>
@@ -89,7 +89,7 @@
       <item>
        <widget class="QCheckBox" name="splinebaseline">
         <property name="text">
-         <string>Spline Baseline Correction</string>
+         <string>Spline BC</string>
         </property>
        </widget>
       </item>
@@ -104,13 +104,6 @@
        <widget class="QCheckBox" name="multipletAnalysis">
         <property name="text">
          <string>Multiplet Analysis</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="isotopomerAnalysis">
-        <property name="text">
-         <string>Isotopomer Analysis</string>
         </property>
        </widget>
       </item>
@@ -219,7 +212,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="spcTab">
        <attribute name="title">

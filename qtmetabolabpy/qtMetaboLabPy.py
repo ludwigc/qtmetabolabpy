@@ -335,7 +335,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preProcPeak.setVisible(False)
         self.w.hsqcAnalysis.setVisible(False)
         self.w.multipletAnalysis.setVisible(False)
-        self.w.isotopomerAnalysis.setVisible(False)
+        #self.w.isotopomerAnalysis.setVisible(False)
         self.w.nmrSpectrum.setTabEnabled(1, False)
         self.w.nmrSpectrum.setTabEnabled(2, False)
         self.w.nmrSpectrum.setTabEnabled(3, False)
@@ -453,7 +453,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.exportFormatCB.currentIndexChanged.connect(self.set_datasets_exps)
         self.w.hsqcAnalysis.stateChanged.connect(self.set_hsqc_analysis)
         self.w.multipletAnalysis.stateChanged.connect(self.set_multiplet_analysis)
-        self.w.isotopomerAnalysis.stateChanged.connect(self.set_isotopomer_analysis)
+        #self.w.isotopomerAnalysis.stateChanged.connect(self.set_isotopomer_analysis)
         self.w.preserveOverallScale.stateChanged.connect(self.set_preserve_overall_scale)
         self.w.actionReset.triggered.connect(self.reset_plot)
         self.w.actionShow_NMR_Spectrum.triggered.connect(self.show_nmr_spectrum)
@@ -7252,7 +7252,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.nd.old_data_set = self.nd.s
             self.nd.old_data_exp = self.nd.e
             self.w.multipletAnalysis.setVisible(False)
-            self.w.isotopomerAnalysis.setVisible(False)
+            #self.w.isotopomerAnalysis.setVisible(False)
             self.w.nmrSpectrum.setTabEnabled(1, True)
             # self.w.nmrSpectrum.setTabEnabled(2, True)
             self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.set_metabolite_list()
@@ -7324,9 +7324,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.displaySelectedMetabolite.setChecked(False)
             self.w.displaySelectedMetabolite.setVisible(False)
             self.w.multipletAnalysis.setChecked(False)
-            self.w.isotopomerAnalysis.setChecked(False)
+            #self.w.isotopomerAnalysis.setChecked(False)
             self.w.multipletAnalysis.setVisible(False)
-            self.w.isotopomerAnalysis.setVisible(False)
+            #self.w.isotopomerAnalysis.setVisible(False)
             self.w.nmrSpectrum.setTabEnabled(1, False)
             self.w.nmrSpectrum.setTabEnabled(2, False)
             self.w.openWeb.clear()
@@ -7439,19 +7439,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end set_multiplet_analysis
 
-    def set_isotopomer_analysis(self):
-        if (self.w.isotopomerAnalysis.isChecked() == True):
-            self.w.nmrSpectrum.setTabEnabled(4, True)
-            self.w.nmrSpectrum.setStyleSheet(
-                "QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
-            self.w.nmrSpectrum.setCurrentIndex(4)
-        else:
-            self.w.nmrSpectrum.setTabEnabled(4, False)
-            self.w.nmrSpectrum.setStyleSheet(
-                "QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
-            self.w.nmrSpectrum.setCurrentIndex(1)
-
-        # end set_isotopomer_analysis
 
     def set_pre_processing_options(self):
         cur_idx = self.w.preProcessingSelect.currentIndex()
@@ -8096,7 +8083,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.hsqcAnalysis.setVisible(False)
 
         self.w.multipletAnalysis.setVisible(False)
-        self.w.isotopomerAnalysis.setVisible(False)
+        #self.w.isotopomerAnalysis.setVisible(False)
         return "updated GUI"
         # end update_gui
 
