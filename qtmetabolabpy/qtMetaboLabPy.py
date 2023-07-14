@@ -679,16 +679,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # self.w.nMax.textChanged.connect(self.get_hsqc_pars6())
         # self.w..textChanged.connect(self.get_hsqc_pars())
         # self.set_hsqc()
-        #self.show_main_window()
-        #self.w.setMaximumWidth(1100)
-        #if (self.w.isFullScreen() == False):
-        #    self.w.showNormal()
-        #    self.w.resize(1100, self.w.size().height())
-        #    self.w.showNormal()
-        #else:
-        #    self.w.showFullScreen()
-        self.w.resize(1100, 823)
-        #self.update_gui()
         # end __init__
 
     def activate_command_line(self):
