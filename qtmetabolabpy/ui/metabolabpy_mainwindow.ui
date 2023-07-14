@@ -25,7 +25,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>DataSet</string>
+         <string>Set</string>
         </property>
        </widget>
       </item>
@@ -39,7 +39,7 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>   Experiment</string>
+         <string>Exp</string>
         </property>
        </widget>
       </item>
