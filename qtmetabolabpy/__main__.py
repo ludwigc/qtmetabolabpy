@@ -110,14 +110,26 @@ def main():  # pragma: no cover
     else:
         qtmodern.styles.dark(app)
 
+    screen_width = app.desktop().screenGeometry().width()
+    screen_height = app.desktop().screenGeometry().height()
+    w_width = w.w.size().width()
+    w_height = w.w.size().height()
     w.show()
     w.w.showNormal()
     w.w.move(0, 0)
     app.processEvents()
-    w.w.setMaximumWidth(1280)
-    app.processEvents()
-    w.w.resize(1280, w.w.size().height())
-    app.processEvents()
+    if w_width > screen_width:
+        w.w.setMaximumWidth(screen_width)
+        app.processEvents()
+        w.w.resize(screen_width, w.w.size().height())
+        app.processEvents()
+
+    if w_height > screen_height:
+        w.w.setMaximumWidth(screen_height)
+        app.processEvents()
+        w.w.resize(w.w.size().width(), screen_height)
+        app.processEvents()
+
     w.w.updateGeometry()
     app.processEvents()
     #print("update2")
