@@ -72,7 +72,7 @@
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Data PreProc</string>
+         <string>Data Pre-Processing</string>
         </property>
         <property name="tristate">
          <bool>false</bool>
@@ -119,16 +119,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="autoPlot">
-        <property name="text">
-         <string>AutoPlot |</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="keepZoom">

@@ -574,7 +574,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_font_size()
         self.cf = nmrConfig.NmrConfig()
         self.cf.read_config()
-        self.w.autoPlot.setChecked(self.cf.auto_plot)
+        #self.w.autoPlot.setChecked(self.cf.auto_plot)
         self.w.keepZoom.setChecked(self.cf.keep_zoom)
         self.w.fontSize.setValue(self.cf.font_size)
         self.std_pos_col1 = (self.cf.pos_col10, self.cf.pos_col11, self.cf.pos_col12)
@@ -1243,10 +1243,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     self.set_title_file()
                     self.set_pulse_program()
                     if (self.ph_corr_active == False):
-                        if (self.w.autoPlot.isChecked()):
-                            self.plot_spc(True)
-                        elif (self.w.nmrSpectrum.currentIndex() == 0):
-                            self.plot_spc(True)
+                        #if (self.w.autoPlot.isChecked()):
+                        #    self.plot_spc(True)
+                        #elif (self.w.nmrSpectrum.currentIndex() == 0):
+                        self.plot_spc(True)
 
                     else:
                         if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
@@ -4093,7 +4093,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def load_config(self):
         self.cf.read_config()
         self.w.phRefColour.setCurrentIndex(self.nd.nmrdat[0][0].display.colours2.get(self.cf.phase_reference_colour))
-        self.w.autoPlot.setChecked(self.cf.auto_plot)
+        #self.w.autoPlot.setChecked(self.cf.auto_plot)
         self.w.keepZoom.setChecked(self.cf.keep_zoom)
         self.w.fontSize.setValue(self.cf.font_size)
         self.std_pos_col1 = (self.cf.pos_col10, self.cf.pos_col11, self.cf.pos_col12)
@@ -5827,7 +5827,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end save_hsqc_data
 
     def save_config(self):
-        self.cf.auto_plot = self.w.autoPlot.isChecked()
+        #self.cf.auto_plot = self.w.autoPlot.isChecked()
         self.cf.keep_zoom = self.w.keepZoom.isChecked()
         self.cf.font_size = self.w.fontSize.value()
         self.cf.phase_reference_colour = self.nd.nmrdat[0][0].display.ph_ref_col
