@@ -42,93 +42,88 @@ def main():  # pragma: no cover
     base_dir = os.path.split(nmr_dir)[0]
     app = QApplication(['MetaboLabPy'])
     icon = QIcon()
-    if args["iso"] == False:
-        p_name = os.path.join(base_dir, "icon")
-        icon.addFile(os.path.join(p_name, "icon-16.png"), QtCore.QSize(16, 16))
-        icon.addFile(os.path.join(p_name, "icon-24.png"), QtCore.QSize(24, 24))
-        icon.addFile(os.path.join(p_name, "icon-32.png"), QtCore.QSize(32, 32))
-        icon.addFile(os.path.join(p_name, "icon-48.png"), QtCore.QSize(48, 48))
-        icon.addFile(os.path.join(p_name, "icon-256.png"), QtCore.QSize(256, 256))
-        app.setWindowIcon(icon)
-        app.setApplicationDisplayName("MetaboLabPy")
-        w = qtMetaboLabPy.QtMetaboLabPy()
-        if args["FullScreen"] == True or args["KioskMode"] == True:
-            w.w.showFullScreen()
+    p_name = os.path.join(base_dir, "icon")
+    icon.addFile(os.path.join(p_name, "icon-16.png"), QtCore.QSize(16, 16))
+    icon.addFile(os.path.join(p_name, "icon-24.png"), QtCore.QSize(24, 24))
+    icon.addFile(os.path.join(p_name, "icon-32.png"), QtCore.QSize(32, 32))
+    icon.addFile(os.path.join(p_name, "icon-48.png"), QtCore.QSize(48, 48))
+    icon.addFile(os.path.join(p_name, "icon-256.png"), QtCore.QSize(256, 256))
+    app.setWindowIcon(icon)
+    app.setApplicationDisplayName("MetaboLabPy")
+    w = qtMetaboLabPy.QtMetaboLabPy()
+    if args["FullScreen"] == True or args["KioskMode"] == True:
+        w.w.showFullScreen()
 
-        if args["KioskMode"] == True:
-            w.w.actionToggle_FullScreen.triggered.disconnect()
+    if args["KioskMode"] == True:
+        w.w.actionToggle_FullScreen.triggered.disconnect()
 
-        if args["noSplash"] == False:
-            ##
-            # Create and display the splash screen
-            nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
-            base_dir = os.path.split(nmr_dir)[0]
-            p_name = os.path.join(base_dir, "png")
-            cf = nmrConfig.NmrConfig()
-            cf.read_config()
-            if cf.mode == 'dark' or (cf.mode == 'system' and darkdetect.isDark()):
-                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
-            else:
-                splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))
-
-            splash = QSplashScreen(splash_pix)
-            splash.setMask(splash_pix.mask())
-            # adding progress bar
-            splash.show()
-            app.processEvents()
-            max_time = 2
-            max_range = 30
-            time_inc = max_range
-            for i in range(max_range):
-                # Simulate something that takes time
-                time.sleep(max_time / float(max_range))
-
-            splash.close()
-            ## End of splash screen
-
-        if args["fileName"] != "None":
-            try:
-                w.load_file(args["fileName"])
-            except:
-                if (args["script"] != None):
-                    w.open_script(args["script"])
-                    w.script_editor()
-                    w.exec_script()
-
+    if args["noSplash"] == False:
+        ##
+        # Create and display the splash screen
+        nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
+        base_dir = os.path.split(nmr_dir)[0]
+        p_name = os.path.join(base_dir, "png")
+        cf = nmrConfig.NmrConfig()
+        cf.read_config()
+        if cf.mode == 'dark' or (cf.mode == 'system' and darkdetect.isDark()):
+            splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
         else:
+            splash_pix = QPixmap(os.path.join(p_name, "metabolabpy.png"))
+
+        splash = QSplashScreen(splash_pix)
+        splash.setMask(splash_pix.mask())
+        # adding progress bar
+        splash.show()
+        app.processEvents()
+        max_time = 2
+        max_range = 30
+        time_inc = max_range
+        for i in range(max_range):
+            # Simulate something that takes time
+            time.sleep(max_time / float(max_range))
+
+        splash.close()
+        ## End of splash screen
+
+    if args["fileName"] != "None":
+        try:
+            w.load_file(args["fileName"])
+        except:
             if (args["script"] != None):
                 w.open_script(args["script"])
                 w.script_editor()
                 w.exec_script()
 
-        if cf.mode == 'system':
-            if darkdetect.isDark():
-                qtmodern.styles.dark(app)
-            else:
-                qtmodern.styles.light(app)
-        elif cf.mode == 'light':
-            qtmodern.styles.light(app)
-        else:
-            qtmodern.styles.dark(app)
-
-        w.show()
-        w.w.showNormal()
-        w.w.setMaximumWidth(1280)
-        w.w.resize(1280, w.w.size().height())
-        w.w.move(0, 0)
-        app.processEvents()
-        print("update2")
-        sys.exit(app.exec_())
     else:
-        p_name = os.path.join(base_dir, "icon")
-        icon.addFile(os.path.join(p_name, "iconiso-16.png"), QtCore.QSize(16, 16))
-        icon.addFile(os.path.join(p_name, "iconiso-24.png"), QtCore.QSize(24, 24))
-        icon.addFile(os.path.join(p_name, "iconiso-32.png"), QtCore.QSize(32, 32))
-        icon.addFile(os.path.join(p_name, "iconiso-48.png"), QtCore.QSize(48, 48))
-        icon.addFile(os.path.join(p_name, "iconiso-256.png"), QtCore.QSize(256, 256))
-        app.setWindowIcon(icon)
-        app.setApplicationDisplayName("IsotopomerAnalysisPy")
-        print("isotopomer analysis!")
+        if (args["script"] != None):
+            w.open_script(args["script"])
+            w.script_editor()
+            w.exec_script()
+
+    if cf.mode == 'system':
+        if darkdetect.isDark():
+            qtmodern.styles.dark(app)
+        else:
+            qtmodern.styles.light(app)
+    elif cf.mode == 'light':
+        qtmodern.styles.light(app)
+    else:
+        qtmodern.styles.dark(app)
+
+    w.show()
+    w.w.showNormal()
+    w.w.setMaximumWidth(1280)
+    w.w.resize(1100, w.w.size().height())
+    w.w.move(0, 0)
+    w.w.updateGeometry()
+    app.processEvents()
+    time.sleep(1)
+    w.w.setMaximumWidth(1280)
+    w.w.resize(1100, w.w.size().height())
+    app.processEvents()
+    #print("update2")
+    #print(dir(app))
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":  # pragma: no cover
