@@ -114,6 +114,8 @@ def main():  # pragma: no cover
     screen_height = app.desktop().screenGeometry().height()
     w_width = w.w.size().width()
     w_height = w.w.size().height()
+    ww = min(w_width, screen_width)
+    wh = min(w_height, screen_height)
     w.show()
     w.w.showNormal()
     w.w.move(0, 0)
@@ -121,15 +123,13 @@ def main():  # pragma: no cover
     if w_width > screen_width:
         w.w.setMaximumWidth(screen_width)
         app.processEvents()
-        w.w.resize(screen_width, w.w.size().height())
-        app.processEvents()
 
     if w_height > screen_height:
         w.w.setMaximumWidth(screen_height)
         app.processEvents()
-        w.w.resize(w.w.size().width(), screen_height)
-        app.processEvents()
 
+    w.w.resize(ww, wh)
+    app.processEvents()
     w.w.updateGeometry()
     app.processEvents()
     #print("update2")
