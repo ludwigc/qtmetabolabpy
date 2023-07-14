@@ -116,7 +116,6 @@ def main():  # pragma: no cover
     w_height = w.w.size().height()
     ww = min(w_width, screen_width)
     wh = min(w_height, screen_height)
-    print(f'screen_width: {screen_width}, w_width: {w_width}, ww: {ww}')
     w.show()
     w.w.showNormal()
     w.w.move(0, 0)
