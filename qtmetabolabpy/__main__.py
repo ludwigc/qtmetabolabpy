@@ -58,6 +58,7 @@ def main():  # pragma: no cover
             w.w.showNormal()
             w.w.setMaximumWidth(1280)
             w.w.resize(1280, w.w.size().height())
+            w.w.move(0,0)
             app.processEvents()
             print("update")
 
