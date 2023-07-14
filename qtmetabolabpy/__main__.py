@@ -54,13 +54,6 @@ def main():  # pragma: no cover
         w = qtMetaboLabPy.QtMetaboLabPy()
         if args["FullScreen"] == True or args["KioskMode"] == True:
             w.w.showFullScreen()
-        else:
-            w.w.showNormal()
-            w.w.setMaximumWidth(1280)
-            w.w.resize(1280, w.w.size().height())
-            w.w.move(0,0)
-            app.processEvents()
-            print("update")
 
         if args["KioskMode"] == True:
             w.w.actionToggle_FullScreen.triggered.disconnect()
@@ -119,6 +112,12 @@ def main():  # pragma: no cover
             qtmodern.styles.dark(app)
 
         w.show()
+        w.w.showNormal()
+        w.w.setMaximumWidth(1280)
+        w.w.resize(1280, w.w.size().height())
+        w.w.move(0, 0)
+        app.processEvents()
+        print("update2")
         sys.exit(app.exec_())
     else:
         p_name = os.path.join(base_dir, "icon")
