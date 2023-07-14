@@ -426,7 +426,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionPlot_spc.triggered.connect(self.plot_spc)
         self.w.actionSave.triggered.connect(self.save_button)
         self.w.actionLoad.triggered.connect(self.load_button)
-
         self.w.actionOpen_NMRPipe.triggered.connect(self.read_nmrpipe_spc)
         self.w.actionActivate_Command_Line.triggered.connect(self.activate_command_line)
         self.w.actionPrevious_command.triggered.connect(self.previous_command)
@@ -680,6 +679,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # self.w.nMax.textChanged.connect(self.get_hsqc_pars6())
         # self.w..textChanged.connect(self.get_hsqc_pars())
         # self.set_hsqc()
+        #self.show_main_window()
+        self.w.setMaximumWidth(1280)
+        if (self.w.isFullScreen() == False):
+            self.w.showNormal()
+        else:
+            self.w.showFullScreen()
         # end __init__
 
     def activate_command_line(self):
