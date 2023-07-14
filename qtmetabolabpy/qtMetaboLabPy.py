@@ -687,11 +687,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         #    self.w.showNormal()
         #else:
         #    self.w.showFullScreen()
-        pyautogui.click()
-        self.w.resize(1310, 823)
-        pyautogui.click()
-        #time.sleep(0.5)
-        self.w.showNormal()
+        self.w.resize(1100, 823)
+        #self.update_gui()
         # end __init__
 
     def activate_command_line(self):

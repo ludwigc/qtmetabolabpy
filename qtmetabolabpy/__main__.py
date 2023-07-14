@@ -54,6 +54,12 @@ def main():  # pragma: no cover
         w = qtMetaboLabPy.QtMetaboLabPy()
         if args["FullScreen"] == True or args["KioskMode"] == True:
             w.w.showFullScreen()
+        else:
+            w.w.showNormal()
+            w.w.setMaximumWidth(1280)
+            w.w.resize(1280, w.w.size().height())
+            app.processEvents()
+            print("update")
 
         if args["KioskMode"] == True:
             w.w.actionToggle_FullScreen.triggered.disconnect()
