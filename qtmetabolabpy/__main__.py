@@ -117,8 +117,10 @@ def main():  # pragma: no cover
     ww = min(w_width, screen_width)
     wh = min(w_height, screen_height)
     w.show()
-    w.w.showNormal()
-    w.w.move(0, 0)
+    if ww < 1300:
+        w.w.showNormal()
+        w.w.move(0, 0)
+
     app.processEvents()
     if w_width > screen_width:
         w.w.setMaximumWidth(screen_width)
