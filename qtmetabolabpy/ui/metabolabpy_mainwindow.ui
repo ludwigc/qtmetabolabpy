@@ -202,7 +202,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="spcTab">
        <attribute name="title">
@@ -3071,9 +3071,15 @@
                   <verstretch>40</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>400</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
-                  <width>500</width>
+                  <width>600</width>
                   <height>100</height>
                  </size>
                 </property>
@@ -6561,7 +6567,7 @@
      <x>0</x>
      <y>0</y>
      <width>1914</width>
-     <height>22</height>
+     <height>43</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
