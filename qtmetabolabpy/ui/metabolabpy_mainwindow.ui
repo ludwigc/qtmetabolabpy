@@ -6567,7 +6567,7 @@
      <x>0</x>
      <y>0</y>
      <width>1914</width>
-     <height>43</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -6579,7 +6579,6 @@
     <addaction name="actionRead_NMR_Spectrum"/>
     <addaction name="actionOpen_NMRPipe"/>
     <addaction name="actionCreate"/>
-    <addaction name="actionUpdate_MetaboLabPy_requires_restart"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
