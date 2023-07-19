@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: qtmetabolabpy
-Version: 0.9.1
+Version: 0.9.2
 Summary: Python package for data processing of NMR 1D and 2D metabolomics and metabolism tracing data
 Home-page: https://github.com/ludwigc/qtmetabolabpy
 Author: Christian Ludwig

@@ -14,7 +14,6 @@ import os  # pragma: no cover
 
 
 try:
-    v = 0.9.2
     from PySide2.QtUiTools import QUiLoader  # pragma: no cover
     from PySide2.QtCore import QFile  # pragma: no cover
     from PySide2.QtCore import QCoreApplication  # pragma: no cover
