@@ -9,8 +9,8 @@ pyside2
 pyautogui
 qtmodern
 xlsxwriter
-jupyter
-jupyterthemes
+#jupyter
+#jupyterthemes
 multiprocess
 darkdetect
 #on arm: then install with : pip3 install metabolabpy --no-deps

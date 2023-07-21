@@ -128,10 +128,10 @@ from io import StringIO
 import contextlib
 import zipfile
 from collections import defaultdict
-from notebook import notebookapp
+#from notebook import notebookapp
 import multiprocess
 import subprocess
-import jupyterthemes
+#import jupyterthemes
 import itertools
 import xlsxwriter
 from string import ascii_uppercase
@@ -362,8 +362,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.titleFile.textChanged.connect(self.change_title_file)
         self.w.samplesInComboBox.currentIndexChanged.connect(self.set_samples_in_combo_box)
         self.w.openWeb.activated.connect(self.open_metabolite_web)
-        self.w.startNotebookButton.clicked.connect(self.start_notebook)
-        self.w.stopNotebookButton.clicked.connect(self.stop_notebook)
+        #self.w.startNotebookButton.clicked.connect(self.start_notebook)
+        #self.w.stopNotebookButton.clicked.connect(self.stop_notebook)
         self.w.runPreProcessingButton.clicked.connect(self.data_pre_processing)
         self.w.resetPreProcessingButton.clicked.connect(self.reset_data_pre_processing)
         self.w.avoidNegValues.stateChanged.connect(self.set_avoid_neg_values)
@@ -602,8 +602,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.MplWidget.toolbar.setVisible(False)
         self.w.hsqcMultiplet.toolbar.setVisible(False)
         self.w.hsqcPeak.toolbar.setVisible(False)
-        self.w.startNotebookButton.setVisible(False)
-        self.w.stopNotebookButton.setVisible(False)
+        #self.w.startNotebookButton.setVisible(False)
+        #self.w.stopNotebookButton.setVisible(False)
         # self.w.isotopomerHsqcPeak.toolbar.setVisible(False)
         # self.w.isotopomerMultiplet.toolbar.setVisible(False)
         self.w.MplWidget.setFocus()
@@ -7873,45 +7873,45 @@ class QtMetaboLabPy(object):  # pragma: no cover
         splash.close()
         # end splash
 
-    def start_notebook(self):
-        try:
-            self.p.terminate()
-            sleep(2)
-        except:
-            pass
+    #def start_notebook(self):
+    #    try:
+    #        self.p.terminate()
+    #        sleep(2)
+    #    except:
+    #        pass
+    #
+    #    if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+    #        jupyterthemes.install_theme('chesterish')
+    #    else:
+    #        jupyterthemes.install_theme('grade3')
+    #
+    #    nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
+    #    base_dir = os.path.split(nmr_dir)[0]
+    #    jupyter_path = os.path.join(base_dir, "nmr", "jupyter")
+    #    jobs = []
+    #    print("-----------------")
+    #    self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--ip=127.0.0.1', '--port=9997'],))
+    #    #self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997', '--NotebookApp.token=''', '--NotebookApp.password='''],))
+    #    print('=======================')
+    #    jobs.append(self.process)
+    #    print('#########################')
+    #    self.process.start()
+    #    print('//////////////////////////')
+    #    sleep(2)
+    #    print('__________________________')
+    #    self.w.helpView.setUrl('http://127.0.0.1:9997')
+    #    self.w.nmrSpectrum.setCurrentIndex(12)
+    #    # end startNotebook
 
-        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            jupyterthemes.install_theme('chesterish')
-        else:
-            jupyterthemes.install_theme('grade3')
-
-        nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
-        base_dir = os.path.split(nmr_dir)[0]
-        jupyter_path = os.path.join(base_dir, "nmr", "jupyter")
-        jobs = []
-        print("-----------------")
-        self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--ip=127.0.0.1', '--port=9997'],))
-        #self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997', '--NotebookApp.token=''', '--NotebookApp.password='''],))
-        print('=======================')
-        jobs.append(self.process)
-        print('#########################')
-        self.process.start()
-        print('//////////////////////////')
-        sleep(2)
-        print('__________________________')
-        self.w.helpView.setUrl('http://127.0.0.1:9997')
-        self.w.nmrSpectrum.setCurrentIndex(12)
-        # end startNotebook
-
-    def stop_notebook(self):
-        try:
-            self.process.terminate()
-            sleep(2)
-        except:
-            pass
-
-        self.reset_help()
-        # end stop_notebook
+    #def stop_notebook(self):
+    #    try:
+    #        self.process.terminate()
+    #        sleep(2)
+    #    except:
+    #        pass
+    #
+    #    self.reset_help()
+    #    # end stop_notebook
 
     def start_stop_ph_corr(self):
         s = self.nd.s
