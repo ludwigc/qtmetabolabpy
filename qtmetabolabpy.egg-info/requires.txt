@@ -6,7 +6,5 @@ pyside2
 pyautogui
 qtmodern
 xlsxwriter
-jupyter
-jupyterthemes
 multiprocess
 darkdetect

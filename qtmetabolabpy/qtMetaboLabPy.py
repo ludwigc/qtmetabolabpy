@@ -871,8 +871,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end apply_2d_ph_corr
 
     def autobaseline(self):
-        #print("autobaseline")
-        #print(self.nd.nmrdat[self.nd.s][self.nd.e].dim)
         if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
             self.autobaseline1d()
         elif self.nd.nmrdat[self.nd.s][self.nd.e].dim == 2:
@@ -5492,6 +5490,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 self.nd.auto_ref(False)
 
             self.nd.e = len(self.nd.nmrdat[self.nd.s]) - 1
+            self.nd.auto_ref()
             self.plot_spc()
             self.w.keepZoom.setChecked(kz)
             self.set_proc_pars()
@@ -7043,7 +7042,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
             if self.w.maApplyToAll.isChecked():
                 for k in range(len(self.nd.nmrdat[self.nd.s])):
                     self.nd.nmrdat[self.nd.s][k].hsqc.echo_time = echo_time
-                    hsqc.echo_time = echo_time
 
             self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.echo_time = echo_time
 

@@ -3518,64 +3518,10 @@
                   </column>
                  </widget>
                 </item>
-                <item row="1" column="0">
-                 <widget class="QCheckBox" name="maAutoScale">
-                  <property name="text">
-                   <string>Autoscale</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QCheckBox" name="maAutoSim">
-                  <property name="text">
-                   <string>Autosim</string>
-                  </property>
-                  <property name="checked">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
                 <item row="3" column="0" rowspan="2" colspan="7">
                  <widget class="Line" name="line_2">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="1" rowspan="2" colspan="2">
-                 <spacer name="horizontalSpacer_47">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>96</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item row="4" column="3" rowspan="2" colspan="2">
-                 <widget class="QLabel" name="label_84">
-                  <property name="text">
-                   <string>Echo time [ms]:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="0">
-                 <widget class="QCheckBox" name="maApplyToAll">
-                  <property name="text">
-                   <string>Apply to all</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="5" colspan="2">
-                 <widget class="QLineEdit" name="multipletAnalysisEchoTime">
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -3634,44 +3580,85 @@
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1" colspan="2">
-                 <widget class="QLabel" name="label_82">
+                <item row="10" column="4">
+                 <widget class="QPushButton" name="exportHsqcData">
                   <property name="text">
-                   <string>Intensity:</string>
+                   <string>Export all</string>
                   </property>
+                 </widget>
+                </item>
+                <item row="5" column="6">
+                 <widget class="QLineEdit" name="multipletAnalysisEchoTime">
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1" colspan="2">
-                 <widget class="QLabel" name="label_83">
+                <item row="5" column="0" colspan="2">
+                 <widget class="QCheckBox" name="maApplyToAll">
                   <property name="text">
-                   <string>Linewidth [Hz]:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   <string>Apply to all</string>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="3" colspan="4">
+                <item row="5" column="4" colspan="2">
+                 <widget class="QLabel" name="label_84">
+                  <property name="text">
+                   <string>Echo time [ms]:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="4" colspan="3">
                  <widget class="QLineEdit" name="multipletAnalysisR2">
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="3" colspan="4">
+                <item row="1" column="4" colspan="3">
                  <widget class="QLineEdit" name="multipletAnalysisIntensity">
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item row="10" column="4">
-                 <widget class="QPushButton" name="exportHsqcData">
+                <item row="1" column="3">
+                 <widget class="QLabel" name="label_82">
                   <property name="text">
-                   <string>Export all</string>
+                   <string>Int.:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="3">
+                 <widget class="QLabel" name="label_83">
+                  <property name="text">
+                   <string>lw [Hz]:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0" colspan="2">
+                 <widget class="QCheckBox" name="maAutoScale">
+                  <property name="text">
+                   <string>Autoscale</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0" colspan="2">
+                 <widget class="QCheckBox" name="maAutoSim">
+                  <property name="text">
+                   <string>Autosim</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -3793,7 +3780,7 @@
                 <item row="5" column="0" colspan="3">
                  <widget class="QLabel" name="label_92">
                   <property name="text">
-                   <string>Autoscale 13C range with J-scale (cnst18)</string>
+                   <string>Scale 13C range with J-scale (cnst18)</string>
                   </property>
                  </widget>
                 </item>
@@ -6434,64 +6421,6 @@
         <string>Help</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_27">
-        <item row="1" column="5">
-         <widget class="QCheckBox" name="autoUnzip">
-          <property name="text">
-           <string>Auto-unzip downloaded zip files</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
-         <widget class="QPushButton" name="stopNotebookButton">
-          <property name="text">
-           <string>Stop Notebook Server</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="startNotebookButton">
-          <property name="text">
-           <string>(Re-)Start Notebook Server</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="6">
-         <widget class="QWebEngineView2" name="helpView" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>8</pointsize>
-           </font>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="4">
-         <spacer name="horizontalSpacer_24">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>1208</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="1" column="0">
          <widget class="QComboBox" name="helpComboBox">
           <item>
@@ -6541,6 +6470,19 @@
           </item>
          </widget>
         </item>
+        <item row="1" column="2">
+         <spacer name="horizontalSpacer_24">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>1208</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="tutorialComboBox">
           <item>
@@ -6553,6 +6495,37 @@
             <string>Tutorial 2</string>
            </property>
           </item>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="4">
+         <widget class="QWebEngineView2" name="helpView" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QCheckBox" name="autoUnzip">
+          <property name="text">
+           <string>Auto-unzip downloaded zip files</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
        </layout>
