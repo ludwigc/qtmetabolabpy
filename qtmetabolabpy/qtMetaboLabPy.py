@@ -3836,10 +3836,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def html(self, url=''):
         if len(url) == 0:
-            nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
-            base_dir = os.path.split(nmr_dir)[0]
-            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
-            url = "file:///" + f_name.replace('\\', '/')
+            url = "https://ludwigc.github.io/metabolabpy"
 
         self.w.helpView.setUrl(url)
         self.w.nmrSpectrum.setCurrentIndex(12)
@@ -4136,10 +4133,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         idx = self.w.helpComboBox.currentIndex()
         url = []
-        nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
-        base_dir = os.path.split(nmr_dir)[0]
-        f_name = os.path.join(base_dir, "nmr", "web", "index.html")
-        url.append("file:///" + f_name.replace('\\', '/'))
+        url.append("https://ludwigc.github.io/metabolabpy")
         url.append("http://www.bml-nmr.org")
         url.append("https://www.hmdb.ca")
         url.append("https://www.smpdb.ca")
@@ -4231,10 +4225,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         idx = self.w.helpComboBox.currentIndex()
         url = []
-        nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
-        base_dir = os.path.split(nmr_dir)[0]
-        f_name = os.path.join(base_dir, "nmr", "web", "index.html")
-        url.append("file:///" + f_name.replace('\\', '/'))
+        url.append("https://ludwigc.github.io/metabolabpy")
         url.append("http://www.bml-nmr.org")
         url.append("https://www.hmdb.ca")
         url.append("https://www.smpdb.ca")
@@ -5762,7 +5753,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         else:
             f_name = os.path.join(base_dir, "nmr", "web", "index.html")
 
-        url = "file:///" + f_name.replace('\\', '/')
+        url = "https://ludwigc.github.io/metabolabpy"
         self.w.helpView.setUrl(url)
         self.w.nmrSpectrum.setCurrentIndex(12)
         # end reset_help
@@ -6828,14 +6819,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def set_help(self):
         url = []
         idx = self.w.helpComboBox.currentIndex()
-        nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
-        base_dir = os.path.split(nmr_dir)[0]
-        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
-        else:
-            f_name = os.path.join(base_dir, "nmr", "web", "index.html")
-
-        url.append("file:///" + f_name.replace('\\', '/'))
+        url.append("https://ludwigc.github.io/metabolabpy")
         url.append("http://www.bml-nmr.org")
         url.append("https://www.hmdb.ca")
         url.append("https://www.smpdb.ca")
