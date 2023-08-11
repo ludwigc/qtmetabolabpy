@@ -29,7 +29,6 @@ def main():  # pragma: no cover
     ap.add_argument("-k", "--KioskMode", required=False,
                     help="open application in full screen mode without windowed mode available",
                     action="store_true")
-    ap.add_argument("-i", "--iso", required=False, help="open isotopomer analysis instead of NMR GUI", action="store_true")
     ap.add_argument("fileName", metavar="fileName", type=str, help="load MetaboLabPy DataSet File")
     dd = ap.parse_known_args()
     # dd = ap.parse_known_intermixed_args()

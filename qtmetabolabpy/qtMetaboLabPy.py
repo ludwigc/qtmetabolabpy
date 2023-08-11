@@ -546,6 +546,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.phRefExp.valueChanged.connect(self.change_data_set_exp_ph_ref)
         self.w.phRefColour.currentIndexChanged.connect(self.get_disp_pars15)
         self.w.fourierTransformButton.clicked.connect(self.ft)
+        self.w.fourierTransformButton_2.clicked.connect(self.ft)
         self.w.executeScript.clicked.connect(self.exec_script)
         self.w.openScript.clicked.connect(self.open_script)
         self.w.saveScript.clicked.connect(self.save_script)
@@ -695,58 +696,18 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end add_peak
 
     def autofit_hsqc(self, metabolite_list=False):
-        if metabolite_list is False:
-            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
-        elif len(metabolite_list[0]) == 0:
-            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
-
-        if self.w.maAutoScale.isChecked():
-            hsqc = self.nd.nmrdat[self.nd.s][self.nd.s].hsqc
-            for k in range(len(hsqc.hsqc_data[hsqc.cur_metabolite].intensities)):
-                self.nd.nmrdat[self.nd.s][self.nd.s].hsqc.hsqc_data[hsqc.cur_metabolite].intensities[k] = 1
-
-
-        if len(metabolite_list[0]) == 0:
-            return
-
-        no_peak_selected = False
-        if self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak == -1:
-            no_peak_selected = True
-            cur_peak = 1
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
         else:
-            cur_peak = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak
+            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
 
-        if self.w.hsqcAnalysis.isChecked() == False:
-            self.w.hsqcAnalysis.setChecked(True)
-            self.w.hsqcAnalysis.setChecked(False)
-
-        self.nd.nmrdat[self.nd.s][self.nd.e].autofit_hsqc(metabolite_list)
-        for metabolite_name in metabolite_list:
-            self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite = metabolite_name
-            self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak = cur_peak
-            self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.read_metabolite_information(metabolite_name)
-            self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.set_metabolite_information(metabolite_name,
-                                                                                 self.nd.nmrdat[self.nd.s][
-                                                                                     self.nd.e].hsqc.metabolite_information)
-            self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.set_peak_information()
-            for k in range(len(self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.hsqc_data[metabolite_name].h1_shifts)):
-                self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak = k + 1
-                self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_1d()
-                self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.hsqc_data[metabolite_name].intensities[k] = 1
-                self.nd.nmrdat[self.nd.s][self.nd.e].sim_hsqc_1d()
-                self.nd.nmrdat[self.nd.s][self.nd.e].sim_hsqc_1d()
-
-        if no_peak_selected:
-            self.w.hsqcAnalysis.setChecked(False)
-            self.w.hsqcAnalysis.setChecked(True)
-            idx1 = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.metabolite_list.index(metabolite_list[0])
-            self.w.hsqcMetabolites.setCurrentIndex(self.w.hsqcMetabolites.model().index(idx1, 0))
-
-        self.set_hsqc_metabolite()
-        self.plot_metabolite_peak(cur_peak)
-        # end autofit_hsqc
-
-    def autofit_hsqc(self, metabolite_list=False):
+        code_out = io.StringIO()
+        code_err = io.StringIO()
+        sys.stdout = code_out
+        sys.stderr = code_err
+        print(f'fitting multiplets...')
         if metabolite_list is False:
             metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
         elif len(metabolite_list[0]) == 0:
@@ -766,7 +727,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         else:
             cur_peak = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak
 
-        self.nd.nmrdat[self.nd.s][self.nd.e].autofit_hsqc(metabolite_list)
+        text = self.nd.nmrdat[self.nd.s][self.nd.e].autofit_hsqc(metabolite_list)
+        print(text)
         if no_peak_selected:
             self.w.hsqcAnalysis.setChecked(False)
             self.w.hsqcAnalysis.setChecked(True)
@@ -775,14 +737,33 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.set_hsqc_metabolite()
         self.plot_metabolite_peak(cur_peak)
+        self.w.console.setTextColor(txt_col)
+        self.w.console.append(code_out.getvalue())
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        code_out.close()
+        code_err.close()
+        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
         # end autofit_hsqc
 
     def autopick_hsqc(self, metabolite_list=False):
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        else:
+            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+
+        code_out = io.StringIO()
+        code_err = io.StringIO()
+        sys.stdout = code_out
+        sys.stderr = code_err
         if metabolite_list is False:
             metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
         elif len(metabolite_list[0]) == 0:
             metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
 
+        print(f'autopick_hsqc: {metabolite_list}')
         if len(metabolite_list[0]) == 0:
             return
 
@@ -806,7 +787,19 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.set_hsqc_metabolite()
         self.plot_metabolite_peak(cur_peak)
+        self.w.console.setTextColor(txt_col)
+        self.w.console.append(code_out.getvalue())
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        code_out.close()
+        code_err.close()
+        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
         # end autopick_hsqc
+
+    def clear_console(self):
+        self.nd.console = ""
+        self.w.console.setText("")
+        # end clear_console
 
     def clear_peak(self):
         self.nd.clear_peak()
@@ -2405,18 +2398,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
             print(">>> " + cmd_text)
             try:
                 output = eval(cmd_text)
-                print(output)
-                self.w.console.setTextColor(txt_col)
-                self.w.console.append(code_out.getvalue())
+                if code_out.getvalue().find('clear_console()') < 0:
+                    print(output)
+                    self.w.console.setTextColor(txt_col)
+                    self.w.console.append(code_out.getvalue())
+                    
             except:  # (SyntaxError, NameError, TypeError, ZeroDivisionError, AttributeError, ArithmeticError, BufferError, LookupError):
                 cmd_text2 = "self." + cmd_text
                 try:
                     output = eval(cmd_text2)
-                    if cmd_text2.find('self.nd') > -1:
-                        print(output)
+                    if code_out.getvalue().find('clear_console()') < 0:
+                        if cmd_text2.find('self.nd') > -1:
+                            print(output)
 
-                    self.w.console.setTextColor(txt_col)
-                    self.w.console.append(code_out.getvalue())
+                        self.w.console.setTextColor(txt_col)
+                        self.w.console.append(code_out.getvalue())
                 except:
                     traceback.print_exc()
                     self.w.console.setTextColor(err_col)
@@ -2691,7 +2687,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def ft(self):
         self.nd.ft()
-        if (self.w.baselineCorrection.currentIndex() > 0):
+        if self.w.baselineCorrection.currentIndex() > 0 and self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
             self.baseline1d()
 
         self.w.nmrSpectrum.setCurrentIndex(0)
@@ -4304,7 +4300,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         code_err = io.StringIO()
         sys.stdout = code_out
         sys.stderr = code_err
-        print('fitting multiplet...')
+        print(f'fitting multiplet...')
         fit_again_counter = 0
         auto_scale = self.w.maAutoScale.isChecked()
         if self.w.maAutoScale.isChecked():
@@ -4316,9 +4312,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_1d()
         while self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_again:
-            if fit_again_counter < 3:
+            if fit_again_counter < self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.n_max:
                 fit_again_counter += 1
-                print(f'self.nd.nmrdat[{self.nd.s}][{self.nd.e}].fit_hsqc_again[iteration: {fit_again_counter}]: '
+                print(f'self.nd.nmrdat[{self.nd.s}][{self.nd.e}].fit_hsqc[iteration: {fit_again_counter}]: '
                       f'{self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_again}')
                 self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_again = False
                 self.nd.nmrdat[self.nd.s][self.nd.e].fit_hsqc_1d()
