@@ -5369,6 +5369,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.MplWidget.canvas.axes.axvspan(self.nd.pp.noise_start, self.nd.pp.noise_end, alpha=self.nd.pp.alpha,
                                                  color=self.nd.pp.colour)
             val = self.nd.pp.noise_threshold * self.nd.pp.std_val
+            print(f'noise_threshold: {self.nd.pp.noise_threshold}, std_val: {self.nd.pp.std_val}')
             x = [self.nd.nmrdat[self.nd.s][0].ppm1[0], self.nd.nmrdat[self.nd.s][0].ppm1[-1]]
             y = [val, val]
             self.w.MplWidget.canvas.axes.plot(x, y, color=self.nd.pp.th_colour, linewidth=self.nd.pp.th_line_width)
@@ -7671,6 +7672,17 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.zoom_was_on = False
         self.pan_was_on = True
+
+    def set_xlim(self, xlim1=0.006, xlim2=-0.006):
+        self.w.MplWidget.canvas.axes.set_xlim((max(xlim1, xlim2), min(xlim1, xlim2)))
+        self.show_nmr_spectrum()
+        self.vertical_auto_scale()
+        # end set_xlim
+
+    def get_xlim(self):
+        xlim = self.w.MplWidget.canvas.axes.get_xlim()
+        print(xlim)
+        # end set_xlim
 
     def set_zoom(self):
         try:
