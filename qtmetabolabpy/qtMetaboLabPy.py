@@ -864,21 +864,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.show_nmr_spectrum()
         # end apply_2d_ph_corr
 
-    def autobaseline(self):
+    def autobaseline(self, alg='jbcd'):
         if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
-            self.autobaseline1d()
+            self.autobaseline1d(alg='jbcd')
         elif self.nd.nmrdat[self.nd.s][self.nd.e].dim == 2:
             self.autobaseline2d()
 
         # end autobaseline
 
-    def autobaseline_all(self):
+    def autobaseline_all(self, alg='jbcd'):
         ce = self.nd.e
         n_exp = len(self.nd.nmrdat[self.nd.s])
         for k in range(n_exp):
             self.nd.e = k
             if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
-                self.autobaseline1d()
+                self.autobaseline1d(alg='jbcd')
             elif self.nd.nmrdat[self.nd.s][self.nd.e].dim == 2:
                 self.autobaseline2d()
 
