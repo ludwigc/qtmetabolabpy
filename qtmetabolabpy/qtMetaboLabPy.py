@@ -864,9 +864,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.show_nmr_spectrum()
         # end apply_2d_ph_corr
 
-    def autobaseline(self, alg='jbcd'):
+    def autobaseline(self, alg='rolling_ball', half_window=4096, smooth_half_window=16, lam=1e5, quantile=0.3, poly_order=4, add_ext=2):
         if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
-            self.autobaseline1d(alg='jbcd')
+            self.autobaseline1d(alg=alg, half_window=half_window, lam=lam, quantile=quantile, poly_order=poly_order, smooth_half_window=smooth_half_window, add_ext=add_ext)
         elif self.nd.nmrdat[self.nd.s][self.nd.e].dim == 2:
             self.autobaseline2d()
 
@@ -886,15 +886,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end autobaseline
 
-    def autobaseline1d(self, alg='jbcd', lam=1000000, max_iter=50, alpha=0.1, beta=10, gamma=15, beta_mult=0.98, gamma_mult=0.94, half_window=None):
-        code_out = io.StringIO()
-        code_err = io.StringIO()
-        sys.stdout = code_out
-        sys.stderr = code_err
+    def autobaseline1d(self, alg='rolling_ball', lam=1000000, max_iter=50, alpha=0.1, beta=10, gamma=15, beta_mult=0.98, gamma_mult=0.94, half_window=4096, quantile=0.3, poly_order=4, smooth_half_window=16, add_ext=2):
+        #code_out = io.StringIO()
+        #code_err = io.StringIO()
+        #sys.stdout = code_out
+        #sys.stderr = code_err
         self.show_auto_baseline()
         self.nd.ft()
         self.nd.auto_ref()
-        self.nd.autobaseline1d(alg=alg, lam=lam, max_iter=max_iter, alpha=alpha, beta=beta, gamma=gamma, beta_mult=beta_mult, gamma_mult=gamma_mult, half_window=half_window)
+        self.nd.autobaseline1d(alg=alg, lam=lam, max_iter=max_iter, alpha=alpha, beta=beta, gamma=gamma, beta_mult=beta_mult, gamma_mult=gamma_mult, half_window=half_window, quantile=quantile, poly_order=poly_order, smooth_half_window=smooth_half_window, add_ext=add_ext)
         self.nd.auto_ref()
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
@@ -902,21 +902,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc(True)
         self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline = True
         self.set_autobaseline()
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
-        else:
-            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
-
-        self.w.console.setTextColor(txt_col)
-        self.w.console.append(code_out.getvalue())
-        self.w.console.setTextColor(err_col)
-        self.w.console.append(code_err.getvalue())
-        code_out.close()
-        code_err.close()
+        #sys.stdout = sys.__stdout__
+        #sys.stderr = sys.__stderr__
+        #if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+        #    txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+        #    err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        #else:
+        #    txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+        #    err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+        #
+        #self.w.console.setTextColor(txt_col)
+        #self.w.console.append(code_out.getvalue())
+        #self.w.console.setTextColor(err_col)
+        #self.w.console.append(code_err.getvalue())
+        #code_out.close()
+        #code_err.close()
         # end autobaseline1d
 
     def autobaseline1d_old(self):
@@ -7679,9 +7679,26 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.vertical_auto_scale()
         # end set_xlim
 
+    def set_xlim2(self, xlim1=0.006, xlim2=-0.006):
+        self.w.MplWidget.canvas.axes.set_xlim((max(xlim1, xlim2), min(xlim1, xlim2)))
+        self.show_nmr_spectrum()
+        # end set_xlim
+
     def get_xlim(self):
         xlim = self.w.MplWidget.canvas.axes.get_xlim()
         print(xlim)
+        # end set_xlim
+
+    def set_ylim(self, ylim1=0, ylim2=1):
+        self.w.MplWidget.canvas.axes.set_ylim((min(ylim1, ylim2), max(ylim1, ylim2)))
+        self.show_nmr_spectrum()
+        self.w.MplWidget.canvas.draw()
+        #self.vertical_auto_scale()
+        # end set_xlim
+
+    def get_ylim(self):
+        ylim = self.w.MplWidget.canvas.axes.get_ylim()
+        print(ylim)
         # end set_xlim
 
     def set_zoom(self):
