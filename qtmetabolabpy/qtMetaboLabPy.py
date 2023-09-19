@@ -2690,6 +2690,25 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if self.w.baselineCorrection.currentIndex() > 0 and self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
             self.baseline1d()
 
+        if self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline == True:
+            alg = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg
+            lam = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam
+            max_iter = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_max_iter
+            alpha = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alpha
+            beta = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_beta
+            gamma = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_gamma
+            beta_mult = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_beta_mult
+            gamma_mult = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_gamma_mult
+            half_window = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_half_window
+            quantile = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_quantile
+            poly_order = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_poly_order
+            smooth_half_window = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_smooth_half_window
+            add_ext = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_add_ext
+            self.autobaseline1d(alg=alg, lam=lam, max_iter=max_iter, alpha=alpha, beta=beta, gamma=gamma,
+                                beta_mult=beta_mult, gamma_mult=gamma_mult, half_window=half_window, quantile=quantile,
+                                poly_order=poly_order, smooth_half_window=smooth_half_window, add_ext=add_ext)
+
+
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
         self.plot_spc()
