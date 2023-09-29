@@ -453,6 +453,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.exportFormatCB.currentIndexChanged.connect(self.set_datasets_exps)
         self.w.hsqcAnalysis.stateChanged.connect(self.set_hsqc_analysis)
         self.w.multipletAnalysis.stateChanged.connect(self.set_multiplet_analysis)
+        self.w.resetAutobaseline.clicked.connect(self.reset_autobaseline)
         #self.w.isotopomerAnalysis.stateChanged.connect(self.set_isotopomer_analysis)
         self.w.preserveOverallScale.stateChanged.connect(self.set_preserve_overall_scale)
         self.w.actionReset.triggered.connect(self.reset_plot)
@@ -523,6 +524,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.winType.currentIndexChanged.connect(self.get_proc_pars6)
         self.w.gibbs.currentIndexChanged.connect(self.get_proc_pars7)
         self.w.gibbs_2.currentIndexChanged.connect(self.get_proc_pars8)
+        self.w.wwStartLevel.textChanged.connect(self.get_proc_pars28)
+        self.w.wwZeroFilling.textChanged.connect(self.get_proc_pars29)
+        self.w.wwWaveletType.currentIndexChanged.connect(self.get_proc_pars30)
+        self.w.wwNumber.currentIndexChanged.connect(self.get_proc_pars31)
+        self.w.autobaselineBox.stateChanged.connect(self.set_autobaseline2)
+        self.w.abslAlg.currentIndexChanged.connect(self.get_proc_pars32)
+        self.w.abslHw.textChanged.connect(self.get_proc_pars33)
+        self.w.abslShw.textChanged.connect(self.get_proc_pars34)
+        self.w.abslAe.textChanged.connect(self.get_proc_pars35)
+        self.w.abslLam.textChanged.connect(self.get_proc_pars36)
+        self.w.abslMi.textChanged.connect(self.get_proc_pars37)
+        self.w.abslAlpha.textChanged.connect(self.get_proc_pars38)
+        self.w.abslBeta.textChanged.connect(self.get_proc_pars39)
+        self.w.abslGamma.textChanged.connect(self.get_proc_pars40)
+        self.w.abslBetaMult.textChanged.connect(self.get_proc_pars41)
+        self.w.abslGammaMult.textChanged.connect(self.get_proc_pars42)
+        self.w.abslQuantile.textChanged.connect(self.get_proc_pars43)
+        self.w.abslPolyOrder.textChanged.connect(self.get_proc_pars44)
         self.w.zeroFilling.textChanged.connect(self.get_proc_pars9)
         self.w.zeroFilling_2.textChanged.connect(self.get_proc_pars10)
         self.w.lb.textChanged.connect(self.get_proc_pars11)
@@ -649,6 +668,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.metaboliteAutofitButton.clicked.connect(self.autofit_hsqc)
         self.w.maSimButton.clicked.connect(self.ma_sim_hsqc_1d)
         self.buttons = {}
+        self.set_water_suppression(0)
+        self.set_autobaseline2()
         # print(sys.platform)
         if sys.platform == 'darwin':
             self.w.actionCreate.setText('Create Launchpad Icon')
@@ -673,6 +694,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.helpView.page().profile().downloadRequested.connect(self._download_requested)
         self.w.peakWidget.setColumnWidth(2, 182)
         self.layout = QGridLayout(self.w.peakSelection)
+        self.set_autobaseline_pars()
         # self.w.h1Range.textChanged.connect(self.get_hsqc_pars1())
         # self.w.c13Range.textChanged.connect(self.get_hsqc_pars2())
         # self.w.threshold.textChanged.connect(self.get_hsqc_pars3())
@@ -682,6 +704,111 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # self.w..textChanged.connect(self.get_hsqc_pars())
         # self.set_hsqc()
         # end __init__
+
+    def reset_autobaseline(self):
+        s = self.nd.s
+        e = self.nd.e
+        self.nd.nmrdat[s][e].proc.autobaseline_alg = self.nd.default_baseline_alg
+        idx = self.nd.baseline_algs.index(self.nd.default_baseline_alg)
+        self.w.abslAlg.setCurrentIndex(idx)
+        self.w.abslHw.setText(str(self.nd.default_half_window))
+        self.w.abslShw.setText(str(self.nd.default_smooth_half_window))
+        self.w.abslAe.setText(str(self.nd.default_add_ext))
+        self.w.abslLam.setText(str(self.nd.default_lam))
+        self.w.abslMi.setText(str(self.nd.default_max_iter))
+        self.w.abslAlpha.setText(str(self.nd.default_alpha))
+        self.w.abslBeta.setText(str(self.nd.default_beta))
+        self.w.abslGamma.setText(str(self.nd.default_gamma))
+        self.w.abslBetaMult.setText(str(self.nd.default_beta_mult))
+        self.w.abslGammaMult.setText(str(self.nd.default_gamma_mult))
+        self.w.abslQuantile.setText(str(self.nd.default_quantile))
+        self.w.abslPolyOrder.setText(str(self.nd.default_poly_order))
+        self.nd.nmrdat[s][e].proc.autobaseline_half_window = self.nd.default_half_window
+        self.nd.nmrdat[s][e].proc.autobaseline_smooth_half_window = self.nd.default_smooth_half_window
+        self.nd.nmrdat[s][e].proc.autobaseline_add_ext = self.nd.default_add_ext
+        self.nd.nmrdat[s][e].proc.autobaseline_lam = self.nd.default_lam
+        self.nd.nmrdat[s][e].proc.autobaseline_max_iter = self.nd.default_max_iter
+        self.nd.nmrdat[s][e].proc.autobaseline_alpha = self.nd.default_alpha
+        self.nd.nmrdat[s][e].proc.autobaseline_beta = self.nd.default_beta
+        self.nd.nmrdat[s][e].proc.autobaseline_gamma = self.nd.default_gamma
+        self.nd.nmrdat[s][e].proc.autobaseline_beta_mult = self.nd.default_beta_mult
+        self.nd.nmrdat[s][e].proc.autobaseline_gamma_mult = self.nd.default_gamma_mult
+        self.nd.nmrdat[s][e].proc.autobaseline_quantile = self.nd.default_quantile
+        self.nd.nmrdat[s][e].proc.autobaseline_poly_order = self.nd.default_poly_order
+        # end reset_autobaseline
+
+    def set_autobaseline_pars(self):
+        if self.nd.e > -1:
+            alg = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg
+
+        self.w.abslAlg.clear()
+        self.w.abslAlg.addItems(self.nd.baseline_algs)
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg = alg
+
+        if self.nd.e == -1:
+            idx = self.nd.baseline_algs.index(self.nd.default_baseline_alg)
+            self.w.abslAlg.setCurrentIndex(idx)
+            self.w.abslHw.setText(str(self.nd.default_half_window))
+            self.w.abslShw.setText(str(self.nd.default_smooth_half_window))
+            self.w.abslAe.setText(str(self.nd.default_add_ext))
+            self.w.abslLam.setText(str(self.nd.default_lam))
+            self.w.abslMi.setText(str(self.nd.default_max_iter))
+            self.w.abslAlpha.setText(str(self.nd.default_alpha))
+            self.w.abslBeta.setText(str(self.nd.default_beta))
+            self.w.abslGamma.setText(str(self.nd.default_gamma))
+            self.w.abslBetaMult.setText(str(self.nd.default_beta_mult))
+            self.w.abslGammaMult.setText(str(self.nd.default_gamma_mult))
+            self.w.abslQuantile.setText(str(self.nd.default_quantile))
+            self.w.abslPolyOrder.setText(str(self.nd.default_poly_order))
+        else:
+            s = self.nd.s
+            e = self.nd.e
+            alg = self.nd.nmrdat[s][e].proc.autobaseline_alg
+            idx = self.nd.baseline_algs.index(alg)
+            self.w.abslAlg.setCurrentIndex(idx)
+            self.w.abslHw.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_half_window))
+            self.w.abslShw.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_smooth_half_window))
+            self.w.abslAe.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_add_ext))
+            self.w.abslLam.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_lam))
+            self.w.abslMi.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_max_iter))
+            self.w.abslAlpha.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_alpha))
+            self.w.abslBeta.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_beta))
+            self.w.abslGamma.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_gamma))
+            self.w.abslBetaMult.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_beta_mult))
+            self.w.abslGammaMult.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_gamma_mult))
+            self.w.abslQuantile.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_quantile))
+            self.w.abslPolyOrder.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_poly_order))
+
+        # end set_autobaseline_pars
+
+    def set_water_suppression(self, status=-1):
+        status1 = False
+        status2 = False
+        status3 = False
+        if status == 3:
+            status3 = True
+        elif status == 2:
+            status2 = True
+        elif status == 1:
+            status1 = True
+
+        self.w.label_74.setVisible(status3)
+        self.w.wwStartLevel.setVisible(status3)
+        self.w.label_100.setVisible(status3)
+        self.w.wwZeroFilling.setVisible(status3)
+        self.w.label_101.setVisible(status3)
+        self.w.wwWaveletType.setVisible(status3)
+        self.w.label_102.setVisible(status3)
+        self.w.wwNumber.setVisible(status3)
+        self.w.label_9.setVisible(status2)
+        self.w.polyOrder.setVisible(status2)
+        self.w.label_10.setVisible(status1)
+        self.w.winType.setVisible(status1)
+        self.w.label_11.setVisible(status1)
+        self.w.extrapolationSize.setVisible(status1)
+        self.w.label_12.setVisible(status1)
+        self.w.windowSize.setVisible(status1)
 
     def activate_command_line(self):
         if (self.w.cmdLine.hasFocus() == True):
@@ -886,7 +1013,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end autobaseline
 
-    def autobaseline1d(self, alg='rolling_ball', lam=1000000, max_iter=50, alpha=0.1, beta=10, gamma=15, beta_mult=0.98, gamma_mult=0.94, half_window=4096, quantile=0.3, poly_order=4, smooth_half_window=16, add_ext=2):
+    def autobaseline1d(self, alg='rolling_ball', lam=1e5, max_iter=50, alpha=0.1, beta=10, gamma=15, beta_mult=0.98, gamma_mult=0.94, half_window=4096, quantile=0.3, poly_order=4, smooth_half_window=16, add_ext=2):
         #code_out = io.StringIO()
         #code_err = io.StringIO()
         #sys.stdout = code_out
@@ -1269,10 +1396,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 self.w.expBox.valueChanged.disconnect()
                 self.w.expBox.setValue(0)
                 self.w.setBox.setValue(0)
-                self.w.setBox.valueChanged.connect(lambda: self.change_data_set_exp())
-                self.w.expBox.valueChanged.connect(lambda: self.change_data_set_exp())
+                self.w.setBox.valueChanged.connect(self.change_data_set_exp)
+                self.w.expBox.valueChanged.connect(self.change_data_set_exp)
 
+            self.w.wwStartLevel.textChanged.disconnect()
             self.update_gui()
+            self.w.wwStartLevel.textChanged.connect(self.get_proc_pars28)
         else:
             self.w.setBox.valueChanged.disconnect()
             self.w.expBox.valueChanged.disconnect()
@@ -2686,10 +2815,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end fill_pre_processing_numbers
 
     def ft(self):
-        self.nd.ft()
-        if self.w.baselineCorrection.currentIndex() > 0 and self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
-            self.baseline1d()
-
         if self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline == True:
             alg = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg
             lam = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam
@@ -2704,6 +2829,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
             poly_order = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_poly_order
             smooth_half_window = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_smooth_half_window
             add_ext = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_add_ext
+
+        self.nd.ft()
+        if self.w.baselineCorrection.currentIndex() > 0 and self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
+            self.baseline1d()
+
+        if self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline == True:
             self.autobaseline1d(alg=alg, lam=lam, max_iter=max_iter, alpha=alpha, beta=beta, gamma=gamma,
                                 beta_mult=beta_mult, gamma_mult=gamma_mult, half_window=half_window, quantile=quantile,
                                 poly_order=poly_order, smooth_half_window=smooth_half_window, add_ext=add_ext)
@@ -3073,9 +3204,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end get_proc_pars4
 
     def get_proc_pars5(self):
-        p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.water_suppression = self.w.waterSuppression.currentIndex()
-        self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
+        if len(self.nd.nmrdat[0]) > 0:
+            p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
+            p.water_suppression = self.w.waterSuppression.currentIndex()
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
+            self.set_water_suppression(p.water_suppression)
         # end get_proc_pars5
 
     def get_proc_pars6(self):
@@ -3209,6 +3342,119 @@ class QtMetaboLabPy(object):  # pragma: no cover
         p.autobaseline = self.w.autobaselineBox.isChecked()
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars27
+
+    def get_proc_pars28(self):
+        p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
+        p.ww_start = int(self.w.wwStartLevel.text())
+        self.w.wwStartLevel.setText(str(p.ww_start))
+        self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
+        # end get_proc_pars28
+
+    def get_proc_pars29(self):
+        p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
+        p.ww_zf = int(self.w.wwZeroFilling.text())
+        self.w.wwZeroFilling.setText(str(p.ww_zf))
+        self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
+        # end get_proc_pars29
+
+    def get_proc_pars30(self):
+        p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
+        idx = self.w.wwWaveletType.currentIndex()
+        self.w.wwNumber.currentIndexChanged.disconnect()
+        self.w.wwWaveletType.currentIndexChanged.disconnect()
+        self.w.wwNumber.clear()
+        self.w.wwNumber.addItems(p.wavelet_numbers[p.wavelet_names[idx]])
+        idx2 = p.wavelet_default[p.wavelet_names[idx]]
+        self.w.wwNumber.setCurrentIndex(idx2)
+        p.ww_wavelet_type = p.wavelet_names[idx]
+        p.ww_wavelet_type_number = p.wavelet_numbers[p.ww_wavelet_type][idx2]
+        p.ww_wavelet_number = idx2
+        self.w.wwStartLevel.setText(str(p.wavelet_start_default[p.ww_wavelet_type]))
+        self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
+        self.w.wwNumber.currentIndexChanged.connect(self.get_proc_pars31)
+        self.w.wwWaveletType.currentIndexChanged.connect(self.get_proc_pars30)
+        # end get_proc_pars30
+
+    def get_proc_pars31(self):
+        p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
+        idx2 = self.w.wwNumber.currentIndex()
+        self.w.wwNumber.currentIndexChanged.disconnect()
+        self.w.wwNumber.clear()
+        self.w.wwNumber.addItems(p.wavelet_numbers[p.ww_wavelet_type])
+        self.w.wwNumber.setCurrentIndex(idx2)
+        p.ww_wavelet_type_number = p.wavelet_numbers[p.ww_wavelet_type][idx2]
+        p.ww_wavelet_number = idx2
+        self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
+        self.w.wwNumber.currentIndexChanged.connect(self.get_proc_pars31)
+        # end get_proc_pars31
+
+    def get_proc_pars32(self):
+        if self.nd.e > -1:
+            idx = self.w.abslAlg.currentIndex()
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg = self.nd.baseline_algs[idx]
+        # end get_proc_pars32
+
+    def get_proc_pars33(self):
+        if self.nd.e > -1:
+            if self.w.abslHw.text() != 'None':
+                self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_half_window = int(self.w.abslHw.text())
+        # end get_proc_pars33
+
+    def get_proc_pars34(self):
+        if self.nd.e > -1:
+            if self.w.abslShw.text() != 'None':
+                self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_smooth_half_window = int(self.w.abslShw.text())
+        # end get_proc_pars34
+
+    def get_proc_pars35(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_add_ext = float(self.w.abslAe.text())
+        # end get_proc_pars35
+
+    def get_proc_pars36(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam = float(self.w.abslLam.text())
+        # end get_proc_pars36
+
+    def get_proc_pars37(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_max_iter = int(self.w.abslMi.text())
+        # end get_proc_pars37
+
+    def get_proc_pars38(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alpha = float(self.w.abslAlpha.text())
+        # end get_proc_pars38
+
+    def get_proc_pars39(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_beta = float(self.w.abslBeta.text())
+        # end get_proc_pars39
+
+    def get_proc_pars40(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_gamma = float(self.w.abslGamma.text())
+        # end get_proc_pars40
+
+    def get_proc_pars41(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_beta_mult = float(self.w.abslBetaMult.text())
+        # end get_proc_pars41
+
+    def get_proc_pars42(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_gamma_mult = float(self.w.abslGammaMult.text())
+        # end get_proc_pars42
+
+    def get_proc_pars43(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_quantile = float(self.w.abslQuantile.text())
+        # end get_proc_pars43
+
+    def get_proc_pars44(self):
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_poly_order = int(self.w.abslPolyOrder.text())
+        # end get_proc_pars44
 
     def get_bottom_top(self, line):
         margin = 0.1
@@ -4099,6 +4345,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         else:
             self.w.maAutoSim.setChecked(False)
 
+        self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
         # end load_button
 
     def load_config(self):
@@ -6269,6 +6516,22 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
         # end set_autobaseline
 
+    def set_autobaseline2(self):
+        if self.nd.e > -1:
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
+                show = self.w.autobaselineBox.isChecked()
+                self.w.autobaselineGroupBox.setVisible(show)
+                self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline = show
+            else:
+                self.w.autobaselineGroupBox.setVisible(False)
+                self.w.autobaselineBox.setChecked(False)
+
+        else:
+            self.w.autobaselineGroupBox.setVisible(False)
+            self.w.autobaselineBox.setChecked(False)
+
+        # end set_autobaseline2
+
     def set_avoid_neg_values(self):
         if (self.nd.pp.pre_proc_fill == False):
             if (self.w.avoidNegValues.isChecked() == True):
@@ -7483,6 +7746,16 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.winType.setCurrentIndex(p.conv_window_type[0])
         self.w.gibbs.setCurrentIndex(p.gibbs_p.get(p.gibbs[0]))
         self.w.gibbs_2.setCurrentIndex(p.gibbs_p.get(p.gibbs[1]))
+        self.w.wwStartLevel.setText(f'{p.ww_start}')
+        self.w.wwZeroFilling.setText(f'{p.ww_zf}')
+        idx1 = p.wavelet_names.index(p.ww_wavelet_type)
+        idx2 = p.wavelet_numbers[p.ww_wavelet_type].index(p.ww_wavelet_type_number)
+        if self.w.wwWaveletType.count() == 0:
+            self.w.wwWaveletType.addItems(p.wavelet_names)
+            self.w.wwWaveletType.setCurrentIndex(idx1)
+
+        #self.w.wwNumber.addItems(p.wavelet_numbers[p.ww_wavelet_type])
+        #self.w.wwNumber.setCurrentIndex(idx2)
         self.w.rSpc_p0.setText(str(a.r_spc[0]))
         self.w.rSpc_p1.setText(str(a.r_spc[1]))
         self.w.rSpc_p2.setText(str(a.r_spc[2]))
@@ -7499,6 +7772,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.iSpc_p6.setText(str(a.i_spc[6]))
         self.w.baselineOrder.setCurrentIndex(a.n_order)
         self.w.baselineCorrection.setCurrentIndex(a.correct_baseline)
+        self.set_autobaseline_pars()
         # end set_proc_pars
 
     def set_pulse_program(self):
@@ -8069,8 +8343,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.expBox.valueChanged.disconnect()
         self.w.expBox.setValue(self.nd.e + 1)
         self.w.setBox.setValue(self.nd.s + 1)
-        self.w.setBox.valueChanged.connect(lambda: self.change_data_set_exp())
-        self.w.expBox.valueChanged.connect(lambda: self.change_data_set_exp())
+        self.w.setBox.valueChanged.connect(self.change_data_set_exp)
+        self.w.expBox.valueChanged.connect(self.change_data_set_exp)
         self.set_disp_pars()
         self.set_proc_pars()
         self.set_acq_pars()

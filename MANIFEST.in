@@ -5,9 +5,9 @@ include README.md
 include qtmetabolabpy/*
 include qtmetabolabpy/ui/*
 include qtmetabolabpy/web/*
-include metabolabpy/nmr/web/*
-include metabolabpy/nmr/web/*/*
-include metabolabpy/nmr/web/*/*/*
+include qtmetabolabpy/web/*
+include qtmetabolabpy/web/*/*
+include qtmetabolabpy/web/*/*/*
 include qtmetabolabpy/bash/*
 include qtmetabolabpy/mlStarter
 include qtmetabolabpy/mlStarter/Contents
