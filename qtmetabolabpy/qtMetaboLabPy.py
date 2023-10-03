@@ -2630,6 +2630,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if (zoom_checked == True):
             self.w.keepZoom.setChecked(True)
 
+        self.set_autobaseline()
         # end exec_script
 
     def export_peak(self):
@@ -4397,6 +4398,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         idx = self.w.helpComboBox.currentIndex()
         url = []
         f_name = os.path.join(os.path.dirname(__file__), "web", "index.html")
+        print(f'f_name: {f_name}')
         url.append("file:///" + f_name.replace('\\', '/'))
         url.append("http://www.bml-nmr.org")
         url.append("https://www.hmdb.ca")
