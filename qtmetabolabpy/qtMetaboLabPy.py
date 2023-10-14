@@ -1843,6 +1843,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def print_spc(self):
         file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
+        if file_name.find('.pdf') == -1:
+            file_name += '.pdf'
+
         if len(file_name) > 0:
             if self.w.nmrSpectrum.currentIndex() == 0:
                 self.w.MplWidget.canvas.figure.savefig(file_name)
@@ -4414,7 +4417,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         idx = self.w.helpComboBox.currentIndex()
         url = []
         f_name = os.path.join(os.path.dirname(__file__), "web", "index.html")
-        print(f'f_name: {f_name}')
         url.append("file:///" + f_name.replace('\\', '/'))
         url.append("http://www.bml-nmr.org")
         url.append("https://www.hmdb.ca")
