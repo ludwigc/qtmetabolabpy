@@ -6911,6 +6911,7 @@
     <addaction name="actionOpen_Script"/>
     <addaction name="actionSave_Script"/>
     <addaction name="actionExecute_Script"/>
+    <addaction name="actionPrint"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlot"/>
@@ -7491,6 +7492,14 @@
   <action name="actionSet_system_mode_requires_restart">
    <property name="text">
     <string>Set 'system' mode (requires restart)</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

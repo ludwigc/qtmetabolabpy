@@ -430,6 +430,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionActivate_Command_Line.triggered.connect(self.activate_command_line)
         self.w.actionPrevious_command.triggered.connect(self.previous_command)
         self.w.actionNext_command.triggered.connect(self.next_command)
+        self.w.actionPrint.triggered.connect(self.print_spc)
         self.w.actionCorrect_Phase.triggered.connect(self.start_stop_ph_corr)
         self.w.actionUpdate_MetaboLabPy_requires_restart.triggered.connect(self.update_metabolabpy)
         # self.w.actionZoomCorrect_Phase.triggered.connect(self.zoom_ph_corr)
@@ -1839,6 +1840,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
             print("plw{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level_watt[index]))
 
         # end plw
+
+    def print_spc(self):
+        file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
+        if len(file_name) > 0:
+            if self.w.nmrSpectrum.currentIndex() == 0:
+                self.w.MplWidget.canvas.figure.savefig(file_name)
+            elif self.w.nmrSpectrum.currentIndex() == 1:
+                f_name = file_name[:file_name.index('.pdf')]
+                print(f'f_name: {f_name}')
+                file_name = f_name + '_multiplet.pdf'
+                self.w.hsqcMultiplet.canvas.figure.savefig(file_name)
+                file_name = f_name + '_peak.pdf'
+                self.w.hsqcPeak.canvas.figure.savefig(file_name)
+
+        # end print_spc
 
     def pulprog(self):
         print(f'pulprog: {self.nd.nmrdat[self.nd.s][self.nd.e].acq.pul_prog_name}')
