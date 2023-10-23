@@ -29,6 +29,7 @@ def main():  # pragma: no cover
     ap.add_argument("-k", "--KioskMode", required=False,
                     help="open application in full screen mode without windowed mode available",
                     action="store_true")
+    ap.add_argument("-m", "--mode", required=False, help="select UI colour scheme (system, light, dark)")
     ap.add_argument("fileName", metavar="fileName", type=str, help="load MetaboLabPy DataSet File")
     dd = ap.parse_known_args()
     # dd = ap.parse_known_intermixed_args()
@@ -36,6 +37,24 @@ def main():  # pragma: no cover
         sys.argv.pop()
 
     args = vars(ap.parse_args())
+    cf = nmrConfig.NmrConfig()
+    cf.read_config()
+    if args["mode"] == None:
+        mode = cf.mode
+    else:
+        if args["mode"].lower() == 'system':
+            mode = 'system'
+        elif args["mode"].lower() == 'light':
+            mode = 'light'
+        elif args["mode"].lower() == 'dark':
+            mode = 'dark'
+        else:
+            mode = cf.mode
+
+    cf.mode = mode
+    cf.save_config()
+    cf = nmrConfig.NmrConfig()
+    cf.read_config()
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
     base_dir = os.path.split(nmr_dir)[0]
@@ -62,8 +81,6 @@ def main():  # pragma: no cover
         nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         base_dir = os.path.split(nmr_dir)[0]
         p_name = os.path.join(base_dir, "png")
-        cf = nmrConfig.NmrConfig()
-        cf.read_config()
         if cf.mode == 'dark' or (cf.mode == 'system' and darkdetect.isDark()):
             splash_pix = QPixmap(os.path.join(p_name, "metabolabpy_dark.png"))
         else:

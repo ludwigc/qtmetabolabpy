@@ -6899,6 +6899,7 @@
     <addaction name="actionToggle_FullScreen"/>
     <addaction name="separator"/>
     <addaction name="actionShow_SplashScreen"/>
+    <addaction name="actionRestart_MetaboLabPy"/>
    </widget>
    <widget class="QMenu" name="menuCommand_Line">
     <property name="title">
@@ -6949,7 +6950,7 @@
     <string>Reset Plot</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>Ctrl+Shift+R</string>
    </property>
   </action>
   <action name="actionHorizontal_Zoom">
@@ -7442,10 +7443,16 @@
    <property name="text">
     <string>Set 'light' mode (requires restart)</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+Shift+L</string>
+   </property>
   </action>
   <action name="actionSet_dark_mode_requires_restart">
    <property name="text">
     <string>Set 'dark' mode (requires restart)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Shift+D</string>
    </property>
   </action>
   <action name="actionreInitialise_plot_colours">
@@ -7493,6 +7500,9 @@
    <property name="text">
     <string>Set 'system' mode (requires restart)</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+Shift+S</string>
+   </property>
   </action>
   <action name="actionPrint">
    <property name="text">
@@ -7500,6 +7510,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionRestart_MetaboLabPy">
+   <property name="text">
+    <string>Restart MetaboLabPy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

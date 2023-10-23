@@ -417,6 +417,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.bucketPpmLE.returnPressed.connect(self.set_bucket_ppm_pre_proc)
         self.w.bucketDataPointsLE.returnPressed.connect(self.set_bucket_points_pre_proc)
         self.w.actionAutomatic_Referencing.triggered.connect(self.automatic_referencing)
+        self.w.actionRestart_MetaboLabPy.triggered.connect(self.restart_metabolabpy)
         self.w.actionVertical_AutoScale.triggered.connect(self.vertical_auto_scale)
         self.w.actionHorizontal_AutoScale.triggered.connect(self.horizontal_auto_scale)
         self.w.actionZoom.triggered.connect(self.set_zoom)
@@ -4787,7 +4788,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     if (mods == QtCore.Qt.ShiftModifier):
                         # first order phase correction
                         ph0 = 0
-                        ph1 = self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        ph1 = - self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
                         self.ph_corr.spc = self.phase1d(self.nd.nmrdat[s][e].spc, ph0, ph1, self.ph_corr.piv_points)
 
                     if (mods == QtCore.Qt.NoModifier):
@@ -4808,7 +4809,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                         self.ph_corr.x_data = event.xdata
                         self.ph_corr.y_data = event.ydata
                         ph0 = 0
-                        ph1 = self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        ph1 = - self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
                         self.ph_corr.spc = self.phase1d(self.nd.nmrdat[s][e].spc, ph0, ph1, self.ph_corr.piv_points)
 
             self.ph_corr_plot_spc()
@@ -4833,13 +4834,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     if (mods == QtCore.Qt.ShiftModifier):
                         # first order phase correction
                         ph0 = 0
-                        ph1 = self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        if self.ph_corr.dim == 0:
+                            ph1 = self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        else:
+                            ph1 = - self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+
                         self.ph_corr.spc = self.phase1d(self.ph_corr.spc2, ph0, ph1,
                                                         self.ph_corr.pivot_points2d[self.ph_corr.dim])
 
                     if (mods == QtCore.Qt.NoModifier):
                         # zero order phase correction
-                        ph0 = self.ph_corr.max_ph0 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        if self.ph_corr.dim == 0:
+                            ph0 = - self.ph_corr.max_ph0 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        else:
+                            ph0 = self.ph_corr.max_ph0 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+
                         ph1 = 0
                         self.ph_corr.spc = self.phase1d(self.ph_corr.spc2, ph0, ph1,
                                                         self.ph_corr.pivot_points2d[self.ph_corr.dim])
@@ -4857,7 +4866,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
                         self.ph_corr.x_data = event.xdata
                         self.ph_corr.y_data = event.ydata
                         ph0 = 0
-                        ph1 = self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        if self.ph_corr.dim == 0:
+                            ph1 = self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+                        else:
+                            ph1 = - self.ph_corr.max_ph1 * (event.ydata - self.ph_corr.start) / self.ph_corr.spc_max
+
                         self.ph_corr.spc = self.phase1d(self.ph_corr.spc2, ph0, ph1,
                                                         self.ph_corr.pivot_points2d[self.ph_corr.dim])
 
@@ -4885,7 +4898,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
                 if (mods == QtCore.Qt.ShiftModifier):
                     # first order phase correction
-                    ph1 = (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+                    ph1 = - (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
                     ph = self.phases_remove_pivot(0.0, ph1, self.ph_corr.piv_points, len(self.ph_corr.spc[0]))
                     ph0 = ((self.nd.nmrdat[s][e].proc.ph0[0] + ph[0] + 180.0) % 360.0) - 180.0
                     ph1 = self.nd.nmrdat[s][e].proc.ph1[0] + ph[1]
@@ -4909,7 +4922,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     self.ph_corr.piv_points = self.nd.nmrdat[s][e].ppm2points(self.ph_corr.pivot, 0)
                 else:
                     # first order phase correction
-                    ph1 = (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+                    ph1 = - (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
                     ph = self.phases_remove_pivot(0.0, ph1, self.ph_corr.piv_points, len(self.ph_corr.spc[0]))
                     ph0 = ((self.nd.nmrdat[s][e].proc.ph0[0] + ph[0] + 180.0) % 360.0) - 180.0
                     ph1 = self.nd.nmrdat[s][e].proc.ph1[0] + ph[1]
@@ -4954,7 +4967,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
                 if mods == QtCore.Qt.ShiftModifier:
                     # first order phase correction
-                    ph1 = (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+                    if self.ph_corr.dim == 0:
+                        ph1 = (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+                    else:
+                        ph1 = - (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+
                     ph = self.phases_remove_pivot(0.0, ph1, self.ph_corr.pivot_points2d[self.ph_corr.dim],
                                                   len(self.ph_corr.spc[0]))
                     ph0 = ((self.ph_corr.ph0_2d[self.ph_corr.dim] + ph[0] + 180.0) % 360.0) - 180.0
@@ -4964,7 +4981,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
                 if mods == QtCore.Qt.NoModifier:
                     # zero order phase correction
-                    ph0a = (self.ph_corr.max_ph0 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max) % 360.0
+                    if self.ph_corr.dim == 0:
+                        ph0a = - (self.ph_corr.max_ph0 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max) % 360.0
+                    else:
+                        ph0a = (self.ph_corr.max_ph0 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max) % 360.0
+
                     ph1a = 0.0
                     ph = self.phases_remove_pivot(ph0a, ph1a, self.ph_corr.pivot_points2d[self.ph_corr.dim],
                                                   len(self.ph_corr.spc[0]))
@@ -4982,7 +5003,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
                 else:
                     # first order phase correction
-                    ph1 = (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+                    if self.ph_corr.dim == 0:
+                        ph1 = (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+                    else:
+                        ph1 = - (self.ph_corr.max_ph1 * (ydata - self.ph_corr.start) / self.ph_corr.spc_max)
+
                     ph = self.phases_remove_pivot(0.0, ph1, self.ph_corr.pivot_points2d[self.ph_corr.dim],
                                                   len(self.ph_corr.spc[0]))
                     ph0 = ((self.ph_corr.ph0_2d[self.ph_corr.dim] + ph[0] + 180.0) % 360.0) - 180.0
@@ -6065,6 +6090,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.keepZoom.setChecked(True)
 
         # end reset_plot
+
+    def restart_metabolabpy(selfself):
+        os.execl(sys.executable, sys.executable, *sys.argv)
+        # end restart_metabolabpy
 
     def save_button(self):
         if len(self.cf.current_directory) > 0:
