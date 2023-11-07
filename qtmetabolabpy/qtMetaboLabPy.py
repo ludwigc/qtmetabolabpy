@@ -339,7 +339,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.nmrSpectrum.setTabEnabled(1, False)
         self.w.nmrSpectrum.setTabEnabled(2, False)
         self.w.nmrSpectrum.setTabEnabled(3, False)
-        self.w.nmrSpectrum.setTabEnabled(4, False)
+        #self.w.nmrSpectrum.setTabEnabled(4, False)
         self.w.nmrSpectrum.setStyleSheet(
             "QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
         # connections
@@ -481,6 +481,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionSelect_All.triggered.connect(self.select_plot_all)
         self.w.actionClear_All.triggered.connect(self.select_plot_clear)
         self.w.actionConsole.triggered.connect(self.show_console)
+        self.w.actionConsole.triggered.connect(self.show_console)
+        self.w.actionShow_Plot_Editor.triggered.connect(self.show_plot_editor)
         self.w.actionShow_SplashScreen.triggered.connect(self.splash)
         self.w.actionHelp.triggered.connect(self.show_help)
         self.w.actionToggle_FullScreen.triggered.connect(self.show_main_window)
@@ -597,6 +599,19 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_font_size()
         self.cf = nmrConfig.NmrConfig()
         self.cf.read_config()
+        self.w.plotTop.clicked.connect(self.update_plot_top)
+        self.w.plotLeft.clicked.connect(self.update_plot_left)
+        self.w.plotRight.clicked.connect(self.update_plot_right)
+        self.w.plotBottom.clicked.connect(self.update_plot_bottom)
+        self.w.plotBackground.clicked.connect(self.update_plot_background)
+        self.w.useStandardPlotColours.clicked.connect(self.update_use_standard_plot_colours)
+        self.w.useDatasetPlotColours.clicked.connect(self.update_use_dataset_plot_colours)
+        self.w.plotLightMode.clicked.connect(self.update_plot_light_mode)
+        self.w.plotDarkMode.clicked.connect(self.update_plot_dark_mode)
+        self.w.spectrumLineWidth.valueChanged.connect(self.update_spectrum_line_width)
+        self.w.axesLineWidth.valueChanged.connect(self.update_axes_line_width)
+        self.w.axesFontSize.valueChanged.connect(self.update_axes_font_size)
+        self.w.labelFontSize.valueChanged.connect(self.update_label_font_size)
         #self.w.autoPlot.setChecked(self.cf.auto_plot)
         self.w.keepZoom.setChecked(self.cf.keep_zoom)
         self.w.fontSize.setValue(self.cf.font_size)
@@ -1843,21 +1858,170 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end plw
 
     def print_spc(self):
+        self.show_nmr_spectrum()
         file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
+        ax_lw = self.w.MplWidget.canvas.axes.spines['bottom'].get_linewidth()
+        ax_fs = self.w.MplWidget.canvas.axes.get_xticklabels()[0].get_fontsize()
+        ax_ls = 10
         if file_name.find('.pdf') == -1:
             file_name += '.pdf'
 
         if len(file_name) > 0:
+            self.nd.init_print_colours()
             if self.w.nmrSpectrum.currentIndex() == 0:
-                self.w.MplWidget.canvas.figure.savefig(file_name)
+                cv = []
+                cv.append(self.w.MplWidget.canvas)
+            elif self.w.nmrSpectrum.currentIndex() == 1:
+                cv = []
+                cv.append(self.w.hsqcPeak.canvas)
+                cv.append(self.w.hsqcMultiplet.canvas)
+            else:
+                return
+
+
+            yticks = cv[0].axes.get_yticks()
+            xticks = cv[0].axes.get_xticks()
+            if self.nd.cf.print_standard_colours:
+                p_cols = self.nd.print_colours
+                n_cols = self.nd.print_neg_colours
+                cols = []
+                cols_dict = {}
+                cols_dict_rgb = {}
+                orig_pos_col_rgb = []
+                orig_pos_col = []
+                orig_neg_col_rgb = []
+                orig_neg_col = []
+                for k in range(len(self.nd.nmrdat)):
+                    orig_pos_col_rgb.append([])
+                    orig_pos_col.append([])
+                    orig_neg_col_rgb.append([])
+                    orig_neg_col.append([])
+                    for l in range(len(self.nd.nmrdat[k])):
+                        orig_pos_col_rgb[k].append(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                        orig_pos_col[k].append(self.nd.nmrdat[k][l].display.pos_col)
+                        orig_neg_col_rgb[k].append(self.nd.nmrdat[k][l].display.neg_col_rgb)
+                        orig_neg_col[k].append(self.nd.nmrdat[k][l].display.neg_col)
+                        if self.nd.nmrdat[k][l].display.pos_col == 'RGB':
+                            if self.nd.nmrdat[k][l].display.pos_col_rgb not in cols:
+                                cols.append(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                                idx = len(cols) - 1
+                                cols_dict_rgb[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col_rgb
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                            else:
+                                idx = cols.index(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                        else:
+                            if self.nd.nmrdat[k][l].display.pos_col not in cols:
+                                cols.append(self.nd.nmrdat[k][l].display.pos_col)
+                                idx = len(cols) - 1
+                                cols_dict[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                            else:
+                                idx = cols.index(self.nd.nmrdat[k][l].display.pos_col)
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+
+                            self.nd.nmrdat[k][l].display.pos_col = 'RGB'
+
+
+            cv[0].draw()
+            matplotlib.pyplot.rc('axes', labelsize=self.nd.cf.print_label_font_size)
+            matplotlib.pyplot.rc('xtick', labelsize=self.nd.cf.print_ticks_font_size)
+            matplotlib.pyplot.rc('ytick', labelsize=self.nd.cf.print_ticks_font_size)
+            if len(cv) == 1:
+                self.plot_spc(linewidth=self.nd.cf.print_spc_linewidth)
+
+            bg = self.nd.print_background_colour
+            fg = self.nd.print_foreground_colour
+            cv[0].figure.set_facecolor(bg)
+            cv[0].axes.set_facecolor(bg)
+            cv[0].axes.xaxis.label.set_color(fg)
+            cv[0].axes.yaxis.label.set_color(fg)
+            cv[0].axes.tick_params(axis='x', colors=fg)
+            cv[0].axes.tick_params(axis='y', colors=fg)
+            cv[0].axes.spines['bottom'].set_color(fg)
+            cv[0].axes.spines['left'].set_color(fg)
+            cv[0].axes.spines['right'].set_color(fg)
+            cv[0].axes.spines['top'].set_color(fg)
+            ylim = cv[0].axes.get_ylim()
+            xlim = cv[0].axes.get_xlim()
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
+                if self.nd.cf.print_left_axis == False:
+                    cv[0].axes.set_yticks([])
+
+                if self.nd.cf.print_bottom_axis == False:
+                    cv[0].axes.set_xticks([])
+                    cv[0].axes.set_xlabel('')
+
+
+                cv[0].draw()
+                cv[0].axes.spines['bottom'].set_visible(ax_lw)
+                cv[0].axes.spines['left'].set_visible(self.nd.cf.print_left_axis)
+                cv[0].axes.spines['top'].set_visible(self.nd.cf.print_top_axis)
+                cv[0].axes.spines['right'].set_visible(self.nd.cf.print_right_axis)
+                cv[0].axes.spines['bottom'].set_visible(self.nd.cf.print_bottom_axis)
+
+            cv[0].axes.spines['bottom'].set_linewidth(self.nd.cf.print_axes_linewidth)
+            cv[0].axes.spines['left'].set_linewidth(self.nd.cf.print_axes_linewidth)
+            cv[0].axes.spines['right'].set_linewidth(self.nd.cf.print_axes_linewidth)
+            cv[0].axes.spines['top'].set_linewidth(self.nd.cf.print_axes_linewidth)
+            cv[0].axes.tick_params(width=self.nd.cf.print_axes_linewidth)
+            cv[0].axes.set_ylim(ylim)
+            cv[0].axes.set_xlim(xlim)
+            #self.w.MplWidget.canvas.flush_events()
+            if self.w.nmrSpectrum.currentIndex() == 0:
+                cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
             elif self.w.nmrSpectrum.currentIndex() == 1:
                 f_name = file_name[:file_name.index('.pdf')]
                 print(f'f_name: {f_name}')
                 file_name = f_name + '_multiplet.pdf'
-                self.w.hsqcMultiplet.canvas.figure.savefig(file_name)
+                cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                 file_name = f_name + '_peak.pdf'
-                self.w.hsqcPeak.canvas.figure.savefig(file_name)
+                cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
 
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+                self.load_dark_mode()
+            else:
+                self.load_light_mode()
+
+            if self.nd.cf.print_standard_colours:
+                if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
+                    for k in range(len(self.nd.nmrdat)):
+                        for l in range(len(self.nd.nmrdat[k])):
+                            self.nd.nmrdat[k][l].display.pos_col_rgb = orig_pos_col_rgb[k][l]
+                            self.nd.nmrdat[k][l].display.pos_col = orig_pos_col[k][l]
+                            self.nd.nmrdat[k][l].display.neg_col_rgb = orig_neg_col_rgb[k][l]
+                            self.nd.nmrdat[k][l].display.neg_col = orig_neg_col[k][l]
+
+            cv[0].axes.set_yticks(yticks)
+            cv[0].axes.set_ylim(ylim)
+            cv[0].axes.set_xticks(xticks)
+            cv[0].axes.set_xlim(xlim)
+
+            bg = self.nd.background_colour
+            fg = self.nd.foreground_colour
+            cv[0].figure.set_facecolor(bg)
+            cv[0].axes.set_facecolor(bg)
+            cv[0].axes.xaxis.label.set_color(fg)
+            cv[0].axes.yaxis.label.set_color(fg)
+            cv[0].axes.tick_params(axis='x', colors=fg)
+            cv[0].axes.tick_params(axis='y', colors=fg)
+            cv[0].axes.spines['bottom'].set_linewidth(ax_lw)
+            cv[0].axes.spines['left'].set_linewidth(ax_lw)
+            cv[0].axes.spines['right'].set_linewidth(ax_lw)
+            cv[0].axes.spines['top'].set_linewidth(ax_lw)
+            matplotlib.pyplot.rc('axes', labelsize=ax_ls)
+            matplotlib.pyplot.rc('xtick', labelsize=ax_fs)
+            matplotlib.pyplot.rc('ytick', labelsize=ax_fs)
+            cv[0].axes.tick_params(width=ax_lw)
+            cv[0].axes.spines['bottom'].set_visible(True)
+            cv[0].axes.spines['top'].set_visible(True)
+            cv[0].axes.spines['right'].set_visible(True)
+            cv[0].axes.spines['left'].set_visible(True)
+            self.plot_spc()
         # end print_spc
 
     def pulprog(self):
@@ -2536,7 +2700,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         cmd_text = self.w.cmdLine.text()
         if (len(cmd_text) > 0):
-            self.w.nmrSpectrum.setCurrentIndex(11)
+            self.w.nmrSpectrum.setCurrentIndex(10)
             self.w.cmdLine.setText("")
             self.nd.cmd_buffer = np.append(self.nd.cmd_buffer, cmd_text)
             self.nd.cmd_idx = len(self.nd.cmd_buffer)
@@ -2613,7 +2777,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             exec(code)
 
         except:  # (SyntaxError, NameError, TypeError, ZeroDivisionError, AttributeError):
-            self.w.nmrSpectrum.setCurrentIndex(11)
+            self.w.nmrSpectrum.setCurrentIndex(10)
             traceback.print_exc()
 
         sys.stdout = sys.__stdout__
@@ -5055,7 +5219,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             scriptText = f.read()
             self.w.script.setText(scriptText)
 
-        self.w.nmrSpectrum.setCurrentIndex(10)
+        self.w.nmrSpectrum.setCurrentIndex(9)
         # end open_script
 
     def p(self, index=-1):
@@ -5450,7 +5614,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.coefficientOfDetermination.setPalette(palette)
         # end
 
-    def plot_spc(self, hide_pre_processing=False, plot_spline_baseline=False):
+    def plot_spc(self, hide_pre_processing=False, plot_spline_baseline=False, linewidth=1.5):
         s = self.nd.s
         e = self.nd.e
         self.keep_zoom = self.w.keepZoom.isChecked()
@@ -5499,7 +5663,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                         neg_col = matplotlib.colors.to_hex(neg_col)
                         #print(f'Dataset: {s1}, Exp: {k}, pos_col: {pos_col}')
                         self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s1][k].ppm1,
-                                                          self.nd.nmrdat[s1][k].spc[0].real, color=pos_col)
+                                                          self.nd.nmrdat[s1][k].spc[0].real, color=pos_col, linewidth=linewidth)
 
                         if self.w.splinebaseline.isChecked() and s1 == s:
                             if len(self.nd.nmrdat[s][k].spline_baseline.baseline_points) > 0:
@@ -5508,7 +5672,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                 if plot_spline_baseline:
                                     self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][k].ppm1,
                                                                       self.nd.nmrdat[s][k].calc_spline_baseline(),
-                                                                      color="lightgreen")
+                                                                      color="lightgreen", linewidth=linewidth)
+
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+                bg = (42 / 255, 42 / 255, 42 / 255)
+                fg = (255 / 255, 255 / 255, 255 / 255)
+            else:
+                bg = (255 / 255, 255 / 255, 255 / 255)
+                fg = (0 / 255, 0 / 255, 0 / 255)
 
             d = self.nd.nmrdat[s][e].display
             if (d.pos_col == "RGB"):
@@ -5533,7 +5704,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                                              alpha=self.nd.pp.alpha, color=self.nd.pp.colour)
 
             self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1,
-                                              self.nd.nmrdat[self.nd.s][self.nd.e].spc[0].real, color=pos_col)
+                                              self.nd.nmrdat[self.nd.s][self.nd.e].spc[0].real, color=pos_col, linewidth=linewidth)
 
             if self.w.splinebaseline.isChecked():
                 if len(self.nd.nmrdat[s][k].spline_baseline.baseline_points) > 0:
@@ -5541,18 +5712,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                                       self.nd.nmrdat[s][e].spline_baseline.baseline_values, 'o', color="lightgreen")
                     if plot_spline_baseline:
                         baseline = self.nd.nmrdat[s][e].calc_spline_baseline()
-                        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].ppm1, baseline, color="lightgreen")
-
-            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-                bg = (42 / 255, 42 / 255, 42 / 255)
-                fg = (255 / 255, 255 / 255, 255 / 255)
-            else:
-                bg = (255 / 255, 255 / 255, 255 / 255)
-                fg = (0 / 255, 0 / 255, 0 / 255)
+                        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].ppm1, baseline, color="lightgreen", linewidth=linewidth)
 
             self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
             self.w.MplWidget.canvas.axes.autoscale()
             self.w.MplWidget.canvas.axes.invert_xaxis()
+            self.w.MplWidget.canvas.axes.tick_params(axis='y', colors=fg)
             if (self.keep_zoom == True):
                 self.w.MplWidget.canvas.axes.set_xlim(xlim)
                 self.w.MplWidget.canvas.axes.set_ylim(ylim)
@@ -5573,11 +5738,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.MplWidget.canvas.axes.contour(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1,
                                                  self.nd.nmrdat[self.nd.s][self.nd.e].ppm2,
                                                  self.nd.nmrdat[self.nd.s][self.nd.e].spc.real, pos_lev, colors=pos_col,
-                                                 linestyles='solid', antialiased=True)
+                                                 linestyles='solid', antialiased=True, linewidths=linewidth)
             self.w.MplWidget.canvas.axes.contour(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1,
                                                  self.nd.nmrdat[self.nd.s][self.nd.e].ppm2,
                                                  self.nd.nmrdat[self.nd.s][self.nd.e].spc.real, neg_lev, colors=neg_col,
-                                                 linestyles='solid', antialiased=True)
+                                                 linestyles='solid', antialiased=True, linewidths=linewidth)
 
             if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 bg = (42 / 255, 42 / 255, 42 / 255)
@@ -5767,7 +5932,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.nd.set_title_information(rack_label=rack_label, pos_label=pos_label, data_path=data_path,
                                       excel_name=excel_name, replace_orig_title=replace_orig_title)
         self.update_gui()
-        self.w.nmrSpectrum.setCurrentIndex(8)
+        self.w.nmrSpectrum.setCurrentIndex(7)
         # end set_title_information
 
 
@@ -6216,7 +6381,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end scaleAll_2d_spectra_down
 
     def script_editor(self):
-        self.w.nmrSpectrum.setCurrentIndex(10)
+        self.w.nmrSpectrum.setCurrentIndex(9)
         # end script_editor
 
     def set_datasets_exps(self):
@@ -7738,7 +7903,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.nmrSpectrum.setTabEnabled(3, True)
             self.w.nmrSpectrum.setStyleSheet(
                 "QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
-            self.w.nmrSpectrum.setCurrentIndex(3)
+            self.w.nmrSpectrum.setCurrentIndex(2)
         else:
             self.w.nmrSpectrum.setTabEnabled(3, False)
             self.w.nmrSpectrum.setStyleSheet(
@@ -7952,7 +8117,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end set_title_file
 
     def setup_processing_parameters(self):
-        self.w.nmrSpectrum.setCurrentIndex(5)
+        self.w.nmrSpectrum.setCurrentIndex(4)
         # end setup_processing_parameters
 
     def set_up_to_bonds(self):
@@ -8073,7 +8238,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end show
 
     def show_acquisition_parameters(self):
-        self.w.nmrSpectrum.setCurrentIndex(7)
+        self.w.nmrSpectrum.setCurrentIndex(6)
         # end show_acquisition_parameters
 
     def show_auto_baseline(self):
@@ -8091,11 +8256,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end show_auto_phase
 
     def show_console(self):
+        self.w.nmrSpectrum.setCurrentIndex(10)
+        # end show_console
+
+    def show_plot_editor(self):
         self.w.nmrSpectrum.setCurrentIndex(11)
         # end show_console
 
     def show_display_parameters(self):
-        self.w.nmrSpectrum.setCurrentIndex(6)
+        self.w.nmrSpectrum.setCurrentIndex(5)
         # end show_display_parameters
 
     def show_help(self):
@@ -8171,7 +8340,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end show_pre_processing
 
     def show_pulse_program(self):
-        self.w.nmrSpectrum.setCurrentIndex(9)
+        self.w.nmrSpectrum.setCurrentIndex(8)
         # end show_pulse_program
 
     def show_spline_baseline_pick(self):
@@ -8179,7 +8348,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.statusBar().showMessage("Left click to add baseline point, right click or double click to exit peak picking mode")
 
     def show_title_file_information(self):
-        self.w.nmrSpectrum.setCurrentIndex(8)
+        self.w.nmrSpectrum.setCurrentIndex(7)
         # end show_title_file_information
 
     def show_version(self):
@@ -8271,7 +8440,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
                 err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
 
-            self.w.nmrSpectrum.setCurrentIndex(11)
+            self.w.nmrSpectrum.setCurrentIndex(10)
             code_out = io.StringIO()
             code_err = io.StringIO()
             sys.stdout = code_out
@@ -8387,6 +8556,39 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.nmrSpectrum.setCurrentIndex(12)
         # end tutorials
 
+    def update_plot_editor(self):
+        self.w.plotTop.setChecked(self.cf.print_top_axis)
+        if self.w.plotTop.isChecked():
+            self.w.plotTop.setStyleSheet("background-color: black")
+        else:
+            self.w.plotTop.setStyleSheet("background-color: darkgrey")
+        self.w.plotLeft.setChecked(self.cf.print_left_axis)
+        if self.w.plotLeft.isChecked():
+            self.w.plotLeft.setStyleSheet("background-color: black")
+        else:
+            self.w.plotLeft.setStyleSheet("background-color: darkgrey")
+        self.w.plotRight.setChecked(self.cf.print_right_axis)
+        if self.w.plotRight.isChecked():
+            self.w.plotRight.setStyleSheet("background-color: black")
+        else:
+            self.w.plotRight.setStyleSheet("background-color: darkgrey")
+        self.w.plotBottom.setChecked(self.cf.print_bottom_axis)
+        if self.w.plotBottom.isChecked():
+            self.w.plotBottom.setStyleSheet("background-color: black")
+        else:
+            self.w.plotBottom.setStyleSheet("background-color: darkgrey")
+
+        self.w.plotBackground.setChecked(self.cf.print_background)
+        self.w.useStandardPlotColours.setChecked(self.cf.print_standard_colours)
+        self.w.useDatasetPlotColours.setChecked(self.cf.print_dataset_colours)
+        self.w.plotLightMode.setChecked(self.cf.print_light_mode)
+        self.w.plotDarkMode.setChecked(not self.cf.print_light_mode)
+        self.w.spectrumLineWidth.setValue(self.cf.print_spc_linewidth)
+        self.w.axesLineWidth.setValue(self.cf.print_axes_linewidth)
+        self.w.axesFontSize.setValue(self.cf.print_ticks_font_size)
+        self.w.labelFontSize.setValue(self.cf.print_label_font_size)
+        # end update_plot_editor
+
     def update_gui(self):
         self.w.setBox.valueChanged.disconnect()
         self.w.expBox.valueChanged.disconnect()
@@ -8402,6 +8604,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.expBox.setValue(self.nd.e + 1)
         self.w.invertMatrix_1.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.invert_matrix[0])
         self.w.invertMatrix_2.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.invert_matrix[1])
+        #self.update_plot_editor()
         if (self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1):
             self.w.preprocessing.setVisible(True)
             self.w.peakPicking.setVisible(True)
@@ -8429,6 +8632,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.w.multipletAnalysis.setVisible(False)
         #self.w.isotopomerAnalysis.setVisible(False)
+        self.update_plot_editor()
         return "updated GUI"
         # end update_gui
 
@@ -8458,6 +8662,99 @@ class QtMetaboLabPy(object):  # pragma: no cover
         code_err.close()
         self.show_console()
         # end update_metabolabpy
+
+
+    def update_plot_top(self):
+        self.cf.print_top_axis = self.w.plotTop.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_plot_top
+
+    def update_plot_left(self):
+        self.cf.print_left_axis = self.w.plotLeft.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_plot_left
+
+    def update_plot_right(self):
+        self.cf.print_right_axis = self.w.plotRight.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_plot_right
+
+    def update_plot_bottom(self):
+        self.cf.print_bottom_axis = self.w.plotBottom.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_plot_bottom
+
+    def update_plot_background(self):
+        self.cf.print_background = self.w.plotBackground.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_plot_background
+
+    def update_use_standard_plot_colours(self):
+        self.cf.print_standard_colours = self.w.useStandardPlotColours.isChecked()
+        self.cf.print_dataset_colours = not self.w.useStandardPlotColours.isChecked()
+        self.w.useDatasetPlotColours.setChecked(not self.w.useStandardPlotColours.isChecked())
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_use_standard_plot_colours
+
+    # self.w.useDatasetPlotColours.clicked.connect(update_use_dataset_plot_colours)
+    def update_use_dataset_plot_colours(self):
+        self.cf.print_dataset_colours = self.w.useDatasetPlotColours.isChecked()
+        self.cf.print_standard_colours = not self.w.useDatasetPlotColours.isChecked()
+        self.w.useStandardPlotColours.setChecked(not self.w.useDatasetPlotColours.isChecked())
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_use_dataset_plot_colours
+
+    # self.w.plotLightMode.clicked.connect(self.update_plot_light_mode)
+    def update_plot_light_mode(self):
+        self.cf.print_light_mode = self.w.plotLightMode.isChecked()
+        self.w.plotDarkMode.setChecked(not self.w.plotLightMode.isChecked())
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_plot_light_mode
+
+    # self.w.plotDarkMode.clicked.connect(self.update_plot_dark_mode)
+    def update_plot_dark_mode(self):
+        self.cf.print_light_mode = not self.w.plotDarkMode.isChecked()
+        self.w.plotLightMode.setChecked(not self.w.plotDarkMode.isChecked())
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_plot_dark_mode
+
+    # self.w.spectrumLineWidth.valueChanged.connect(self.update_spectrum_line_width)
+    def update_spectrum_line_width(self):
+        self.cf.print_spc_linewidth = self.w.spectrumLineWidth.value()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_spectrum_line_width
+
+    # self.w.axesLineWidth.valueChanged.connect(self.update_axes_line_width)
+    def update_axes_line_width(self):
+        self.cf.print_axes_linewidth = self.w.axesLineWidth.value()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_
+
+    # self.w.axesFontSize.valueChanged.connect(self.update_axes_font_size)
+    def update_axes_font_size(self):
+        self.cf.print_ticks_font_size = self.w.axesFontSize.value()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_axes_font_size
+
+    # self.w.labelFontSize.valueChanged.connect(self.update_label_font_size)
+    def update_label_font_size(self):
+        self.cf.print_label_font_size = self.w.labelFontSize.value()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_label_font_size
+
 
     def vertical_auto_scale(self):
         if (self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1):
@@ -8692,7 +8989,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.console.append(code_err.getvalue())
         code_out.close()
         code_err.close()
-        self.w.nmrSpectrum.setCurrentIndex(11)
+        self.w.nmrSpectrum.setCurrentIndex(10)
 
     def _download_finished(self) -> None:
         code_out = io.StringIO()
@@ -8726,6 +9023,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.console.append(code_err.getvalue())
         code_out.close()
         code_err.close()
-        self.w.nmrSpectrum.setCurrentIndex(11)
+        self.w.nmrSpectrum.setCurrentIndex(10)
 
 
