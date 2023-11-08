@@ -1861,7 +1861,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end plw
 
-    def print_spc(self, file_name=-1):
+    def print_spc(self, file_name=False):
+        if self.w.nmrSpectrum.currentIndex() != 1:
+            self.show_nmr_spectrum()
+
         if not file_name:
             file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
 
@@ -1976,7 +1979,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.tick_params(width=self.nd.cf.print_axes_linewidth)
             cv[0].axes.set_ylim(ylim)
             cv[0].axes.set_xlim(xlim)
-            #self.w.MplWidget.canvas.flush_events()
             if self.w.nmrSpectrum.currentIndex() == 0:
                 orig_e = self.nd.e
                 for k in range(len(self.nd.nmrdat[self.nd.s])):
@@ -2027,7 +2029,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             elif self.w.nmrSpectrum.currentIndex() == 1:
                 f_name = file_name[:file_name.index('.pdf')]
-                print(f'f_name: {f_name}')
                 file_name = f_name + '_multiplet.pdf'
                 cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                 file_name = f_name + '_peak.pdf'
@@ -2074,8 +2075,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.spines['left'].set_visible(True)
             self.plot_spc()
             if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1 and self.cf.print_stacked_plot and len(disp_spc) > 1:
-                #merger = PdfMerger()
-                #reader = PdfReader()
                 writer = PdfWriter()
                 pdf_file = []
                 pdf_reader = []

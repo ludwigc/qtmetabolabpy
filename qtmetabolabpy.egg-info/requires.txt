@@ -8,3 +8,4 @@ qtmodern
 xlsxwriter
 multiprocess
 darkdetect
+pypdf2
