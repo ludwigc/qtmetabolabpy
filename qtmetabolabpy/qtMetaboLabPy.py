@@ -2031,10 +2031,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             elif self.w.nmrSpectrum.currentIndex() == 1:
                 f_name = file_name[:file_name.index('.pdf')]
-<<<<<<< HEAD
-=======
-                #print(f'f_name: {f_name}')
->>>>>>> 2d8cdf8a362a20e9013040e6e91684aa681d4f70
                 file_name = f_name + '_multiplet.pdf'
                 cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                 file_name = f_name + '_peak.pdf'
