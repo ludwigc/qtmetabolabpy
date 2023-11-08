@@ -1986,7 +1986,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
                 if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1 and self.cf.print_stacked_plot and len(disp_spc) > 1:
                     for kk in range(len(disp_spc)):
+                        self.nd.nmrdat[self.nd.s][self.nd.e].display.display_spc = False
                         self.nd.e = disp_spc[kk]
+                        self.nd.nmrdat[self.nd.s][self.nd.e].display.display_spc = True
                         self.plot_spc(linewidth=self.nd.cf.print_spc_linewidth)
                         bg = self.nd.print_background_colour
                         fg = self.nd.print_foreground_colour
@@ -2027,7 +2029,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             elif self.w.nmrSpectrum.currentIndex() == 1:
                 f_name = file_name[:file_name.index('.pdf')]
-                print(f'f_name: {f_name}')
+                #print(f'f_name: {f_name}')
                 file_name = f_name + '_multiplet.pdf'
                 cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                 file_name = f_name + '_peak.pdf'
@@ -2093,7 +2095,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 op = Transformation().scale(sx=1, sy=1).translate(tx=0, ty=float(height))
                 for k in range(n_files - 1):
                     merged_page.add_transformation(op)
-                    merged_page.merge_page(pdf_reader[n_files - 2].pages[0])
+                    merged_page.merge_page(pdf_reader[n_files - 2 - k].pages[0])
 
                 writer.add_page(merged_page)
                 file_name = f'{f_name}.pdf'
