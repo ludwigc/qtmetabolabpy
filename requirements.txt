@@ -13,4 +13,5 @@ xlsxwriter
 #jupyterthemes
 multiprocess
 darkdetect
+pypdf2
 #on arm: then install with : pip3 install metabolabpy --no-deps

@@ -74,6 +74,8 @@ except:
 import darkdetect
 import webbrowser
 import pandas as pd
+from PyPDF2 import PdfWriter, PdfMerger, PdfReader
+from PyPDF2 import PageObject, Transformation
 #import matplotlib.pyplot as pl  # pragma: no cover
 
 if "linux" in sys.platform:  # pragma: no cover
@@ -608,6 +610,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.useDatasetPlotColours.clicked.connect(self.update_use_dataset_plot_colours)
         self.w.plotLightMode.clicked.connect(self.update_plot_light_mode)
         self.w.plotDarkMode.clicked.connect(self.update_plot_dark_mode)
+        self.w.printStackedPlot.clicked.connect(self.update_print_stacked_plot)
+        self.w.printAutoScale.clicked.connect(self.update_print_auto_scale)
         self.w.spectrumLineWidth.valueChanged.connect(self.update_spectrum_line_width)
         self.w.axesLineWidth.valueChanged.connect(self.update_axes_line_width)
         self.w.axesFontSize.valueChanged.connect(self.update_axes_font_size)
@@ -1857,26 +1861,27 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end plw
 
-    def print_spc(self):
-        self.show_nmr_spectrum()
-        file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
-        ax_lw = self.w.MplWidget.canvas.axes.spines['bottom'].get_linewidth()
-        ax_fs = self.w.MplWidget.canvas.axes.get_xticklabels()[0].get_fontsize()
-        ax_ls = 10
+    def print_spc(self, file_name=-1):
+        if not file_name:
+            file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
+
         if file_name.find('.pdf') == -1:
             file_name += '.pdf'
 
         if len(file_name) > 0:
+            disp_spc = []
+            ax_lw = self.w.MplWidget.canvas.axes.spines['bottom'].get_linewidth()
+            ax_fs = self.w.MplWidget.canvas.axes.get_xticklabels()[0].get_fontsize()
+            ax_ls = 10
             self.nd.init_print_colours()
-            if self.w.nmrSpectrum.currentIndex() == 0:
-                cv = []
-                cv.append(self.w.MplWidget.canvas)
-            elif self.w.nmrSpectrum.currentIndex() == 1:
+            if self.w.nmrSpectrum.currentIndex() == 1:
                 cv = []
                 cv.append(self.w.hsqcPeak.canvas)
                 cv.append(self.w.hsqcMultiplet.canvas)
             else:
-                return
+                self.show_nmr_spectrum()
+                cv = []
+                cv.append(self.w.MplWidget.canvas)
 
 
             yticks = cv[0].axes.get_yticks()
@@ -1973,7 +1978,53 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.set_xlim(xlim)
             #self.w.MplWidget.canvas.flush_events()
             if self.w.nmrSpectrum.currentIndex() == 0:
-                cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
+                orig_e = self.nd.e
+                for k in range(len(self.nd.nmrdat[self.nd.s])):
+                    if self.nd.nmrdat[self.nd.s][k].display.display_spc == True:
+                        disp_spc.append(k)
+                        self.nd.nmrdat[self.nd.s][k].display.display_spc = False
+
+                if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1 and self.cf.print_stacked_plot and len(disp_spc) > 1:
+                    for kk in range(len(disp_spc)):
+                        self.nd.e = disp_spc[kk]
+                        self.plot_spc(linewidth=self.nd.cf.print_spc_linewidth)
+                        bg = self.nd.print_background_colour
+                        fg = self.nd.print_foreground_colour
+                        cv[0].figure.set_facecolor(bg)
+                        cv[0].axes.set_facecolor(bg)
+                        cv[0].axes.xaxis.label.set_color(fg)
+                        cv[0].axes.yaxis.label.set_color(fg)
+                        cv[0].axes.tick_params(axis='x', colors=fg)
+                        cv[0].axes.tick_params(axis='y', colors=fg)
+                        cv[0].axes.spines['bottom'].set_color(fg)
+                        cv[0].axes.spines['left'].set_color(fg)
+                        cv[0].axes.spines['right'].set_color(fg)
+                        cv[0].axes.spines['top'].set_color(fg)
+                        cv[0].axes.set_yticks([])
+                        if kk > 0:
+                            cv[0].axes.set_xticks([])
+                            cv[0].axes.set_xlabel('')
+                            cv[0].axes.spines['left'].set_visible(False)
+                            cv[0].axes.spines['top'].set_visible(False)
+                            cv[0].axes.spines['right'].set_visible(False)
+                            cv[0].axes.spines['bottom'].set_visible(False)
+
+                        cv[0].draw()
+                        cv[0].axes.set_ylim(ylim)
+                        cv[0].axes.set_xlim(xlim)
+                        if self.cf.print_auto_scale == True:
+                            self.vertical_auto_scale()
+
+                        f_name = file_name[:file_name.index('.pdf')]
+                        cv[0].figure.savefig(f_name + f'_{kk}.pdf', transparent=not self.nd.cf.print_background)
+
+                    self.nd.e = orig_e
+                else:
+                    cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
+
+                for kk in range(len(disp_spc)):
+                    self.nd.nmrdat[self.nd.s][disp_spc[kk]].display.display_spc = True
+
             elif self.w.nmrSpectrum.currentIndex() == 1:
                 f_name = file_name[:file_name.index('.pdf')]
                 print(f'f_name: {f_name}')
@@ -2022,6 +2073,33 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.spines['right'].set_visible(True)
             cv[0].axes.spines['left'].set_visible(True)
             self.plot_spc()
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1 and self.cf.print_stacked_plot and len(disp_spc) > 1:
+                #merger = PdfMerger()
+                #reader = PdfReader()
+                writer = PdfWriter()
+                pdf_file = []
+                pdf_reader = []
+                for k in range(len(disp_spc)):
+                    file_name = f_name + f'_{k}.pdf'
+                    pdf_file.append(open(file_name, 'rb'))
+                    pdf_reader.append(PdfReader(pdf_file[k]))
+                    os.remove(file_name)
+
+                n_files = len(pdf_file)
+                width = pdf_reader[0].pages[0].mediabox.width
+                height = pdf_reader[0].pages[0].mediabox.height
+                merged_page = PageObject.create_blank_page(None, width, height * n_files)
+                merged_page.merge_page(pdf_reader[n_files - 1].pages[0])
+                op = Transformation().scale(sx=1, sy=1).translate(tx=0, ty=float(height))
+                for k in range(n_files - 1):
+                    merged_page.add_transformation(op)
+                    merged_page.merge_page(pdf_reader[n_files - 2].pages[0])
+
+                writer.add_page(merged_page)
+                file_name = f'{f_name}.pdf'
+                with open(file_name, 'wb') as f:
+                    writer.write(f)
+
         # end print_spc
 
     def pulprog(self):
@@ -8587,6 +8665,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.axesLineWidth.setValue(self.cf.print_axes_linewidth)
         self.w.axesFontSize.setValue(self.cf.print_ticks_font_size)
         self.w.labelFontSize.setValue(self.cf.print_label_font_size)
+        self.w.printStackedPlot.setChecked(self.cf.print_stacked_plot)
+        self.w.printAutoScale.setChecked(self.cf.print_auto_scale)
         # end update_plot_editor
 
     def update_gui(self):
@@ -8726,6 +8806,18 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.save_config()
         self.update_plot_editor()
         # end update_plot_dark_mode
+
+    def update_print_stacked_plot(self):
+        self.cf.print_stacked_plot = self.w.printStackedPlot.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_print_stacked_plot
+
+    def update_print_auto_scale(self):
+        self.cf.print_auto_scale = self.w.printAutoScale.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_print_auto_scale
 
     # self.w.spectrumLineWidth.valueChanged.connect(self.update_spectrum_line_width)
     def update_spectrum_line_width(self):

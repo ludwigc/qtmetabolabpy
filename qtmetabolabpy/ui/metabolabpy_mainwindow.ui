@@ -202,7 +202,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>11</number>
       </property>
       <widget class="QWidget" name="spcTab">
        <attribute name="title">
@@ -6676,18 +6676,40 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_36">
         <item row="0" column="0" colspan="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_60">
+         <layout class="QHBoxLayout" name="horizontalLayout_61">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_27">
+           <layout class="QVBoxLayout" name="verticalLayout_28">
             <item>
-             <widget class="QLabel" name="label_116">
-              <property name="text">
-               <string>Plot Axes (1D only)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_60">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_27">
+                <item>
+                 <widget class="QCheckBox" name="printStackedPlot">
+                  <property name="text">
+                   <string>Stacked Plot</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="printAutoScale">
+                  <property name="text">
+                   <string>Auto Scale</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_116">
+                <property name="text">
+                 <string>Plot Axes (1D only)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <spacer name="verticalSpacer_14">
