@@ -1861,10 +1861,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end plw
 
-    def print_spc(self, file_name=False):
-        if self.w.nmrSpectrum.currentIndex() != 1:
-            self.show_nmr_spectrum()
-
+    def print_spc(self, file_name=-1):
         if not file_name:
             file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
 
@@ -2833,8 +2830,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
             scr_col2 = QColor.fromRgbF(0.0, 0.0, 0.6, 1.0)
             adm_col = QColor.fromRgbF(0.4, 0.4, 0.4, 1.0)
 
-        zoom_checked = self.w.keepZoom.isChecked()
-        self.w.keepZoom.setChecked(False)
         code_out = io.StringIO()
         code_err = io.StringIO()
         sys.stdout = code_out
@@ -2890,9 +2885,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.setBox.setValue(self.nd.s + 1)
         self.w.setBox.valueChanged.connect(lambda: self.change_data_set_exp())
         self.w.expBox.valueChanged.connect(lambda: self.change_data_set_exp())
-        if (zoom_checked == True):
-            self.w.keepZoom.setChecked(True)
-
         self.set_autobaseline()
         # end exec_script
 
