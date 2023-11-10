@@ -612,6 +612,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.plotDarkMode.clicked.connect(self.update_plot_dark_mode)
         self.w.printStackedPlot.clicked.connect(self.update_print_stacked_plot)
         self.w.printAutoScale.clicked.connect(self.update_print_auto_scale)
+        self.w.printRepeatAxes.clicked.connect(self.update_print_repeat_axes)
         self.w.spectrumLineWidth.valueChanged.connect(self.update_spectrum_line_width)
         self.w.axesLineWidth.valueChanged.connect(self.update_axes_line_width)
         self.w.axesFontSize.valueChanged.connect(self.update_axes_font_size)
@@ -1862,6 +1863,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end plw
 
     def print_spc(self, file_name=-1):
+        prg_mode = self.cf.mode
         if not file_name:
             file_name = QFileDialog.getSaveFileName(None, "Save Spectrum Plot", "", "*.pdf", "*.pdf")[0]
 
@@ -1876,8 +1878,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.nd.init_print_colours()
             if self.w.nmrSpectrum.currentIndex() == 1:
                 cv = []
-                cv.append(self.w.hsqcPeak.canvas)
                 cv.append(self.w.hsqcMultiplet.canvas)
+                cv.append(self.w.hsqcPeak.canvas)
             else:
                 self.show_nmr_spectrum()
                 cv = []
@@ -1933,11 +1935,23 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
 
             cv[0].draw()
+            if len(cv) > 1:
+                cv[1].draw()
+
             matplotlib.pyplot.rc('axes', labelsize=self.nd.cf.print_label_font_size)
             matplotlib.pyplot.rc('xtick', labelsize=self.nd.cf.print_ticks_font_size)
             matplotlib.pyplot.rc('ytick', labelsize=self.nd.cf.print_ticks_font_size)
             if len(cv) == 1:
                 self.plot_spc(linewidth=self.nd.cf.print_spc_linewidth)
+            else:
+                if self.cf.print_light_mode:
+                    self.cf.mode = 'light'
+                else:
+                    self.cf.mode = 'dark'
+
+                cur_peak = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak
+                self.plot_metabolite_peak(cur_peak)
+                self.cf.mode = prg_mode
 
             bg = self.nd.print_background_colour
             fg = self.nd.print_foreground_colour
@@ -1951,11 +1965,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.spines['left'].set_color(fg)
             cv[0].axes.spines['right'].set_color(fg)
             cv[0].axes.spines['top'].set_color(fg)
+            if len(cv) > 1:
+                cv[1].figure.set_facecolor(bg)
+                cv[1].axes.set_facecolor(bg)
+                cv[1].axes.xaxis.label.set_color(fg)
+                cv[1].axes.yaxis.label.set_color(fg)
+                cv[1].axes.tick_params(axis='x', colors=fg)
+                cv[1].axes.tick_params(axis='y', colors=fg)
+                cv[1].axes.spines['bottom'].set_color(fg)
+                cv[1].axes.spines['left'].set_color(fg)
+                cv[1].axes.spines['right'].set_color(fg)
+                cv[1].axes.spines['top'].set_color(fg)
+
             ylim = cv[0].axes.get_ylim()
             xlim = cv[0].axes.get_xlim()
-            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1 or len(cv) > 1:
                 if self.nd.cf.print_left_axis == False:
                     cv[0].axes.set_yticks([])
+                    cv[0].axes.set_ylabel('')
 
                 if self.nd.cf.print_bottom_axis == False:
                     cv[0].axes.set_xticks([])
@@ -1976,6 +2003,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.tick_params(width=self.nd.cf.print_axes_linewidth)
             cv[0].axes.set_ylim(ylim)
             cv[0].axes.set_xlim(xlim)
+            if len(cv) > 1:
+                cv[1].draw()
+                cv[1].axes.spines['bottom'].set_linewidth(self.nd.cf.print_axes_linewidth)
+                cv[1].axes.spines['left'].set_linewidth(self.nd.cf.print_axes_linewidth)
+                cv[1].axes.spines['right'].set_linewidth(self.nd.cf.print_axes_linewidth)
+                cv[1].axes.spines['top'].set_linewidth(self.nd.cf.print_axes_linewidth)
+                cv[1].axes.tick_params(width=self.nd.cf.print_axes_linewidth)
+
             if self.w.nmrSpectrum.currentIndex() == 0:
                 orig_e = self.nd.e
                 for k in range(len(self.nd.nmrdat[self.nd.s])):
@@ -2001,14 +2036,22 @@ class QtMetaboLabPy(object):  # pragma: no cover
                         cv[0].axes.spines['left'].set_color(fg)
                         cv[0].axes.spines['right'].set_color(fg)
                         cv[0].axes.spines['top'].set_color(fg)
-                        cv[0].axes.set_yticks([])
+                        if self.nd.cf.print_left_axis == False:
+                            cv[0].axes.set_yticks([])
+                            cv[0].axes.set_ylabel('')
+
                         if kk > 0:
-                            cv[0].axes.set_xticks([])
-                            cv[0].axes.set_xlabel('')
-                            cv[0].axes.spines['left'].set_visible(False)
-                            cv[0].axes.spines['top'].set_visible(False)
-                            cv[0].axes.spines['right'].set_visible(False)
-                            cv[0].axes.spines['bottom'].set_visible(False)
+                            if not self.cf.print_stacked_plot_repeat_axes:
+                                cv[0].axes.set_xticks([])
+                                cv[0].axes.set_xlabel('')
+                                cv[0].axes.spines['left'].set_visible(False)
+                                cv[0].axes.spines['top'].set_visible(False)
+                                cv[0].axes.spines['right'].set_visible(False)
+                                cv[0].axes.spines['bottom'].set_visible(False)
+
+                            if not self.cf.print_stacked_plot_repeat_axes and not self.cf.print_left_axis:
+                                cv[0].axes.set_yticks([])
+                                cv[0].axes.set_ylabel('')
 
                         cv[0].draw()
                         cv[0].axes.set_ylim(ylim)
@@ -2029,23 +2072,26 @@ class QtMetaboLabPy(object):  # pragma: no cover
             elif self.w.nmrSpectrum.currentIndex() == 1:
                 f_name = file_name[:file_name.index('.pdf')]
                 file_name = f_name + '_multiplet.pdf'
-                cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
-                file_name = f_name + '_peak.pdf'
                 cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
+                file_name = f_name + '_peak.pdf'
+                cv[1].figure.subplots_adjust(bottom=0.2, left=0.2)
+                cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
+                cv[1].figure.subplots_adjust(bottom=0.1, left=0.125)
 
+            self.cf.mode = prg_mode
             if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 self.load_dark_mode()
             else:
                 self.load_light_mode()
 
             if self.nd.cf.print_standard_colours:
-                if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
-                    for k in range(len(self.nd.nmrdat)):
-                        for l in range(len(self.nd.nmrdat[k])):
-                            self.nd.nmrdat[k][l].display.pos_col_rgb = orig_pos_col_rgb[k][l]
-                            self.nd.nmrdat[k][l].display.pos_col = orig_pos_col[k][l]
-                            self.nd.nmrdat[k][l].display.neg_col_rgb = orig_neg_col_rgb[k][l]
-                            self.nd.nmrdat[k][l].display.neg_col = orig_neg_col[k][l]
+                #if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
+                for k in range(len(self.nd.nmrdat)):
+                    for l in range(len(self.nd.nmrdat[k])):
+                        self.nd.nmrdat[k][l].display.pos_col_rgb = orig_pos_col_rgb[k][l]
+                        self.nd.nmrdat[k][l].display.pos_col = orig_pos_col[k][l]
+                        self.nd.nmrdat[k][l].display.neg_col_rgb = orig_neg_col_rgb[k][l]
+                        self.nd.nmrdat[k][l].display.neg_col = orig_neg_col[k][l]
 
             cv[0].axes.set_yticks(yticks)
             cv[0].axes.set_ylim(ylim)
@@ -2064,6 +2110,18 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.spines['left'].set_linewidth(ax_lw)
             cv[0].axes.spines['right'].set_linewidth(ax_lw)
             cv[0].axes.spines['top'].set_linewidth(ax_lw)
+            if len(cv) > 1:
+                cv[1].figure.set_facecolor(bg)
+                cv[1].axes.set_facecolor(bg)
+                cv[1].axes.xaxis.label.set_color(fg)
+                cv[1].axes.yaxis.label.set_color(fg)
+                cv[1].axes.tick_params(axis='x', colors=fg)
+                cv[1].axes.tick_params(axis='y', colors=fg)
+                cv[1].axes.spines['bottom'].set_linewidth(ax_lw)
+                cv[1].axes.spines['left'].set_linewidth(ax_lw)
+                cv[1].axes.spines['right'].set_linewidth(ax_lw)
+                cv[1].axes.spines['top'].set_linewidth(ax_lw)
+
             matplotlib.pyplot.rc('axes', labelsize=ax_ls)
             matplotlib.pyplot.rc('xtick', labelsize=ax_fs)
             matplotlib.pyplot.rc('ytick', labelsize=ax_fs)
@@ -2072,16 +2130,22 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.spines['top'].set_visible(True)
             cv[0].axes.spines['right'].set_visible(True)
             cv[0].axes.spines['left'].set_visible(True)
-            self.plot_spc()
+            if self.w.nmrSpectrum.currentIndex() == 0:
+                self.plot_spc()
+            else:
+                self.plot_metabolite_peak(cur_peak)
+
             if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1 and self.cf.print_stacked_plot and len(disp_spc) > 1:
                 writer = PdfWriter()
                 pdf_file = []
                 pdf_reader = []
+                f1 = []
+                file_name1 = []
                 for k in range(len(disp_spc)):
-                    file_name = f_name + f'_{k}.pdf'
-                    pdf_file.append(open(file_name, 'rb'))
+                    file_name1.append(f_name + f'_{k}.pdf')
+                    f1.append(open(file_name1[k], 'rb'))
+                    pdf_file.append(f1[k])
                     pdf_reader.append(PdfReader(pdf_file[k]))
-                    os.remove(file_name)
 
                 n_files = len(pdf_file)
                 width = pdf_reader[0].pages[0].mediabox.width
@@ -2097,6 +2161,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 file_name = f'{f_name}.pdf'
                 with open(file_name, 'wb') as f:
                     writer.write(f)
+
+                for k in range(len(f1)):
+                    f1[k].close()
+                    os.remove(file_name1[k])
 
         # end print_spc
 
@@ -5355,6 +5423,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 fg = (0 / 255, 0 / 255, 0 / 255)
 
             self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
+            ylabel = d.y_label
+            self.w.MplWidget.canvas.axes.set_ylabel(ylabel, color=fg)
             self.w.MplWidget.canvas.axes.invert_xaxis()
             self.w.MplWidget.canvas.axes.set_xlim(xlim)
             self.w.MplWidget.canvas.axes.set_ylim(ylim)
@@ -5408,6 +5478,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             fg = (0 / 255, 0 / 255, 0 / 255)
 
         self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
+        self.w.MplWidget.canvas.axes.set_ylabel(ylabel, color=fg)
         self.w.MplWidget.canvas.axes.invert_xaxis()
         self.w.MplWidget.canvas.axes.set_xlim(xlim)
         self.w.MplWidget.canvas.axes.set_ylim(ylim)
@@ -5786,6 +5857,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
                         self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[s][e].ppm1, baseline, color="lightgreen", linewidth=linewidth)
 
             self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
+            ylabel = d.y_label
+            self.w.MplWidget.canvas.axes.set_ylabel(ylabel, color=fg)
             self.w.MplWidget.canvas.axes.autoscale()
             self.w.MplWidget.canvas.axes.invert_xaxis()
             self.w.MplWidget.canvas.axes.tick_params(axis='y', colors=fg)
@@ -8660,6 +8733,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.labelFontSize.setValue(self.cf.print_label_font_size)
         self.w.printStackedPlot.setChecked(self.cf.print_stacked_plot)
         self.w.printAutoScale.setChecked(self.cf.print_auto_scale)
+        self.w.printRepeatAxes.setChecked(self.cf.print_stacked_plot_repeat_axes)
         # end update_plot_editor
 
     def update_gui(self):
@@ -8811,6 +8885,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.save_config()
         self.update_plot_editor()
         # end update_print_auto_scale
+
+    def update_print_repeat_axes(self):
+        self.cf.print_stacked_plot_repeat_axes = self.w.printRepeatAxes.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_print_repeat_axes
 
     # self.w.spectrumLineWidth.valueChanged.connect(self.update_spectrum_line_width)
     def update_spectrum_line_width(self):
