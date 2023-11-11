@@ -617,6 +617,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.axesLineWidth.valueChanged.connect(self.update_axes_line_width)
         self.w.axesFontSize.valueChanged.connect(self.update_axes_font_size)
         self.w.labelFontSize.valueChanged.connect(self.update_label_font_size)
+        self.w.aspectRatioNMR.returnPressed.connect(self.update_aspect_ratio_nmr)
+        self.w.aspectRatioHSQCPeak.returnPressed.connect(self.update_aspect_ratio_hsqc_peak)
+        self.w.aspectRatioNMRMultiplet.returnPressed.connect(self.update_aspect_ratio_nmr_multiplet)
         #self.w.autoPlot.setChecked(self.cf.auto_plot)
         self.w.keepZoom.setChecked(self.cf.keep_zoom)
         self.w.fontSize.setValue(self.cf.font_size)
@@ -2060,23 +2063,42 @@ class QtMetaboLabPy(object):  # pragma: no cover
                             self.vertical_auto_scale()
 
                         f_name = file_name[:file_name.index('.pdf')]
+                        figure_width = cv[0].figure.get_figwidth()
+                        if self.cf.print_nmr_spectrum_aspect_ratio != 'auto':
+                            cv[0].figure.set_figwidth(self.cf.print_nmr_spectrum_aspect_ratio * cv[0].figure.get_figheight())
+
                         cv[0].figure.savefig(f_name + f'_{kk}.pdf', transparent=not self.nd.cf.print_background)
+                        cv[0].figure.set_figwidth(figure_width)
 
                     self.nd.e = orig_e
                 else:
-                    cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
+                    figure_width = cv[0].figure.get_figwidth()
+                    if self.cf.print_nmr_spectrum_aspect_ratio != 'auto':
+                        cv[0].figure.set_figwidth(self.cf.print_nmr_spectrum_aspect_ratio * cv[0].figure.get_figheight())
 
+                    cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
+                    cv[0].figure.set_figwidth(figure_width)
                 for kk in range(len(disp_spc)):
                     self.nd.nmrdat[self.nd.s][disp_spc[kk]].display.display_spc = True
 
             elif self.w.nmrSpectrum.currentIndex() == 1:
                 f_name = file_name[:file_name.index('.pdf')]
                 file_name = f_name + '_multiplet.pdf'
+                figure_width = cv[0].figure.get_figwidth()
+                if self.cf.print_hsqc_multiplet_aspect_ratio != 'auto':
+                    cv[0].figure.set_figwidth(self.cf.print_hsqc_multiplet_aspect_ratio * cv[0].figure.get_figheight())
+
                 cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
+                cv[0].figure.set_figwidth(figure_width)
                 file_name = f_name + '_peak.pdf'
                 cv[1].figure.subplots_adjust(bottom=0.2, left=0.2)
+                figure_width = cv[1].figure.get_figwidth()
+                if self.cf.print_hsqc_peak_aspect_ratio != 'auto':
+                    cv[1].figure.set_figwidth(self.cf.print_hsqc_peak_aspect_ratio * cv[1].figure.get_figheight())
+
                 cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                 cv[1].figure.subplots_adjust(bottom=0.1, left=0.125)
+                cv[1].figure.set_figwidth(figure_width)
 
             self.cf.mode = prg_mode
             if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -8734,6 +8756,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.printStackedPlot.setChecked(self.cf.print_stacked_plot)
         self.w.printAutoScale.setChecked(self.cf.print_auto_scale)
         self.w.printRepeatAxes.setChecked(self.cf.print_stacked_plot_repeat_axes)
+        self.w.aspectRatioNMR.setText(str(self.cf.print_nmr_spectrum_aspect_ratio))
+        self.w.aspectRatioHSQCPeak.setText(str(self.cf.print_hsqc_peak_aspect_ratio))
+        self.w.aspectRatioNMRMultiplet.setText(str(self.cf.print_hsqc_multiplet_aspect_ratio))
         # end update_plot_editor
 
     def update_gui(self):
@@ -8913,7 +8938,51 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.update_plot_editor()
         # end update_axes_font_size
 
-    # self.w.labelFontSize.valueChanged.connect(self.update_label_font_size)
+    def update_aspect_ratio_nmr(self):
+        value = self.w.aspectRatioNMR.text()
+        if value == 'auto':
+            self.cf.print_nmr_spectrum_aspect_ratio = value
+        else:
+            try:
+                value = float(value)
+            except:
+                value = 'auto'
+
+            self.cf.print_nmr_spectrum_aspect_ratio = value
+
+        self.update_plot_editor()
+        # end update_aspect_ratio_nmr
+
+    def update_aspect_ratio_hsqc_peak(self):
+        value = self.w.aspectRatioHSQCPeak.text()
+        if value == 'auto':
+            self.cf.print_hsqc_peak_aspect_ratio = value
+        else:
+            try:
+                value = float(value)
+            except:
+                value = 'auto'
+
+            self.cf.print_hsqc_peak_aspect_ratio = value
+
+        self.update_plot_editor()
+    # end update_aspect_ratio_hsqc_peak
+
+    def update_aspect_ratio_nmr_multiplet(self):
+        value = self.w.aspectRatioNMRMultiplet.text()
+        if value == 'auto':
+            self.cf.print_hsqc_multiplet_aspect_ratio = value
+        else:
+            try:
+                value = float(value)
+            except:
+                value = 'auto'
+
+            self.cf.print_hsqc_multiplet_aspect_ratio = value
+
+        self.update_plot_editor()
+        # end update_aspect_ratio_nmr_multiplet
+
     def update_label_font_size(self):
         self.cf.print_label_font_size = self.w.labelFontSize.value()
         self.cf.save_config()
