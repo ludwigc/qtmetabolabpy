@@ -2064,20 +2064,52 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
                         f_name = file_name[:file_name.index('.pdf')]
                         figure_width = cv[0].figure.get_figwidth()
+                        figure_height = cv[0].figure.get_figheight()
                         if self.cf.print_nmr_spectrum_aspect_ratio != 'auto':
-                            cv[0].figure.set_figwidth(self.cf.print_nmr_spectrum_aspect_ratio * cv[0].figure.get_figheight())
+                            if self.cf.print_nmr_spectrum_aspect_ratio == 'a4_portrait':
+                                fw = 8.27
+                                fh = 11.69 / len(disp_spc)
+                                cv[0].figure.set_figwidth(fw)
+                                cv[0].figure.set_figheight(fh)
+                            elif self.cf.print_nmr_spectrum_aspect_ratio == 'a4_landscape':
+                                fw = 11.69
+                                fh = 8.27 / len(disp_spc)
+                                cv[0].figure.set_figwidth(fw)
+                                cv[0].figure.set_figheight(fh)
+                            else:
+                                cv[0].figure.set_figwidth(self.cf.print_nmr_spectrum_aspect_ratio * cv[0].figure.get_figheight())
+
+                        if self.cf.print_nmr_spectrum_aspect_ratio == 'a4_portrait' or self.cf.print_nmr_spectrum_aspect_ratio == 'a4_landscape':
+                            cv[0].figure.subplots_adjust(bottom=0.5)
+                        else:
+                            cv[0].figure.subplots_adjust(bottom=0.2)
 
                         cv[0].figure.savefig(f_name + f'_{kk}.pdf', transparent=not self.nd.cf.print_background)
                         cv[0].figure.set_figwidth(figure_width)
+                        cv[0].figure.set_figheight(figure_height)
+                        cv[0].figure.subplots_adjust(bottom=0.1)
 
                     self.nd.e = orig_e
                 else:
                     figure_width = cv[0].figure.get_figwidth()
+                    figure_height = cv[0].figure.get_figheight()
                     if self.cf.print_nmr_spectrum_aspect_ratio != 'auto':
-                        cv[0].figure.set_figwidth(self.cf.print_nmr_spectrum_aspect_ratio * cv[0].figure.get_figheight())
+                        if self.cf.print_nmr_spectrum_aspect_ratio == 'a4_portrait':
+                            fw = 8.27
+                            fh = 11.69
+                            cv[0].figure.set_figwidth(fw)
+                            cv[0].figure.set_figheight(fh)
+                        elif self.cf.print_nmr_spectrum_aspect_ratio == 'a4_landscape':
+                            fw = 11.69
+                            fh = 8.27
+                            cv[0].figure.set_figwidth(fw)
+                            cv[0].figure.set_figheight(fh)
+                        else:
+                            cv[0].figure.set_figwidth(self.cf.print_nmr_spectrum_aspect_ratio * cv[0].figure.get_figheight())
 
                     cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                     cv[0].figure.set_figwidth(figure_width)
+                    cv[0].figure.set_figheight(figure_height)
                 for kk in range(len(disp_spc)):
                     self.nd.nmrdat[self.nd.s][disp_spc[kk]].display.display_spc = True
 
@@ -2085,20 +2117,46 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 f_name = file_name[:file_name.index('.pdf')]
                 file_name = f_name + '_multiplet.pdf'
                 figure_width = cv[0].figure.get_figwidth()
+                figure_height = cv[0].figure.get_figheight()
                 if self.cf.print_hsqc_multiplet_aspect_ratio != 'auto':
-                    cv[0].figure.set_figwidth(self.cf.print_hsqc_multiplet_aspect_ratio * cv[0].figure.get_figheight())
+                    if self.cf.print_hsqc_multiplet_aspect_ratio == 'a4_portrait':
+                        fw = 8.27
+                        fh = 11.69
+                        cv[0].figure.set_figwidth(fw)
+                        cv[0].figure.set_figheight(fh)
+                    elif self.cf.print_hsqc_multiplet_aspect_ratio == 'a4_landscape':
+                        fw = 11.69
+                        fh = 8.27
+                        cv[0].figure.set_figwidth(fw)
+                        cv[0].figure.set_figheight(fh)
+                    else:
+                        cv[0].figure.set_figwidth(self.cf.print_hsqc_multiplet_aspect_ratio * cv[0].figure.get_figheight())
 
                 cv[0].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                 cv[0].figure.set_figwidth(figure_width)
+                cv[0].figure.set_figheight(figure_height)
                 file_name = f_name + '_peak.pdf'
                 cv[1].figure.subplots_adjust(bottom=0.2, left=0.2)
                 figure_width = cv[1].figure.get_figwidth()
+                figure_height = cv[1].figure.get_figheight()
                 if self.cf.print_hsqc_peak_aspect_ratio != 'auto':
-                    cv[1].figure.set_figwidth(self.cf.print_hsqc_peak_aspect_ratio * cv[1].figure.get_figheight())
+                    if self.cf.print_hsqc_peak_aspect_ratio == 'a4_portrait':
+                        fw = 8.27
+                        fh = 11.69
+                        cv[1].figure.set_figwidth(fw)
+                        cv[1].figure.set_figheight(fh)
+                    elif self.cf.print_hsqc_peak_aspect_ratio == 'a4_landscape':
+                        fw = 11.69
+                        fh = 8.27
+                        cv[1].figure.set_figwidth(fw)
+                        cv[1].figure.set_figheight(fh)
+                    else:
+                        cv[1].figure.set_figwidth(self.cf.print_hsqc_peak_aspect_ratio * cv[1].figure.get_figheight())
 
                 cv[1].figure.savefig(file_name, transparent=not self.nd.cf.print_background)
                 cv[1].figure.subplots_adjust(bottom=0.1, left=0.125)
                 cv[1].figure.set_figwidth(figure_width)
+                cv[1].figure.set_figheight(figure_height)
 
             self.cf.mode = prg_mode
             if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -8940,7 +8998,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def update_aspect_ratio_nmr(self):
         value = self.w.aspectRatioNMR.text()
-        if value == 'auto':
+        if value == 'auto' or value == 'a4_landscape' or value == 'a4_portrait':
             self.cf.print_nmr_spectrum_aspect_ratio = value
         else:
             try:
@@ -8955,7 +9013,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def update_aspect_ratio_hsqc_peak(self):
         value = self.w.aspectRatioHSQCPeak.text()
-        if value == 'auto':
+        if value == 'auto' or value == 'a4_landscape' or value == 'a4_portrait':
             self.cf.print_hsqc_peak_aspect_ratio = value
         else:
             try:
@@ -8970,7 +9028,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def update_aspect_ratio_nmr_multiplet(self):
         value = self.w.aspectRatioNMRMultiplet.text()
-        if value == 'auto':
+        if value == 'auto' or value == 'a4_landscape' or value == 'a4_portrait':
             self.cf.print_hsqc_multiplet_aspect_ratio = value
         else:
             try:
