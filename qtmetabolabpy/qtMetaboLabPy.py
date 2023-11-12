@@ -610,6 +610,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.useDatasetPlotColours.clicked.connect(self.update_use_dataset_plot_colours)
         self.w.plotLightMode.clicked.connect(self.update_plot_light_mode)
         self.w.plotDarkMode.clicked.connect(self.update_plot_dark_mode)
+        self.w.printSpectrumLabel.clicked.connect(self.update_print_spectrum_label)
         self.w.printStackedPlot.clicked.connect(self.update_print_stacked_plot)
         self.w.printAutoScale.clicked.connect(self.update_print_auto_scale)
         self.w.printRepeatAxes.clicked.connect(self.update_print_repeat_axes)
@@ -2051,8 +2052,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                 cv[0].axes.spines['top'].set_visible(False)
                                 cv[0].axes.spines['right'].set_visible(False)
                                 cv[0].axes.spines['bottom'].set_visible(False)
-
-                            if not self.cf.print_stacked_plot_repeat_axes and not self.cf.print_left_axis:
                                 cv[0].axes.set_yticks([])
                                 cv[0].axes.set_ylabel('')
 
@@ -2079,12 +2078,62 @@ class QtMetaboLabPy(object):  # pragma: no cover
                             else:
                                 cv[0].figure.set_figwidth(self.cf.print_nmr_spectrum_aspect_ratio * cv[0].figure.get_figheight())
 
-                        if self.cf.print_nmr_spectrum_aspect_ratio == 'a4_portrait' or self.cf.print_nmr_spectrum_aspect_ratio == 'a4_landscape':
-                            cv[0].figure.subplots_adjust(bottom=0.5)
-                        else:
-                            cv[0].figure.subplots_adjust(bottom=0.2)
+                        if self.cf.print_nmr_spectrum_aspect_ratio == 'a4_portrait':
+                            bottomval = 0.15 + 0.15 * len(disp_spc) / 7.0
+                            if kk > 0:
+                                if self.cf.print_stacked_plot_repeat_axes:
+                                    cv[0].figure.subplots_adjust(bottom=bottomval)
+                                else:
+                                    cv[0].figure.subplots_adjust(bottom=0.0)
+                            else:
+                                if self.cf.print_bottom_axis:
+                                    cv[0].figure.subplots_adjust(bottom=bottomval)
+                                else:
+                                    cv[0].figure.subplots_adjust(bottom=0.0)
 
-                        cv[0].figure.savefig(f_name + f'_{kk}.pdf', transparent=not self.nd.cf.print_background)
+                        elif self.cf.print_nmr_spectrum_aspect_ratio == 'a4_landscape':
+                            bottomval = 0.1 + 0.3 * len(disp_spc) / 7.0
+                            if kk > 0:
+                                if self.cf.print_stacked_plot_repeat_axes:
+                                    cv[0].figure.subplots_adjust(bottom=bottomval)
+                                else:
+                                    cv[0].figure.subplots_adjust(bottom=0.0)
+                            else:
+                                if self.cf.print_bottom_axis:
+                                    cv[0].figure.subplots_adjust(bottom=bottomval)
+                                else:
+                                    cv[0].figure.subplots_adjust(bottom=0.0)
+
+                        else:
+                            if self.cf.print_bottom_axis:
+                                cv[0].figure.subplots_adjust(bottom=0.2)
+                            else:
+                                cv[0].figure.subplots_adjust(bottom=0.0)
+
+                        ff = []
+                        if self.cf.print_label:
+                            label = self.nd.nmrdat[self.nd.s][self.nd.e].title
+                            idx1 = label.find('spcLabel:')
+                            if idx1 > -1:
+                                label = label[idx1:]
+                                idx2 = label.find('\n')
+                                if idx2 > -1:
+                                    label = label[:idx2]
+
+                                idx3 = label.find(':')
+                                label = label[idx3 + 1:].strip()
+                                ff = cv[0].axes.legend([label], fontsize=self.cf.print_label_font_size, frameon=False, shadow=False, loc='upper right')
+                                hh = ff.legendHandles[0]
+                                hh.set_linestyle("")
+                                cv[0].draw()
+                                cv[0].figure.savefig(f_name + f'_{kk}.pdf', transparent=not self.nd.cf.print_background)
+                                ff.remove()
+                            else:
+                                cv[0].figure.savefig(f_name + f'_{kk}.pdf', transparent=not self.nd.cf.print_background)
+                        else:
+                            cv[0].figure.savefig(f_name + f'_{kk}.pdf', transparent=not self.nd.cf.print_background)
+
+                        cv[0].draw()
                         cv[0].figure.set_figwidth(figure_width)
                         cv[0].figure.set_figheight(figure_height)
                         cv[0].figure.subplots_adjust(bottom=0.1)
@@ -8817,6 +8866,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.aspectRatioNMR.setText(str(self.cf.print_nmr_spectrum_aspect_ratio))
         self.w.aspectRatioHSQCPeak.setText(str(self.cf.print_hsqc_peak_aspect_ratio))
         self.w.aspectRatioNMRMultiplet.setText(str(self.cf.print_hsqc_multiplet_aspect_ratio))
+        self.w.printSpectrumLabel.setChecked(self.cf.print_label)
+        self.nd.cf = self.cf
         # end update_plot_editor
 
     def update_gui(self):
@@ -8963,6 +9014,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.update_plot_editor()
         # end update_print_stacked_plot
 
+    def update_print_spectrum_label(self):
+        self.cf.print_label = self.w.printSpectrumLabel.isChecked()
+        self.cf.save_config()
+        self.update_plot_editor()
+        # end update_print_stacked_plot
+
     def update_print_auto_scale(self):
         self.cf.print_auto_scale = self.w.printAutoScale.isChecked()
         self.cf.save_config()
@@ -8970,6 +9027,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end update_print_auto_scale
 
     def update_print_repeat_axes(self):
+        print("abcde")
         self.cf.print_stacked_plot_repeat_axes = self.w.printRepeatAxes.isChecked()
         self.cf.save_config()
         self.update_plot_editor()
@@ -9008,6 +9066,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             self.cf.print_nmr_spectrum_aspect_ratio = value
 
+        self.cf.save_config()
         self.update_plot_editor()
         # end update_aspect_ratio_nmr
 
@@ -9023,6 +9082,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             self.cf.print_hsqc_peak_aspect_ratio = value
 
+        self.cf.save_config()
         self.update_plot_editor()
     # end update_aspect_ratio_hsqc_peak
 
@@ -9038,6 +9098,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             self.cf.print_hsqc_multiplet_aspect_ratio = value
 
+        self.cf.save_config()
         self.update_plot_editor()
         # end update_aspect_ratio_nmr_multiplet
 
