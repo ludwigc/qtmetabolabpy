@@ -5607,7 +5607,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             fg = (0 / 255, 0 / 255, 0 / 255)
 
         self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
-        self.w.MplWidget.canvas.axes.set_ylabel(ylabel, color=fg)
+        #cd cd self.w.MplWidget.canvas.axes.set_ylabel(ylabel, color=fg)
         self.w.MplWidget.canvas.axes.invert_xaxis()
         self.w.MplWidget.canvas.axes.set_xlim(xlim)
         self.w.MplWidget.canvas.axes.set_ylim(ylim)
