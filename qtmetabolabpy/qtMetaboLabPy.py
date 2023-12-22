@@ -1372,9 +1372,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
                 self.nd.e = self.w.expBox.value() - 1
                 if len(self.nd.nmrdat) > (self.nd.s + 1):
-                    if self.nd.nmrdat[self.nd.s][old_exp].display.display_spc != True and self.nd.nmrdat[self.nd.s+1][old_exp].display.display_spc == True:
-                        self.nd.nmrdat[self.nd.s+1][old_exp].display.display_spc = False
-                        self.nd.nmrdat[self.nd.s+1][self.nd.e].display.display_spc = True
+                    if len(self.nd.nmrdat[self.nd.s + 1]) > self.nd.e and len(self.nd.nmrdat[self.nd.s + 1]) > old_exp:
+                        if self.nd.nmrdat[self.nd.s][old_exp].display.display_spc != True and self.nd.nmrdat[self.nd.s+1][old_exp].display.display_spc == True:
+                            self.nd.nmrdat[self.nd.s+1][old_exp].display.display_spc = False
+                            self.nd.nmrdat[self.nd.s+1][self.nd.e].display.display_spc = True
                 keep_zoom = self.w.keepZoom.isChecked()
                 if not ((old_set == self.nd.s) and (old_exp == self.nd.e)):
                     if (self.nd.nmrdat[old_set][old_exp].dim != self.nd.nmrdat[self.nd.s][self.nd.e].dim):
