@@ -1797,9 +1797,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         subprocess.os.system('pip uninstall pylnk3 --yes')
         # end create_icon_win
 
-    def create_titles(self, excel_name='', dataset_label='', pos_label='', rack_label='', replace_title=False):
+    def create_titles(self, excel_name='', dataset_label='', pos_label='', rack_label='', worksheet='', replace_title=False):
         if dataset_label == '' or pos_label == '' or rack_label == '':
-            print(f'Usage: create_titles(dataset_label="dataset_label", pos_label="pos_label", rack_label="rack_label", replace_title=False)')
+            print(f'Usage: create_titles(dataset_label="dataset_label", pos_label="pos_label", rack_label="rack_label", worksheet="worksheet_name", replace_title=False)')
             return
 
         if excel_name == '':
@@ -1813,7 +1813,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
             if not os.path.isfile(excel_name):
                 return
 
-        xls = pd.read_excel(excel_name).fillna('')
+        if len(worksheet) == 0:
+            xls = pd.read_excel(excel_name).fillna('')
+        else:
+            xls = pd.read_excel(excel_name, worksheet).fillna('')
+
         something_not_found = False
         if len(np.where(xls.columns.str.contains(dataset_label))[0]) == 0:
             something_not_found = True
