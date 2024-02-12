@@ -4738,25 +4738,30 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 if len(self.w.hsqcSpinSys.item(k, 3).text()) > 0:
                     perc_sum += float(self.w.hsqcSpinSys.item(k, 3).text())
 
-        for k in range(len(spin_sys['c13_idx'])):
-            # if self.w.hsqcSpinSys.item(k,3) != None:
-            try:
-                if len(self.w.hsqcSpinSys.item(k, 3).text()) > 0:
-                    perc = round(float(self.w.hsqcSpinSys.item(k, 3).text()) * 100.0 / perc_sum, 3)
-                else:
+        if self.w.spinSysAutoUpdate.isChecked():
+            for k in range(len(spin_sys['c13_idx'])):
+                # if self.w.hsqcSpinSys.item(k,3) != None:
+                try:
+                    if len(self.w.hsqcSpinSys.item(k, 3).text()) > 0:
+                        perc = round(float(self.w.hsqcSpinSys.item(k, 3).text()) * 100.0 / perc_sum, 3)
+                    else:
+                        if k > 0:
+                            perc = 0.0
+                        else:
+                            perc = 100.0
+
+                # else:
+                except:
                     if k > 0:
                         perc = 0.0
                     else:
                         perc = 100.0
 
-            # else:
-            except:
-                if k > 0:
-                    perc = 0.0
-                else:
-                    perc = 100.0
-
-            spin_sys['contribution'][k] = perc
+                spin_sys['contribution'][k] = perc
+        else:
+            for k in range(len(spin_sys['c13_idx'])):
+                perc = float(self.w.hsqcSpinSys.item(k, 3).text())
+                spin_sys['contribution'][k] = perc
 
         self.set_hsqc_spin_sys()
         if self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.autosim:
