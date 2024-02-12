@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1914</width>
-    <height>1002</height>
+    <height>1004</height>
    </rect>
   </property>
   <property name="font">
@@ -3491,6 +3491,158 @@
                 <string>Multiplet Analysis</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_32">
+                <item row="10" column="0" colspan="5">
+                 <widget class="QCheckBox" name="maFitContributions">
+                  <property name="text">
+                   <string>Fit multiplet components  [%]</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0" colspan="2">
+                 <widget class="QCheckBox" name="maAutoSim">
+                  <property name="text">
+                   <string>Autosim</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="9" column="0" colspan="2">
+                 <widget class="QCheckBox" name="maFitChemShifts">
+                  <property name="text">
+                   <string>Fit chemical shifts</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0" colspan="2">
+                 <widget class="QCheckBox" name="maApplyToAll">
+                  <property name="text">
+                   <string>Apply to all</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="11" column="6">
+                 <widget class="QPushButton" name="maFitButton">
+                  <property name="text">
+                   <string>Fit</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="11" column="0" colspan="4">
+                 <widget class="QCheckBox" name="doNotFitZeroPercentages">
+                  <property name="text">
+                   <string>Do not fit 0% contributions</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="4" colspan="2">
+                 <widget class="QLabel" name="label_84">
+                  <property name="text">
+                   <string>Echo time [ms]:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="4" colspan="3">
+                 <widget class="QLineEdit" name="multipletAnalysisR2">
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="6" rowspan="2">
+                 <widget class="QPushButton" name="maResetButton">
+                  <property name="text">
+                   <string>Reset</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="6">
+                 <widget class="QLineEdit" name="multipletAnalysisEchoTime">
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="3">
+                 <widget class="QLabel" name="label_82">
+                  <property name="text">
+                   <string>Int.:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="4" colspan="3">
+                 <widget class="QLineEdit" name="multipletAnalysisIntensity">
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0" rowspan="2" colspan="7">
+                 <widget class="Line" name="line_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QCheckBox" name="spinSysAutoUpdate">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>105</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Auto update</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QCheckBox" name="maAutoScale">
+                  <property name="text">
+                   <string>Autoscale</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="3">
+                 <widget class="QLabel" name="label_83">
+                  <property name="text">
+                   <string>lw [Hz]:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="7" column="0" rowspan="2" colspan="7">
+                 <widget class="Line" name="line">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
                 <item row="0" column="0" colspan="7">
                  <widget class="QTableWidget" name="hsqcSpinSys">
                   <attribute name="verticalHeaderVisible">
@@ -3518,147 +3670,17 @@
                   </column>
                  </widget>
                 </item>
-                <item row="3" column="0" rowspan="2" colspan="7">
-                 <widget class="Line" name="line_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="6" column="0" rowspan="2" colspan="7">
-                 <widget class="Line" name="line">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="7" column="6" rowspan="2">
-                 <widget class="QPushButton" name="maResetButton">
-                  <property name="text">
-                   <string>Reset</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="8" column="0" colspan="2">
-                 <widget class="QCheckBox" name="maFitChemShifts">
-                  <property name="text">
-                   <string>Fit chemical shifts</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="9" column="0" colspan="5">
-                 <widget class="QCheckBox" name="maFitContributions">
-                  <property name="text">
-                   <string>Fit multiplet components  [%]</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="9" column="6">
+                <item row="10" column="6">
                  <widget class="QPushButton" name="maSimButton">
                   <property name="text">
                    <string>Sim</string>
                   </property>
                  </widget>
                 </item>
-                <item row="10" column="0" colspan="4">
-                 <widget class="QCheckBox" name="doNotFitZeroPercentages">
-                  <property name="text">
-                   <string>Do not fit 0% contributions</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="10" column="6">
-                 <widget class="QPushButton" name="maFitButton">
-                  <property name="text">
-                   <string>Fit</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="10" column="4">
+                <item row="11" column="4">
                  <widget class="QPushButton" name="exportHsqcData">
                   <property name="text">
                    <string>Export all</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="6">
-                 <widget class="QLineEdit" name="multipletAnalysisEchoTime">
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="0" colspan="2">
-                 <widget class="QCheckBox" name="maApplyToAll">
-                  <property name="text">
-                   <string>Apply to all</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="4" colspan="2">
-                 <widget class="QLabel" name="label_84">
-                  <property name="text">
-                   <string>Echo time [ms]:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="4" colspan="3">
-                 <widget class="QLineEdit" name="multipletAnalysisR2">
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="4" colspan="3">
-                 <widget class="QLineEdit" name="multipletAnalysisIntensity">
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="3">
-                 <widget class="QLabel" name="label_82">
-                  <property name="text">
-                   <string>Int.:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="3">
-                 <widget class="QLabel" name="label_83">
-                  <property name="text">
-                   <string>lw [Hz]:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0" colspan="2">
-                 <widget class="QCheckBox" name="maAutoScale">
-                  <property name="text">
-                   <string>Autoscale</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0" colspan="2">
-                 <widget class="QCheckBox" name="maAutoSim">
-                  <property name="text">
-                   <string>Autosim</string>
-                  </property>
-                  <property name="checked">
-                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -7210,7 +7232,7 @@
      <x>0</x>
      <y>0</y>
      <width>1914</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
