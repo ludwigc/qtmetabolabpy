@@ -412,6 +412,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.selectClassButton.clicked.connect(self.select_class_pre_proc)
         self.w.selectClassLE.textChanged.connect(self.select_class_pre_proc)
         self.w.cmdLine.returnPressed.connect(self.exec_cmd)
+        self.w.tmspConc.returnPressed.connect(self.set_tmsp_conc)
+        self.w.internalStandard.returnPressed.connect(self.set_internal_std)
         self.w.noiseThresholdLE.returnPressed.connect(self.set_noise_reg_pre_proc)
         self.w.noiseRegionStartLE.returnPressed.connect(self.set_noise_reg_pre_proc)
         self.w.noiseRegionEndLE.returnPressed.connect(self.set_noise_reg_pre_proc)
@@ -452,7 +454,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.peakClearButton.clicked.connect(self.clear_peak)
         self.w.peakWidget.cellChanged.connect(self.set_add_peak)
         self.w.peakExportButton.clicked.connect(self.export_peak)
-        self.w.intAllDS.stateChanged.connect(self.set_datasets_exps)
+        self.w.quantify.stateChanged.connect(self.set_datasets_exps)
         self.w.intAllExps.stateChanged.connect(self.set_datasets_exps)
         self.w.exportFormatCB.currentIndexChanged.connect(self.set_datasets_exps)
         self.w.hsqcAnalysis.stateChanged.connect(self.set_hsqc_analysis)
@@ -3131,10 +3133,19 @@ class QtMetaboLabPy(object):  # pragma: no cover
             worksheet.write('E1', 'stopPeakPPM')
             worksheet.write('A2', 'Sample #')
             worksheet.write('A3', 'Sample ID')
+            tmsp_idx = -1
+            if self.nd.quantify:
+                for idx in range(len(self.nd.nmrdat[ds[k]][self.nd.e].peak_label)):
+                    if self.nd.nmrdat[ds[k]][self.nd.e].peak_label[idx].upper() == self.nd.internal_std.upper():
+                        tmsp_idx = idx
+
+                if tmsp_idx == -1:
+                    self.nd.quantify = False
+
             for m in range(len(exps)):
                 worksheet.write(abc_string[m + 5] + '1', 'peak_int(exp ' + str(exps[m] + 1) + ')')
                 worksheet.write(abc_string[m + 5] + '2', str(exps[m] + 1))
-                worksheet.write(abc_string[m + 5] + '3', self.nd.nmrdat[k][exps[m]].title)
+                worksheet.write(abc_string[m + 5] + '3', self.nd.nmrdat[ds[k]][exps[m]].title)
 
             for l in range(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak)):
                 worksheet.write('B' + str(l + 4), self.nd.nmrdat[self.nd.s][self.nd.e].peak_label[l])
@@ -3142,12 +3153,30 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 worksheet.write('D' + str(l + 4), self.nd.nmrdat[self.nd.s][self.nd.e].start_peak[l])
                 worksheet.write('E' + str(l + 4), self.nd.nmrdat[self.nd.s][self.nd.e].end_peak[l])
                 for m in range(len(exps)):
-                    worksheet.write(abc_string[m + 5] + str(l + 4), self.nd.nmrdat[k][exps[m]].peak_int[l])
+                    worksheet.write(abc_string[m + 5] + str(l + 4), self.nd.nmrdat[ds[k]][exps[m]].peak_int[l])
+
+            if self.nd.quantify:
+                worksheet.write('B' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.nd.internal_std + ' conc [mM]')
+                worksheet.write('C' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.w.tmspConc.text())
+                for m in range(len(exps)):
+                    worksheet.write(abc_string[m + 5] + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 5), 'conc. [mM]')
+                for l in range(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak)):
+                    worksheet.write('C' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), 'nProt')
+                    worksheet.write('D' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), self.nd.nmrdat[ds[k]][self.nd.e].n_protons[l])
+                    worksheet.write('E' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), self.nd.nmrdat[ds[k]][self.nd.e].peak_label[l])
+                    for m in range(len(exps)):
+                        worksheet.write(abc_string[m + 5] + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l),
+                                        f'=C{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4}'
+                                        f'*D{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + tmsp_idx}'
+                                        f'*{abc_string[m + 5]}{l + 4}'
+                                        f'/(D{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l}'
+                                        f'*{abc_string[m + 5]}{tmsp_idx + 4})')
 
         workbook.close()
         # end export_peak
 
     def fill_peak_numbers(self):
+        self.w.internalStandard.setText(self.nd.internal_std)
         self.nd.peak_fill = True
         s = self.nd.s
         e = self.nd.e
@@ -3155,6 +3184,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         start_peak = self.nd.nmrdat[s][e].start_peak
         end_peak = self.nd.nmrdat[s][e].end_peak
         peak_label = self.nd.nmrdat[s][e].peak_label
+        n_protons = self.nd.nmrdat[s][e].n_protons
         self.w.peakWidget.setRowCount(n_peaks)
         for k in range(n_peaks):
             # peakNumber = QTableWidgetItem(str(k))
@@ -3164,12 +3194,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
             start_peak_tw = QTableWidgetItem(str(start_peak[k]))
             end_peak_tw = QTableWidgetItem(str(end_peak[k]))
             peak_label_tw = QTableWidgetItem(str(peak_label[k]))
+            n_protons_tw =  QTableWidgetItem(str(n_protons[k]))
             start_peak_tw.setTextAlignment(QtCore.Qt.AlignHCenter)
             end_peak_tw.setTextAlignment(QtCore.Qt.AlignHCenter)
             peak_label_tw.setTextAlignment(QtCore.Qt.AlignHCenter)
+            n_protons_tw.setTextAlignment(QtCore.Qt.AlignHCenter)
             self.w.peakWidget.setItem(k, 0, start_peak_tw)
             self.w.peakWidget.setItem(k, 1, end_peak_tw)
             self.w.peakWidget.setItem(k, 2, peak_label_tw)
+            self.w.peakWidget.setItem(k, 3, n_protons_tw)
 
         self.nd.peak_fill = False
         # end fill_peak_numbers
@@ -4534,7 +4567,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.peakClearButton.setHidden(True)
         self.w.peakExportButton.setHidden(True)
         self.w.intAllExps.setHidden(True)
-        self.w.intAllDS.setHidden(True)
+        self.w.quantify.setHidden(True)
         self.w.exportFormatCB.setHidden(True)
         # end hide_peak_picking
 
@@ -4573,7 +4606,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.peakClearButton.setHidden(False)
         self.w.peakExportButton.setHidden(False)
         self.w.intAllExps.setHidden(False)
-        self.w.intAllDS.setHidden(False)
+        self.w.quantify.setHidden(False)
         self.w.exportFormatCB.setHidden(False)
         # end show_peak_picking
 
@@ -6668,10 +6701,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end script_editor
 
     def set_datasets_exps(self):
-        if self.w.intAllDS.isChecked() == True:
-            self.nd.int_all_data_sets = True
+        if self.w.quantify.isChecked() == True:
+            self.nd.quantify = True
         else:
-            self.nd.int_all_data_sets = False
+            self.nd.quantify = False
 
         if self.w.intAllExps.isChecked() == True:
             self.nd.int_all_exps = True
@@ -6686,7 +6719,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         start_peak = self.nd.nmrdat[self.nd.s][self.nd.e].start_peak
         end_peak = self.nd.nmrdat[self.nd.s][self.nd.e].end_peak
         peak_label = self.nd.nmrdat[self.nd.s][self.nd.e].peak_label
-        self.nd.set_peak(start_peak, end_peak, peak_label)
+        n_protons = self.nd.nmrdat[self.nd.s][self.nd.e].n_protons
+        self.nd.set_peak(start_peak, end_peak, peak_label, n_protons)
         # end set_datasets_exps
 
     def set_fit_ma_chem_shifts(self):
@@ -7243,9 +7277,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
             start_peak = np.array([])
             end_peak = np.array([])
             peak_label = np.array([])
+            n_protons = np.array([])
             s_peak = np.array([])
             e_peak = np.array([])
             p_label = np.array([])
+            n_prot = np.array([])
             for k in range(n_rows):
                 try:
                     s_peak = np.append(s_peak, float(self.w.peakWidget.item(k, 0).text()))
@@ -7262,6 +7298,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 except:
                     p_label = np.append(p_label, '')
 
+                try:
+                    n_prot = np.append(n_prot, self.w.peakWidget.item(k, 3).text())
+                except:
+                    n_prot = np.append(n_prot, '')
+
             # print("s: {}, e: {}, l: {}".format(s_peak, e_peak, p_label))
             self.w.peakWidget.setRowCount(0)
             self.w.peakWidget.setRowCount(n_rows)
@@ -7276,7 +7317,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 p_label1 = QTableWidgetItem(3 * k + 2)
                 p_label1.setTextAlignment(QtCore.Qt.AlignHCenter)
                 self.w.peakWidget.setItem(k, 3, p_label1)
-                # print("k: {}, s_peak[k]: {}, s_peak: {}".format(k, s_peak[k], s_peak))
+                n_prot1 = QTableWidgetItem(3 * k + 3)
+                n_prot1.setTextAlignment(QtCore.Qt.AlignHCenter)
+                self.w.peakWidget.setItem(k, 4, n_prot1)
                 if ((s_peak[k] > -10000.0) & (e_peak[k] > -10000.0)):
                     p_min = min(s_peak[k], e_peak[k])
                     e_peak[k] = max(s_peak[k], e_peak[k])
@@ -7284,6 +7327,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     start_peak = np.append(start_peak, s_peak[k])
                     end_peak = np.append(end_peak, e_peak[k])
                     peak_label = np.append(peak_label, p_label[k])
+                    n_protons = np.append(n_protons, n_prot[k])
                     s_peak = np.delete(s_peak, k)
                     e_peak = np.delete(e_peak, k)
 
@@ -7291,7 +7335,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
             start_peak = start_peak[sort_idx]
             end_peak = end_peak[sort_idx]
             peak_label = peak_label[sort_idx]
-            self.nd.set_peak(start_peak, end_peak, peak_label)
+            n_protons = n_protons[sort_idx]
+            self.nd.set_peak(start_peak, end_peak, peak_label, n_protons)
             self.set_peak_picking()
             self.nd.peak_fill = False
             self.plot_spc()
@@ -7604,6 +7649,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
         url.append("http://dmar.riken.jp/spincouple/")
         self.w.helpView.setUrl(url[idx])
         # end set_help
+
+    def set_tmsp_conc(self):
+        try:
+            self.nd.tmsp_conc = float(self.w.tmspConc.text())
+            self.w.tmspConc.setText(str(self.nd.tmsp_conc))
+        except:
+            self.w.tmspConc.setText(str(self.nd.tmsp_conc))
+        # end set_tmsp_conc
+
+    def set_internal_std(self):
+        if len(self.w.internalStandard.text()) > 0:
+            self.nd.internal_std = self.w.internalStandard.text()
+        else:
+            self.w.internalStandard.setText(str(self.nd.internal_std))
+        # end set_tmsp_conc
 
     def set_tutorial(self):
         url = []
@@ -7926,20 +7986,28 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.splinebaseline.setChecked(False)
             # self.w.preProcessingTab.setHidden(True)
             self.w.preProcPeak.setCurrentIndex(1)
-            if self.nd.int_all_data_sets == True:
-                self.w.intAllDS.setChecked(True)
-            else:
-                self.w.intAllDS.setChecked(False)
-
+            self.w.intAllExps.stateChanged.disconnect()
             if self.nd.int_all_exps == True:
                 self.w.intAllExps.setChecked(True)
             else:
                 self.w.intAllExps.setChecked(False)
 
+            self.w.intAllExps.stateChanged.connect(self.set_datasets_exps)
+            if self.nd.quantify == True:
+                self.w.quantify.setChecked(True)
+            else:
+                self.w.quantify.setChecked(False)
+
             if self.nd.export_peak_excel == True:
                 self.w.exportFormatCB.setCurrentIndex(0)
             else:
                 self.w.exportFormatCB.setCurrentIndex(1)
+
+            try:
+                self.w.tmspConc.setText(str(self.nd.tmsp_conc))
+            except:
+                self.w.tmspConc.setText('0.5')
+                self.nd.tmsp_conc = 0.5
 
             self.show_peak_picking()
             self.fill_peak_numbers()
