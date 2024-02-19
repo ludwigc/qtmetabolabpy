@@ -3156,6 +3156,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     worksheet.write(abc_string[m + 5] + str(l + 4), self.nd.nmrdat[ds[k]][exps[m]].peak_int[l])
 
             if self.nd.quantify:
+                worksheet.write('A' + str(4 + tmsp_idx), 'Reference compound')
                 worksheet.write('B' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.nd.internal_std + ' conc [mM]')
                 worksheet.write('C' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.w.tmspConc.text())
                 for m in range(len(exps)):
