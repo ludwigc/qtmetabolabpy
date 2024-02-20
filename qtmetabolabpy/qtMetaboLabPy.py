@@ -6006,18 +6006,18 @@ class QtMetaboLabPy(object):  # pragma: no cover
         xlabel = d.x_label + " [" + d.axis_type1 + "]"
         ylabel = d.y_label + " [" + d.axis_type2 + "]"
         # print(self.nd.nmrdat[self.nd.s][self.nd.e].dim)
-        if (self.nd.nmrdat[s][e].dim == 1):
+        if self.nd.nmrdat[s][e].dim == 1:
             self.w.MplWidget.canvas.axes.clear()
             for s1 in range(len(self.nd.nmrdat)):
                 for k in range(len(self.nd.nmrdat[s1])):
                     if ((k != e) or (s1 != s)) and (self.nd.nmrdat[s1][k].display.display_spc == True):
                         #d = self.nd.nmrdat[s1][k].display
-                        if (self.nd.nmrdat[s1][k].display.pos_col == "RGB"):
+                        if self.nd.nmrdat[s1][k].display.pos_col == "RGB":
                             pos_col = self.nd.nmrdat[s1][k].display.pos_col_rgb
                         else:
                             pos_col = self.nd.nmrdat[s1][k].display.pos_col
 
-                        if (self.nd.nmrdat[s1][k].display.neg_col == "RGB"):
+                        if self.nd.nmrdat[s1][k].display.neg_col == "RGB":
                             neg_col = self.nd.nmrdat[s1][k].display.neg_col_rgb
                         else:
                             neg_col = self.nd.nmrdat[s1][k].display.neg_col
