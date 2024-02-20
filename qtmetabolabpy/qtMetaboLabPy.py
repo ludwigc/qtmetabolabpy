@@ -1327,7 +1327,54 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.show_nmr_spectrum()
         # end cancel2dPhCorr
 
+    def disconnect(self):
+        self.w.posColR.textChanged.disconnect()
+        self.w.posColG.textChanged.disconnect()
+        self.w.posColB.textChanged.disconnect()
+        self.w.negColR.textChanged.disconnect()
+        self.w.negColG.textChanged.disconnect()
+        self.w.negColB.textChanged.disconnect()
+        self.w.nLevels.textChanged.disconnect()
+        self.w.minLevel.textChanged.disconnect()
+        self.w.maxLevel.textChanged.disconnect()
+        self.w.axisType1.currentIndexChanged.disconnect()
+        self.w.axisType2.currentIndexChanged.disconnect()
+        self.w.displaySpc.currentIndexChanged.disconnect()
+        self.w.baselineCorrection.currentIndexChanged.disconnect()
+        self.w.baselineOrder.currentIndexChanged.disconnect()
+        self.w.spcOffset.textChanged.disconnect()
+        self.w.spcScale.textChanged.disconnect()
+        self.w.fontSize.valueChanged.disconnect()
+        self.w.xLabel.textChanged.disconnect()
+        self.w.yLabel.textChanged.disconnect()
+        self.w.spcLabel.textChanged.disconnect()
+        # end disconnect
+
+    def connect(self):
+        self.w.posColR.textChanged.connect(self.get_disp_pars3)
+        self.w.posColG.textChanged.connect(self.get_disp_pars3)
+        self.w.posColB.textChanged.connect(self.get_disp_pars3)
+        self.w.negColR.textChanged.connect(self.get_disp_pars3)
+        self.w.negColG.textChanged.connect(self.get_disp_pars3)
+        self.w.negColB.textChanged.connect(self.get_disp_pars3)
+        self.w.nLevels.textChanged.connect(self.get_disp_pars4)
+        self.w.minLevel.textChanged.connect(self.get_disp_pars5)
+        self.w.maxLevel.textChanged.connect(self.get_disp_pars6)
+        self.w.axisType1.currentIndexChanged.connect(self.get_disp_pars7)
+        self.w.axisType2.currentIndexChanged.connect(self.get_disp_pars8)
+        self.w.displaySpc.currentIndexChanged.connect(self.get_disp_pars9)
+        self.w.baselineCorrection.currentIndexChanged.connect(self.check_baseline_correction)
+        self.w.baselineOrder.currentIndexChanged.connect(self.check_baseline_order)
+        self.w.spcOffset.textChanged.connect(self.get_disp_pars10)
+        self.w.spcScale.textChanged.connect(self.get_disp_pars11)
+        self.w.fontSize.valueChanged.connect(self.set_font_size)
+        self.w.xLabel.textChanged.connect(self.get_disp_pars12)
+        self.w.yLabel.textChanged.connect(self.get_disp_pars13)
+        self.w.spcLabel.textChanged.connect(self.get_disp_pars14)
+        # end connect
+
     def change_data_set_exp(self):
+        self.disconnect()
         self.w.cmdLine.setFocus()
         self.w.cmdLine.clearFocus()
         met_idx = self.w.hsqcMetabolites.currentIndex()
@@ -1448,6 +1495,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.set_hsqc_metabolite()
 
         self.w.nmrSpectrum.setCurrentIndex(cidx)
+        self.connect()
         # end change_data_set_exp
 
     def change_data_set_exp_ph_ref(self):
@@ -7224,7 +7272,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end save_config
 
     def set_disp_pars(self):
-        # print("s: {}, e: {}".format(self.nd.s, self.nd.e))
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
         self.w.posColR.setText(str(d.pos_col_rgb[0]))
         self.w.posColG.setText(str(d.pos_col_rgb[1]))
