@@ -1673,7 +1673,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # except:
         #    pass
         #
-        return "Workspace cleared"
+        kz = self.w.keepZoom.isChecked()
+        self.w.keepZoom.setChecked(False)
+        return kz
         # end clear
 
     def clear_assigned_hsqc(self):
@@ -4869,7 +4871,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         selectedDirectory = QFileDialog.getExistingDirectory()
         if (len(selectedDirectory) > 0):
-            self.clear()
+            kz = self.clear()
+            self.w.keepZoom.setChecked(kz)
             self.zero_script()
         else:
             return
@@ -5977,7 +5980,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.coefficientOfDetermination.setPalette(palette)
         # end
 
-    def plot_spc(self, hide_pre_processing=False, plot_spline_baseline=False, linewidth=1.5):
+    def plot_spc(self, hide_pre_processing=False, plot_spline_baseline=False, linewidth=1.5, keep_zoom=-1):
         s = self.nd.s
         e = self.nd.e
         self.keep_zoom = self.w.keepZoom.isChecked()
@@ -6153,6 +6156,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
             else:
                 self.exited_peak_picking = True
 
+        if keep_zoom != -1:
+            self.w.keepZoom.setChecked(keep_zoom)
         # end plot_spc
 
     def plot_spc_disp(self):
