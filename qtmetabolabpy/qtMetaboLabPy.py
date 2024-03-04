@@ -1631,7 +1631,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end check_baseline_order
 
-    def clear(self):
+    def clear(self, kz2=False):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         self.w.displayAssignedMetabolites.setChecked(False)
@@ -1674,7 +1674,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         #    pass
         #
         kz = self.w.keepZoom.isChecked()
-        self.w.keepZoom.setChecked(False)
+        if kz2:
+            self.w.keepZoom.setChecked(False)
+
         return kz
         # end clear
 
@@ -6273,7 +6275,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             msg += '_____________________________________________________________________________MetaboLabPy Help__\n\n'
             msg += '    Usage:\n'
             msg += '        set_title_file_information(rack_label=<string>, pos_label=<string>,\n'
-            msg += '           replace_origFile=True/False, sfile=False/<string>\n\n\n'
+            msg += '           replace_orig_title=True/False, sfile=False/<string>\n\n\n'
             msg += '        <string> for rack_label and pos_label refers to the Excel column headers. Both\n'
             msg += '        arguments are mandatory. replace_orig_file can be set to either True or False.\n'
             msg += '        If the argument is True, the previously exsisting title file information will be\n'
