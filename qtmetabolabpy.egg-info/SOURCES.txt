@@ -3,6 +3,7 @@ MANIFEST.in
 README.rst
 requirements.txt
 setup.py
+qtmetabolabpy/.DS_Store
 qtmetabolabpy/__init__.py
 qtmetabolabpy/__main__.py
 qtmetabolabpy/qtMetaboLabPy.py
@@ -18,6 +19,7 @@ qtmetabolabpy/mlStarter/Contents/Info.plist
 qtmetabolabpy/mlStarter/Contents/PkgInfo
 qtmetabolabpy/mlStarter/Contents/Resources/AppIcon.icns
 qtmetabolabpy/ui/metabolabpy_mainwindow.ui
+qtmetabolabpy/web/.DS_Store
 qtmetabolabpy/web/basic2dprocessing.html
 qtmetabolabpy/web/basicnmrdataprocessing.html
 qtmetabolabpy/web/gui.html
