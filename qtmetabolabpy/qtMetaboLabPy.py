@@ -1734,7 +1734,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def reset_spline_points(self):
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             if self.nd.nmrdat[self.nd.s][k].display.display_spc or k == self.nd.e:
-                self.nd.nmrdat[self.nd.s][k].proc_spc1d(reset_spline=True)
+                self.nd.nmrdat[self.nd.s][k].proc_spc1d()
                 self.nd.nmrdat[self.nd.s][k].add_baseline_points()
 
         self.plot_spc(True)
@@ -3378,10 +3378,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if self.w.baselineCorrection.currentIndex() > 0 and self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
             self.baseline1d()
 
-        if self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline == True:
-            self.autobaseline1d(alg=alg, lam=lam, max_iter=max_iter, alpha=alpha, beta=beta, gamma=gamma,
-                                beta_mult=beta_mult, gamma_mult=gamma_mult, half_window=half_window, quantile=quantile,
-                                poly_order=poly_order, smooth_half_window=smooth_half_window, add_ext=add_ext)
+        #if self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline == True:
+        #    self.autobaseline1d(alg=alg, lam=lam, max_iter=max_iter, alpha=alpha, beta=beta, gamma=gamma,
+        #                        beta_mult=beta_mult, gamma_mult=gamma_mult, half_window=half_window, quantile=quantile,
+        #                        poly_order=poly_order, smooth_half_window=smooth_half_window, add_ext=add_ext)
 
 
         self.w.nmrSpectrum.setCurrentIndex(0)
@@ -4294,8 +4294,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 xy[0][0],
                 0)
             self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[0] = self.temp_ref_shift
+            self.nd.nmrdat[self.nd.s][self.nd.e].ref = 'manual'
             self.nd.nmrdat[self.nd.s][self.nd.e].calc_ppm()
-            self.reset_plot()
+            self.plot_spc()
+            #self.reset_plot()
 
     def on_g_input_click_ref_1d_all(self, event):
         self.cur_clicks += 1
