@@ -7294,6 +7294,7 @@
     <addaction name="actionLoad"/>
     <addaction name="actionRead_NMR_Spectrum"/>
     <addaction name="actionOpen_NMRPipe"/>
+    <addaction name="actionImport_MetaboLab_mat"/>
     <addaction name="actionCreate"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -8011,6 +8012,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+L</string>
+   </property>
+  </action>
+  <action name="actionImport_MetaboLab_mat">
+   <property name="text">
+    <string>Import MetaboLab .mat</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

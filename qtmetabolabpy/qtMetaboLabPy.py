@@ -431,6 +431,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionPlot_spc.triggered.connect(self.plot_spc)
         self.w.actionSave.triggered.connect(self.save_button)
         self.w.actionLoad.triggered.connect(self.load_button)
+        self.w.actionImport_MetaboLab_mat.triggered.connect(self.load_mat)
         self.w.actionOpen_NMRPipe.triggered.connect(self.read_nmrpipe_spc)
         self.w.actionActivate_Command_Line.triggered.connect(self.activate_command_line)
         self.w.actionPrevious_command.triggered.connect(self.previous_command)
@@ -5012,6 +5013,30 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # self.w.isotopomerMultiplet.canvas.axes.spines['left'].set_color(fg)
         # self.w.isotopomerMultiplet.canvas.axes.spines['right'].set_color(fg)
         # end load_dark_mode
+
+    def load_mat(self):
+        if len(self.cf.current_directory) > 0:
+            if os.path.isdir(self.cf.current_directory):
+                os.chdir(self.cf.current_directory)
+
+        selectedFile = QFileDialog.getOpenFileName(None, "Load .mat file", self.cf.current_directory, "Matlab files (*.mat)")
+        selectedFile = selectedFile[0]
+        if (len(selectedFile) > 0):
+            kz = self.clear()
+            self.w.keepZoom.setChecked(kz)
+            self.zero_script()
+        else:
+            return
+
+        self.nd.load_mat(selectedFile)
+        self.reset_plot()
+        self.update_gui()
+        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
+        self.show_title_file_information()
+        self.show_acquisition_parameters()
+        self.set_hsqc()
+        self.show_nmr_spectrum()
+        # end load_mat
 
     def set_standard_plot_colours(self):
         self.cf.read_config()
