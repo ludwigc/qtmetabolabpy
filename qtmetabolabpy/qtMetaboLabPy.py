@@ -6219,7 +6219,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.MplWidget.canvas.axes.axvspan(self.nd.pp.noise_start, self.nd.pp.noise_end, alpha=self.nd.pp.alpha,
                                                  color=self.nd.pp.colour)
             val = self.nd.pp.noise_threshold * self.nd.pp.std_val
-            print(f'noise_threshold: {self.nd.pp.noise_threshold}, std_val: {self.nd.pp.std_val}')
+            #print(f'noise_threshold: {self.nd.pp.noise_threshold}, std_val: {self.nd.pp.std_val}')
             x = [self.nd.nmrdat[self.nd.s][0].ppm1[0], self.nd.nmrdat[self.nd.s][0].ppm1[-1]]
             y = [val, val]
             self.w.MplWidget.canvas.axes.plot(x, y, color=self.nd.pp.th_colour, linewidth=self.nd.pp.th_line_width)
@@ -9162,7 +9162,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end update_print_auto_scale
 
     def update_print_repeat_axes(self):
-        print("abcde")
         self.cf.print_stacked_plot_repeat_axes = self.w.printRepeatAxes.isChecked()
         self.cf.save_config()
         self.update_plot_editor()
