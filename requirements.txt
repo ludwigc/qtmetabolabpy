@@ -4,7 +4,7 @@ metabolabpy
 numpy
 scipy
 matplotlib
-pyside2
+pyside6
 #install on arm with: pip3 install ...
 pyautogui
 qtmodern

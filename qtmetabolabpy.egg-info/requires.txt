@@ -2,7 +2,7 @@ metabolabpy
 numpy
 scipy
 matplotlib
-pyside2
+pyside6
 pyautogui
 qtmodern
 xlsxwriter

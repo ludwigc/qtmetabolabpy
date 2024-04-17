@@ -1255,7 +1255,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     # end autophase1d_hsqcinclude_water
 
-    def autoref(self, tmsp=True):
+    def auto_ref(self, tmsp=True):
         self.nd.auto_ref(tmsp)
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
