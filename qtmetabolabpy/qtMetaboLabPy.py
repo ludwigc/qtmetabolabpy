@@ -480,6 +480,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionChange_to_previous_DS.triggered.connect(self.change_to_previous_ds)
         self.w.exampleScripts.view().pressed.connect(self.load_example_script)
         self.w.actionAutomatic_Phase_Correction.triggered.connect(self.autophase1d)
+        self.w.actionAutomatic_Phase_Correction_with_Reference_Spectrum.triggered.connect(self.autophase1d_bl)
         self.w.actionAutomatic_Baseline_Correction.triggered.connect(self.autobaseline)
         self.w.actionScale_2D_Spectrum_Up.triggered.connect(self.scale_2d_spectrum_up)
         self.w.actionScale_2D_Spectrum_Down.triggered.connect(self.scale_2d_spectrum_down)
@@ -1212,6 +1213,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
         #code_err.close()
         # end autophase1d
 
+    def autophase1d_bl(self):
+        self.nd.autophase1d_bl()
+        self.plot_spc(True)
+
+    def autophase1d_bl_all(self):
+        self.nd.autophase1d_bl_all()
+        self.plot_spc(True)
+
     def autophase1d_all(self):
         code_out = io.StringIO()
         code_err = io.StringIO()
@@ -1908,7 +1917,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.nd.create_titles(xls, dataset_label, pos_label, rack_label, replace_orig_title, excel_name)
         self.update_gui()
-        # end create_titles
+        self.w.nmrSpectrum.setCurrentIndex(7)
+    # end create_titles
 
     def d(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.delay) - 1 or index < -1:
@@ -6328,46 +6338,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.w.close()
         # end quit_app
-
-    def set_title_information(self, rack_label='', pos_label='', replace_orig_title=False, sfile=False):
-        if len(rack_label) == 0 or len(pos_label) == 0:
-            msg = ''
-            msg += '_____________________________________________________________________________MetaboLabPy Help__\n\n'
-            msg += '    Usage:\n'
-            msg += '        set_title_file_information(rack_label=<string>, pos_label=<string>,\n'
-            msg += '           replace_orig_title=True/False, sfile=False/<string>\n\n\n'
-            msg += '        <string> for rack_label and pos_label refers to the Excel column headers. Both\n'
-            msg += '        arguments are mandatory. replace_orig_file can be set to either True or False.\n'
-            msg += '        If the argument is True, the previously exsisting title file information will be\n'
-            msg += '        discarded, if the argument if False, the previous title file information will be\n'
-            msg += '        added to the end of the new title file information. This argument is optional, the\n'
-            msg += '        default value is to keep the original title file information.\n\n'
-            msg += '        The sfile argument should be either False or be a string containing path and file\n'
-            msg += '        name information for the Excel spreadsheet. If the argument is False, a GUI element\n'
-            msg += '        pops up where the user can graphically choose the excel file. This is the default\n'
-            msg += '\n_______________________________________________________________________________________________\n'
-            print(msg)
-            return
-
-        if sfile == False:
-            selected_file = QFileDialog.getOpenFileName()
-            if len(selected_file[0]) == 0:
-                return
-
-        else:
-            selected_file = (sfile, '')
-
-        # print(selected_file)
-        excel_name = os.path.split(selected_file[0])[1]
-        data_path = os.path.split(selected_file[0])[0]
-        #print(f'data_path: {data_path}, excel_name: {excel_name}')
-        self.nd.set_title_information(rack_label=rack_label, pos_label=pos_label, data_path=data_path,
-                                      excel_name=excel_name, replace_orig_title=replace_orig_title)
-        self.update_gui()
-        self.w.nmrSpectrum.setCurrentIndex(7)
-        # end set_title_information
-
-
 
     def read_nmr_spc(self):
         kz = self.w.keepZoom.isChecked()

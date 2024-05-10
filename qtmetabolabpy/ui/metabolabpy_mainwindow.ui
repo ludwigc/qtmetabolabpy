@@ -7348,6 +7348,7 @@
      <addaction name="actionCorrect_Phase"/>
      <addaction name="actionAutomatic_Phase_Correction"/>
      <addaction name="actionAutomatic_Baseline_Correction"/>
+     <addaction name="actionAutomatic_Phase_Correction_with_Reference_Spectrum"/>
     </widget>
     <addaction name="menuApply_Window_Function"/>
     <addaction name="separator"/>
@@ -8039,6 +8040,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+Shift+2</string>
+   </property>
+  </action>
+  <action name="actionAutomatic_Phase_Correction_with_Reference_Spectrum">
+   <property name="text">
+    <string>Automatic Phase Correction with Reference Spectrum</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>
