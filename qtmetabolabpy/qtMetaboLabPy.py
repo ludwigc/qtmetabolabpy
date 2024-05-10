@@ -432,6 +432,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionSave.triggered.connect(self.save_button)
         self.w.actionLoad.triggered.connect(self.load_button)
         self.w.actionImport_MetaboLab_mat.triggered.connect(self.load_mat)
+        self.w.actionIncrease_YLim_2fold.triggered.connect(self.increase_y_lim)
+        self.w.actionDecrease_YLim_2fold.triggered.connect(self.decrease_y_lim)
         self.w.actionOpen_NMRPipe.triggered.connect(self.read_nmrpipe_spc)
         self.w.actionActivate_Command_Line.triggered.connect(self.activate_command_line)
         self.w.actionPrevious_command.triggered.connect(self.previous_command)
@@ -1852,9 +1854,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
         subprocess.os.system('pip uninstall pylnk3 --yes')
         # end create_icon_win
 
-    def create_titles(self, excel_name='', dataset_label='', pos_label='', rack_label='', worksheet='', replace_title=False):
+    def create_titles(self, dataset_label='', pos_label='', rack_label='', worksheet='', replace_orig_title=True, excel_name=''):
         if dataset_label == '' or pos_label == '' or rack_label == '':
-            print(f'Usage: create_titles(dataset_label="dataset_label", pos_label="pos_label", rack_label="rack_label", worksheet="worksheet_name", replace_title=False)')
+            msg = ''
+            msg += '_____________________________________________________________________________MetaboLabPy Help__\n\n'
+            msg += '    Usage:\n'
+            msg += '        create_titles(dataset_label=<string>, pos_label=<string>, rack_label=<string>,\n'
+            msg += '           worksheet=<string>, replace_orig_title=True/False, excel_name=<string>)\n\n\n'
+            msg += '        <string> for dataset_label, rack_label and pos_label refers to the Excel column\n'
+            msg += '        headers. All three arguments are mandatory. replace_orig_title can be set to either\n'
+            msg += '        True or False. If the argument is True, the previously existing title file information\n'
+            msg += '        will be discarded, if the argument if False, the previous title file information will be\n'
+            msg += '        added to the end of the new title file information. This argument is optional, the\n'
+            msg += '        default value is to discard the original title file information.\n\n'
+            msg += '        The excel_name argument should either be empty or a string containing path and file\n'
+            msg += '        name information for the Excel spreadsheet. If the argument is empty, a GUI element\n'
+            msg += '        pops up where the user can graphically choose the excel file. This is the default\n'
+            msg += '\n_______________________________________________________________________________________________\n'
+            print(msg)
             return
 
         if excel_name == '':
@@ -1889,7 +1906,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if something_not_found:
             return
 
-        self.nd.create_titles(xls, dataset_label, pos_label, rack_label, replace_title, excel_name)
+        self.nd.create_titles(xls, dataset_label, pos_label, rack_label, replace_orig_title, excel_name)
         self.update_gui()
         # end create_titles
 
@@ -1903,6 +1920,22 @@ class QtMetaboLabPy(object):  # pragma: no cover
             print("d{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.delay[index]))
 
         # end d
+
+    def increase_y_lim(self):
+        ylim = self.w.MplWidget.canvas.axes.get_ylim()
+        ylim1 = ylim[0]*2
+        ylim2 = ylim[1]*2
+        self.w.MplWidget.canvas.axes.set_ylim((ylim1, ylim2))
+        self.plot_spc()
+        # end increase_y_lim
+
+    def decrease_y_lim(self):
+        ylim = self.w.MplWidget.canvas.axes.get_ylim()
+        ylim1 = ylim[0]/2
+        ylim2 = ylim[1]/2
+        self.w.MplWidget.canvas.axes.set_ylim((ylim1, ylim2))
+        self.plot_spc()
+        # end decrease_y_lim
 
     def pl(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level) - 1 or index < -1:
@@ -7130,6 +7163,20 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
         # end set_autobaseline
 
+    def set_autobaseline_all(self):
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            self.nd.nmrdat[self.nd.s][k].proc.autobaseline = True
+
+        self.set_autobaseline()
+        # end set_autobaseline_all
+
+    def unset_autobaseline_all(self):
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            self.nd.nmrdat[self.nd.s][k].proc.autobaseline = False
+
+        self.set_autobaseline()
+        # end set_autobaseline_all
+
     def set_autobaseline2(self):
         if self.nd.e > -1:
             if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
@@ -7221,6 +7268,35 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_plot_pre_proc()
         self.plot_spc_pre_proc()
         self.w.selectClassTW.setFocus()
+        # end select_plot_pp
+
+    def set_colours(self, keyword=''):
+        if len(keyword) == 0:
+            return
+
+        class_select = []
+        class_select_unique = []
+        self.nd.pp.init_plot_colours()
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            title = self.nd.nmrdat[self.nd.s][k].title
+            idx1 = title.find(keyword)
+            idx2 = title[idx1:].find(':')
+            idx3 = title[idx1:].find('\n')
+            class_select.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+            if title[idx1 + idx2 + 1:idx1 + idx3].strip() not in class_select_unique:
+                class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+
+        for k in range(len(class_select)):
+            if len(class_select_unique) > 1:
+                col_idx = np.where(np.array(class_select_unique) == class_select[k])[0][0]
+                self.nd.nmrdat[self.nd.s][k].display.pos_col = 'RGB'
+                self.nd.nmrdat[self.nd.s][k].display.pos_col_rgb = self.nd.pp.plot_colours[col_idx]
+
+        if len(class_select_unique) > 1:
+            self.plot_spc()
+        else:
+            self.set_standard_colours()
+
         # end select_plot_pp
 
     def set_compress_buckets(self):

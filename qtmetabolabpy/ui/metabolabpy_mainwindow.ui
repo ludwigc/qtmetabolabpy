@@ -7321,6 +7321,9 @@
     <addaction name="actionScale_all_2D_Spectra_Down"/>
     <addaction name="actionZoom"/>
     <addaction name="actionPan"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncrease_YLim_2fold"/>
+    <addaction name="actionDecrease_YLim_2fold"/>
    </widget>
    <widget class="QMenu" name="menuData">
     <property name="title">
@@ -8020,6 +8023,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionIncrease_YLim_2fold">
+   <property name="text">
+    <string>Increase YLim 2fold</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+2</string>
+   </property>
+  </action>
+  <action name="actionDecrease_YLim_2fold">
+   <property name="text">
+    <string>Decrease YLim 2fold</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Shift+2</string>
    </property>
   </action>
  </widget>
