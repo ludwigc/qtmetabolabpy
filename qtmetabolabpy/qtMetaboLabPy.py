@@ -1175,7 +1175,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         code_err.close()
         # end autobaseline1d_all
 
-    def autophase1d(self):
+    def autophase1d(self, width=128, num_windows=1024, max_peaks=1000, noise_fact=20):
         #code_out = io.StringIO()
         #code_err = io.StringIO()
         #sys.stdout = code_out
@@ -1183,7 +1183,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.show_auto_phase()
         self.nd.ft()
         self.nd.auto_ref()
-        self.nd.autophase1d()
+        self.nd.autophase1d(width, num_windows, max_peaks, noise_fact)
         # self.w.baselineCorrection.setCurrentIndex(1)
         # self.nd.ft()
         # self.nd.baseline1d()
