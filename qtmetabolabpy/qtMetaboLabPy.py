@@ -305,6 +305,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.std_neg_col1 = (1.0, 0.0, 0.0)
         self.std_pos_col2 = (0.8, 0.8, 1.0)
         self.std_neg_col2 = (1.0, 0.8, 0.8)
+        self.set_cols = ''
         self.n_clicks = 1
         self.cur_clicks = 0
         self.xy = [[]]
@@ -434,6 +435,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionImport_MetaboLab_mat.triggered.connect(self.load_mat)
         self.w.actionIncrease_YLim_2fold.triggered.connect(self.increase_y_lim)
         self.w.actionDecrease_YLim_2fold.triggered.connect(self.decrease_y_lim)
+        self.w.actionIncrease_XLim_2fold.triggered.connect(self.increase_x_lim)
+        self.w.actionDecrease_XLim_2fold.triggered.connect(self.decrease_x_lim)
         self.w.actionOpen_NMRPipe.triggered.connect(self.read_nmrpipe_spc)
         self.w.actionActivate_Command_Line.triggered.connect(self.activate_command_line)
         self.w.actionPrevious_command.triggered.connect(self.previous_command)
@@ -1946,6 +1949,26 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.MplWidget.canvas.axes.set_ylim((ylim1, ylim2))
         self.plot_spc()
         # end decrease_y_lim
+
+    def increase_x_lim(self):
+        xlim = self.w.MplWidget.canvas.axes.get_xlim()
+        mid_point = np.mean([xlim[0], xlim[1]])
+        width = xlim[0] - xlim[1]
+        xlim1 = mid_point + width
+        xlim2 = mid_point - width
+        self.w.MplWidget.canvas.axes.set_xlim((xlim1, xlim2))
+        self.plot_spc()
+        # end increase_x_lim
+
+    def decrease_x_lim(self):
+        xlim = self.w.MplWidget.canvas.axes.get_xlim()
+        mid_point = np.mean([xlim[0], xlim[1]])
+        width = (xlim[0] - xlim[1])/4.0
+        xlim1 = mid_point + width
+        xlim2 = mid_point - width
+        self.w.MplWidget.canvas.axes.set_xlim((xlim1, xlim2))
+        self.plot_spc()
+        # end decrease_x_lim
 
     def pl(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level) - 1 or index < -1:
@@ -5093,6 +5116,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.nd.load(fileName)
         self.w.script.insertHtml(self.nd.script)
         self.w.console.insertHtml(self.nd.console)
+        self.w.phRefDS.valueChanged.disconnect()
+        self.w.phRefExp.valueChanged.disconnect()
+        self.w.phRefDS.setValue(self.nd.nmrdat[0][0].display.ph_ref_ds)
+        self.w.phRefDS.valueChanged.connect(self.change_data_set_exp_ph_ref)
+        self.w.phRefExp.valueChanged.connect(self.change_data_set_exp_ph_ref)
+        self.w.phRefExp.setValue(self.nd.nmrdat[0][0].display.ph_ref_exp)
         self.reset_plot()
         self.update_gui()
         self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
@@ -7256,18 +7285,62 @@ class QtMetaboLabPy(object):  # pragma: no cover
             if title[idx1 + idx2 + 1:idx1 + idx3].strip() not in class_select_unique:
                 class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
 
+
         for k in range(len(class_select)):
             if len(class_select_unique) > 1:
                 col_idx = np.where(np.array(class_select_unique) == class_select[k])[0][0]
                 self.nd.nmrdat[self.nd.s][k].display.pos_col = 'RGB'
                 self.nd.nmrdat[self.nd.s][k].display.pos_col_rgb = self.nd.pp.plot_colours[col_idx]
 
+
         if len(class_select_unique) > 1:
+            self.set_cols = keyword
             self.plot_spc()
         else:
+            self.set_cols = ''
             self.set_standard_colours()
 
-        # end select_plot_pp
+        # end set_colours
+
+    def select_spectra(self, keyword=[], values=[]):
+        if len(keyword) == 0 or len(values) == 0:
+            msg = ''
+            msg += '_____________________________________________________________________________MetaboLabPy Help__\n\n'
+            msg += '    Usage:\n'
+            msg += '        select_spectra(keyword=[<string>,<string>], values=[[<string>,<string>],[<string>,<string>]])\n\n\n'
+            msg += '        [<string>,<string>] for keyword is a list of keywords to be scanned. Every sample\n'
+            msg += '        to be displayed must have at least one of the options specified in values for every\n'
+            msg += '        keyword specified. All lists can just contain a single item.\n'
+            msg += '\n_______________________________________________________________________________________________\n'
+            print(msg)
+            return
+
+        new_exp = -1
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            self.nd.nmrdat[self.nd.s][k].display.display_spc = False
+            title = self.nd.nmrdat[self.nd.s][k].title
+            idx4 = np.zeros(len(keyword))
+            for l in range(len(keyword)):
+                idx1 = title.find(keyword[l])
+                idx2 = title[idx1:].find(':')
+                idx3 = title[idx1:].find('\n')
+                idx4[l] = -1
+                for m in range(len(values[l])):
+                    if title[idx1 + idx2 + 1:idx1 + idx3].strip() == values[l][m]:
+                        idx4[l] = 1
+
+            if int(idx4.sum()) == len(keyword):
+                self.nd.nmrdat[self.nd.s][k].display.display_spc = True
+                if new_exp == -1:
+                    new_exp = k
+
+        if new_exp > -1:
+            self.nd.e = new_exp
+
+        self.update_gui()
+        self.set_colours(self.set_cols)
+        self.plot_spc()
+        # end select_spectra
 
     def set_compress_buckets(self):
         if (self.nd.pp.pre_proc_fill == False):

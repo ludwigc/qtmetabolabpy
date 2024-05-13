@@ -7324,6 +7324,8 @@
     <addaction name="separator"/>
     <addaction name="actionIncrease_YLim_2fold"/>
     <addaction name="actionDecrease_YLim_2fold"/>
+    <addaction name="actionIncrease_XLim_2fold"/>
+    <addaction name="actionDecrease_XLim_2fold"/>
    </widget>
    <widget class="QMenu" name="menuData">
     <property name="title">
@@ -8048,6 +8050,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionIncrease_XLim_2fold">
+   <property name="text">
+    <string>Increase XLim 2fold</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+3</string>
+   </property>
+  </action>
+  <action name="actionDecrease_XLim_2fold">
+   <property name="text">
+    <string>Decrease XLim 2fold</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Shift+3</string>
    </property>
   </action>
  </widget>
