@@ -9,14 +9,14 @@ from qtmetabolabpy import *
 from qtmetabolabpy import qtMetaboLabPy
 import time
 from time import sleep  # pragma: no cover
-try:
-    from PySide2.QtWidgets import *  # pragma: no cover
-    from PySide2 import QtCore  # pragma: no cover
-    from PySide2.QtGui import QIcon  # pragma: no cover
-    import qtmodern.styles  # pragma: no cover
-    from PySide2.QtGui import QPixmap
-except:
-    pass
+#try:
+from PySide6.QtWidgets import *  # pragma: no cover
+from PySide6 import QtCore  # pragma: no cover
+from PySide6.QtGui import QIcon  # pragma: no cover
+import qtmodern.styles  # pragma: no cover
+from PySide6.QtGui import QPixmap
+#except:
+#    pass
 
 
 def main():  # pragma: no cover
@@ -30,6 +30,7 @@ def main():  # pragma: no cover
                     help="open application in full screen mode without windowed mode available",
                     action="store_true")
     ap.add_argument("-m", "--mode", required=False, help="select UI colour scheme (system, light, dark)")
+    ap.add_argument("-i", "--import", required=False, help="import MetaboLab .mat File")
     ap.add_argument("fileName", metavar="fileName", type=str, help="load MetaboLabPy DataSet File")
     dd = ap.parse_known_args()
     # dd = ap.parse_known_intermixed_args()
@@ -110,11 +111,13 @@ def main():  # pragma: no cover
                 w.script_editor()
                 w.exec_script()
 
-    else:
-        if (args["script"] != None):
-            w.open_script(args["script"])
-            w.script_editor()
-            w.exec_script()
+    elif args["script"] != None:
+        w.open_script(args["script"])
+        w.script_editor()
+        w.exec_script()
+    elif args["import"] != None:
+        w.load_mat(args["import"])
+
 
     if cf.mode == 'system':
         if darkdetect.isDark():
@@ -126,8 +129,8 @@ def main():  # pragma: no cover
     else:
         qtmodern.styles.dark(app)
 
-    screen_width = app.desktop().screenGeometry().width()
-    screen_height = app.desktop().screenGeometry().height()
+    screen_width = app.screens()[0].geometry().width()
+    screen_height = app.screens()[0].geometry().height()
     w_width = 1600 #w.w.size().width()
     w_height = w.w.size().height()
     ww = min(w_width, screen_width)

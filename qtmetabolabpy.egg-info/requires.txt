@@ -1,8 +1,8 @@
+PySide6
 metabolabpy
 numpy
-scipy
+scipy==1.13.1
 matplotlib
-pyside6
 pyautogui
 qtmodern
 xlsxwriter

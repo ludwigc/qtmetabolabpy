@@ -1,10 +1,10 @@
 #on arm: sudo apt install python3-pyside2*
 #on arm then the rest with sudo apt install python3-...
+PySide6
 metabolabpy
 numpy
-scipy
+scipy==1.13.1
 matplotlib
-pyside6
 #install on arm with: pip3 install ...
 pyautogui
 qtmodern

@@ -14,62 +14,63 @@ import os  # pragma: no cover
 
 
 try:
-    from PySide2.QtUiTools import QUiLoader  # pragma: no cover
-    from PySide2.QtCore import QFile  # pragma: no cover
-    from PySide2.QtCore import QCoreApplication  # pragma: no cover
-    from PySide2.QtWidgets import *  # pragma: no cover
-    from PySide2 import QtWidgets  # pragma: no cover
-    from PySide2.QtGui import *  # pragma: no cover
-    from PySide2 import QtGui  # pragma: no cover
-    from PySide2 import QtCore  # pragma: no cover
-    from PySide2.QtWidgets import QFileDialog  # pragma: no cover
-    from PySide2 import QtWidgets  # pragma: no cover
-    from PySide2.QtCore import SIGNAL  # pragma: no cover
-    from PySide2.QtCore import QUrl, Qt  # pragma: no cover
-    import PySide2  # pragma: no cover
+    from PySide6.QtUiTools import QUiLoader  # pragma: no cover
+    from PySide6.QtCore import QFile  # pragma: no cover
+    from PySide6.QtCore import QCoreApplication  # pragma: no cover
+    from PySide6.QtWidgets import *  # pragma: no cover
+    from PySide6 import QtWidgets  # pragma: no cover
+    from PySide6.QtGui import *  # pragma: no cover
+    from PySide6 import QtGui  # pragma: no cover
+    from PySide6 import QtCore  # pragma: no cover
+    from PySide6.QtWidgets import QFileDialog  # pragma: no cover
+    from PySide6 import QtWidgets  # pragma: no cover
+    from PySide6.QtCore import SIGNAL  # pragma: no cover
+    from PySide6.QtCore import QUrl, Qt  # pragma: no cover
+    import PySide6  # pragma: no cover
     import qtmodern.styles  # pragma: no cover
-    from PySide2.QtGui import QPixmap
+    from PySide6.QtGui import QPixmap
 except:
     pass
 
 try:
-    from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings  # pragma: no cover
-    from PySide2.QtWebEngineCore import QWebEngineUrlSchemeHandler  # pragma: no cover
+    from PySide6.QtWebEngineWidgets import QWebEngineView  # pragma: no cover
+    from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEngineUrlSchemeHandler  # pragma: no cover
 except:
-    if platform.system() == 'Darwin' and platform.machine() == 'arm64':  # pragma: no cover
-        find_pyside2 = importlib.util.find_spec('PySide2')  # pragma: no cover
-        if find_pyside2.__str__() == None:  # pragma: no cover
-            print('PySide2 not installed!')  # pragma: no cover
-            sys.exit()  # pragma: no cover
-        else:  # pragma: no cover
-            script_name = os.path.join(os.path.dirname(__file__), 'bash', 'fix_pyside2')  # pragma: no cover
-            print('Error: Could not load QWebEngineView')  # pragma: no cover
-            answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")  # pragma: no cover
-            while answer not in ['y', 'Y', 'n', 'N', 'd', 'D']:  # pragma: no cover
-                print('Please input y, n or d only')  # pragma: no cover
-                answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")  # pragma: no cover
-
-            if answer in ['n', 'N']:  # pragma: no cover
-                print('Good luck!')  # pragma: no cover
-                sys.exit()  # pragma: no cover
-
-            if answer in ['d', 'D']:  # pragma: no cover
-                print('\n=== Bash script to fix the issue ========================================================\n')  # pragma: no cover
-                os.system('cat ' + script_name)  # pragma: no cover
-                print('\n=== End of bash script ==================================================================\n')  # pragma: no cover
-                while answer not in ['y', 'Y', 'n', 'N']:  # pragma: no cover
-                    answer = input("Do you want to fix the issue automatically? [y, n]: ")  # pragma: no cover
-                    if answer not in ['y', 'Y', 'n', 'N']:  # pragma: no cover
-                        print('Please input y or n only')  # pragma: no cover
-
-            if answer in ['n', 'N']:  # pragma: no cover
-                print('Good luck!')  # pragma: no cover
-                sys.exit()  # pragma: no cover
-
-            print('Fixing issue (PySide2/Darwin arm64 anaconda3)...')  # pragma: no cover
-            os.system(script_name)  # pragma: no cover
-            print('Fixed M1/M2 mac arm64 anaconda PySide2 issue, please start qtmetabolabpy again!')  # pragma: no cover
-            sys.exit()  # pragma: no cover
+    pass
+#    if platform.system() == 'Darwin' and platform.machine() == 'arm64':  # pragma: no cover
+#        find_pyside2 = importlib.util.find_spec('PySide2')  # pragma: no cover
+#        if find_pyside2.__str__() == None:  # pragma: no cover
+#            print('PySide2 not installed!')  # pragma: no cover
+#            sys.exit()  # pragma: no cover
+#        else:  # pragma: no cover
+#            script_name = os.path.join(os.path.dirname(__file__), 'bash', 'fix_pyside2')  # pragma: no cover
+#            print('Error: Could not load QWebEngineView')  # pragma: no cover
+#            answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")  # pragma: no cover
+#            while answer not in ['y', 'Y', 'n', 'N', 'd', 'D']:  # pragma: no cover
+#                print('Please input y, n or d only')  # pragma: no cover
+#                answer = input("Do you want to fix the issue automatically (y, n) or display the fixing bash script (d)? [y, n, d]: ")  # pragma: no cover
+#
+#            if answer in ['n', 'N']:  # pragma: no cover
+#                print('Good luck!')  # pragma: no cover
+#                sys.exit()  # pragma: no cover
+#
+#            if answer in ['d', 'D']:  # pragma: no cover
+#                print('\n=== Bash script to fix the issue ========================================================\n')  # pragma: no cover
+#                os.system('cat ' + script_name)  # pragma: no cover
+#                print('\n=== End of bash script ==================================================================\n')  # pragma: no cover
+#                while answer not in ['y', 'Y', 'n', 'N']:  # pragma: no cover
+#                    answer = input("Do you want to fix the issue automatically? [y, n]: ")  # pragma: no cover
+#                    if answer not in ['y', 'Y', 'n', 'N']:  # pragma: no cover
+#                        print('Please input y or n only')  # pragma: no cover
+#
+#            if answer in ['n', 'N']:  # pragma: no cover
+#                print('Good luck!')  # pragma: no cover
+#                sys.exit()  # pragma: no cover
+#
+#            print('Fixing issue (PySide2/Darwin arm64 anaconda3)...')  # pragma: no cover
+#            os.system(script_name)  # pragma: no cover
+#            print('Fixed M1/M2 mac arm64 anaconda PySide2 issue, please start qtmetabolabpy again!')  # pragma: no cover
+#            sys.exit()  # pragma: no cover
 
 import darkdetect
 import webbrowser
@@ -1186,6 +1187,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         #code_err = io.StringIO()
         #sys.stdout = code_out
         #sys.stderr = code_err
+        if width == False:
+            width = 128
+            num_windows = 1024
+            max_peaks = 1000
+            noise_fact = 20
+
         self.show_auto_phase()
         self.nd.ft()
         self.nd.auto_ref()
@@ -1218,6 +1225,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def autophase1d_bl(self):
         self.nd.autophase1d_bl()
+        self.update_gui()
         self.plot_spc(True)
 
     def autophase1d_bl_all(self):
@@ -5080,21 +5088,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # self.w.isotopomerMultiplet.canvas.axes.spines['right'].set_color(fg)
         # end load_dark_mode
 
-    def load_mat(self):
-        if len(self.cf.current_directory) > 0:
-            if os.path.isdir(self.cf.current_directory):
-                os.chdir(self.cf.current_directory)
+    def load_mat(self, file_name=False):
+        if not file_name:
+            if len(self.cf.current_directory) > 0:
+                if os.path.isdir(self.cf.current_directory):
+                    os.chdir(self.cf.current_directory)
 
-        selectedFile = QFileDialog.getOpenFileName(None, "Load .mat file", self.cf.current_directory, "Matlab files (*.mat)")
-        selectedFile = selectedFile[0]
-        if (len(selectedFile) > 0):
-            kz = self.clear()
-            self.w.keepZoom.setChecked(kz)
-            self.zero_script()
+            selected_file = QFileDialog.getOpenFileName(None, "Load .mat file", self.cf.current_directory, "Matlab files (*.mat)")
+            selected_file = selected_file[0]
+            if (len(selected_file) > 0):
+                kz = self.clear()
+                self.w.keepZoom.setChecked(kz)
+                self.zero_script()
+            else:
+                return
         else:
-            return
+            selected_file = file_name
 
-        self.nd.load_mat(selectedFile)
+        self.nd.load_mat(selected_file)
         self.reset_plot()
         self.update_gui()
         self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
@@ -9590,14 +9601,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
         sys.stdout = code_out
         sys.stderr = code_err
         dialog = QFileDialog(self.w)
-        path = dialog.getSaveFileName(dialog, "Save File", download_item.path())
-        print(path)
+        path = dialog.getSaveFileName(dialog, "Save File", os.path.join(download_item.downloadDirectory(), download_item.downloadFileName()))
         if path[0]:
-            download_item.setPath(path[0])
-            print(f"downloading file to:( {download_item.path()} )")
+            download_item.setDownloadDirectory(os.path.split(path[0])[0])
+            print(f"downloading file to:( {download_item.downloadDirectory()} )")
             download_item.accept()
             self.download_item = download_item
-            self.download_item.finished.connect(self._download_finished)
+            self.download_item.isFinishedChanged.connect(self._download_finished)
         else:
             print("Download canceled")
 
@@ -9638,6 +9648,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     zip_ref.extractall(os.path.join(self.download_item.downloadDirectory(), f_name))
 
                 print('.zip-file extraction finished')
+                os.remove(os.path.join(self.download_item.downloadDirectory(), self.download_item.downloadFileName()))
+
 
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
