@@ -29,6 +29,7 @@ try:
     import PySide6  # pragma: no cover
     import qtmodern.styles  # pragma: no cover
     from PySide6.QtGui import QPixmap
+    from PySide6.QtGui import QPalette
 except:
     pass
 
@@ -1731,13 +1732,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.coefficientOfDetermination.display(-1)
         palette = self.w.coefficientOfDetermination.palette()
         # foreground color
-        palette.setColor(palette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))
+        #palette.setColor(palette.currentColorGroup(), QPalette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))
+        palette.setColor(palette.currentColorGroup(), QPalette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))
         # background color
         # palette.setColor(palette.Background, QtGui.QColor(colour[0], colour[1], colour[2]))
         # "light" border
-        palette.setColor(palette.Light, QtGui.QColor(colour[0], colour[1], colour[2]))
+        palette.setColor(palette.currentColorGroup(), QPalette.Light, QtGui.QColor(colour[0], colour[1], colour[2]))
         # "dark" border
-        palette.setColor(palette.Dark, QtGui.QColor(colour[0], colour[1], colour[2]))
+        palette.setColor(palette.currentColorGroup(), QPalette.Dark, QtGui.QColor(colour[0], colour[1], colour[2]))
         self.w.coefficientOfDetermination.setPalette(palette)
         # end clear_assigned_hsqc
 
@@ -6082,13 +6084,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.coefficientOfDetermination.display(hsqc.hsqc_data[hsqc.cur_metabolite].cod[hsqc.cur_peak - 1])
         palette = self.w.coefficientOfDetermination.palette()
         # foreground color
-        palette.setColor(palette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))
-        # background color
+        #palette.setColor(palette.windowText, QtGui.QColor(colour[0], colour[1], colour[2]))
+        palette.setColor(palette.currentColorGroup(), QPalette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))        # background color
         # palette.setColor(palette.Background, QtGui.QColor(colour[0], colour[1], colour[2]))
         # "light" border
-        palette.setColor(palette.Light, QtGui.QColor(colour[0], colour[1], colour[2]))
-        # "dark" border
-        palette.setColor(palette.Dark, QtGui.QColor(colour[0], colour[1], colour[2]))
+        #palette.setColor(palette.Light, QtGui.QColor(colour[0], colour[1], colour[2]))
+        palette.setColor(palette.currentColorGroup(), QPalette.Light, QtGui.QColor(colour[0], colour[1], colour[2]))        # "dark" border
+        #palette.setColor(palette.Dark, QtGui.QColor(colour[0], colour[1], colour[2]))
+        palette.setColor(palette.currentColorGroup(), QPalette.Dark, QtGui.QColor(colour[0], colour[1], colour[2]))
         self.w.coefficientOfDetermination.setPalette(palette)
         # end
 
@@ -6625,7 +6628,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.coefficientOfDetermination.display(-1)
         palette = self.w.coefficientOfDetermination.palette()
         # foreground color
-        palette.setColor(palette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))
+        palette.setColor(palette.windowText, QtGui.QColor(colour[0], colour[1], colour[2]))
         # background color
         # palette.setColor(palette.Background, QtGui.QColor(colour[0], colour[1], colour[2]))
         # "light" border
@@ -8344,13 +8347,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.coefficientOfDetermination.display(-1)
             palette = self.w.coefficientOfDetermination.palette()
             # foreground color
-            palette.setColor(palette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))
+            #palette.setColor(palette.currentColorGroup(), QtGui.QColor(colour[0], colour[1], colour[2]))
+            palette.setColor(palette.currentColorGroup(), QPalette.WindowText, QtGui.QColor(colour[0], colour[1], colour[2]))
             # background color
             # palette.setColor(palette.Background, QtGui.QColor(colour[0], colour[1], colour[2]))
             # "light" border
-            palette.setColor(palette.Light, QtGui.QColor(colour[0], colour[1], colour[2]))
+            palette.setColor(palette.currentColorGroup(), QPalette.Light, QtGui.QColor(colour[0], colour[1], colour[2]))
             # "dark" border
-            palette.setColor(palette.Dark, QtGui.QColor(colour[0], colour[1], colour[2]))
+            palette.setColor(palette.currentColorGroup(), QPalette.Dark, QtGui.QColor(colour[0], colour[1], colour[2]))
             self.w.coefficientOfDetermination.setPalette(palette)
         else:
             self.w.displayAssignedMetabolites.setChecked(False)
