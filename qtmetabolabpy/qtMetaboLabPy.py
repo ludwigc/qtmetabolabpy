@@ -2436,6 +2436,25 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def pulprog(self):
         print(f'pulprog: {self.nd.nmrdat[self.nd.s][self.nd.e].acq.pul_prog_name}')
 
+    def reshape_title(self, n_rows=2):
+        return_text = self.nd.reshape_title(n_rows)
+        if return_text != 'Succesfully reshaped title':
+            self.show_console()
+        else:
+            self.update_gui()
+            self.show_title_file_information()
+        # end reshape_title
+
+    def reshape_titles(self, n_rows=2):
+        all_fine = self.nd.reshape_titles(n_rows)
+        if all_fine:
+            self.update_gui()
+            self.show_title_file_information()
+        else:
+            self.update_gui()
+            self.show_console()
+        # end reshape_titles
+
     def sp(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power) - 1 or index < -1:
             index = -1
