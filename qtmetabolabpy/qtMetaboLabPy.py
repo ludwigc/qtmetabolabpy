@@ -486,6 +486,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.exampleScripts.view().pressed.connect(self.load_example_script)
         self.w.actionAutomatic_Phase_Correction.triggered.connect(self.autophase1d)
         self.w.actionAutomatic_Phase_Correction_with_Reference_Spectrum.triggered.connect(self.autophase1d_bl)
+        self.w.actionAutomatic_Phase_Correction_algorithm_2.triggered.connect(self.autophase1d1)
         self.w.actionAutomatic_Baseline_Correction.triggered.connect(self.autobaseline)
         self.w.actionScale_2D_Spectrum_Up.triggered.connect(self.scale_2d_spectrum_up)
         self.w.actionScale_2D_Spectrum_Down.triggered.connect(self.scale_2d_spectrum_down)
@@ -1184,10 +1185,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end autobaseline1d_all
 
     def autophase1d(self, width=128, num_windows=1024, max_peaks=1000, noise_fact=20):
-        #code_out = io.StringIO()
-        #code_err = io.StringIO()
-        #sys.stdout = code_out
-        #sys.stderr = code_err
         if width == False:
             width = 128
             num_windows = 1024
@@ -1198,31 +1195,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.nd.ft()
         self.nd.auto_ref()
         self.nd.autophase1d(width, num_windows, max_peaks, noise_fact)
-        # self.w.baselineCorrection.setCurrentIndex(1)
-        # self.nd.ft()
-        # self.nd.baseline1d()
-        # self.plot_spc()
         self.set_proc_pars()
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
         self.plot_spc(True)
-        #sys.stdout = sys.__stdout__
-        #sys.stderr = sys.__stderr__
-        #if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-        #    txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
-        #    err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
-        #else:
-        #    txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
-        #    err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
-
-        #self.w.console.setTextColor(txt_col)
-        #self.w.console.append(code_out.getvalue())
-        #self.w.console.setTextColor(err_col)
-        #self.w.console.append(code_err.getvalue())
-        #code_out.close()
-        #code_err.close()
         # end autophase1d
+
+    def autophase1d1(self, gamma_factor=1.0):
+        self.show_auto_phase()
+        self.nd.ft()
+        self.nd.auto_ref()
+        self.nd.autophase1d1(gamma_factor=gamma_factor)
+        self.set_proc_pars()
+        self.show_version()
+        self.w.nmrSpectrum.setCurrentIndex(0)
+        self.change_data_set_exp()
+        self.plot_spc(True)
+        # end autophase1d1
 
     def autophase1d_bl(self):
         self.nd.autophase1d_bl()
@@ -1267,6 +1257,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         code_out.close()
         code_err.close()
         # end autophase1d_all
+
+    def autophase1d1_all(self):
+        self.nd.autophase1d1_all()
+        self.plot_spc(True)
 
     def autophase1d_exclude_water(self, delta_sw=-1):
         self.nd.autophase1d_exclude_water(delta_sw)

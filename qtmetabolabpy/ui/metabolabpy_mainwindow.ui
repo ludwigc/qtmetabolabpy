@@ -7349,6 +7349,7 @@
      </property>
      <addaction name="actionCorrect_Phase"/>
      <addaction name="actionAutomatic_Phase_Correction"/>
+     <addaction name="actionAutomatic_Phase_Correction_algorithm_2"/>
      <addaction name="actionAutomatic_Baseline_Correction"/>
      <addaction name="actionAutomatic_Phase_Correction_with_Reference_Spectrum"/>
     </widget>
@@ -8066,6 +8067,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+Shift+3</string>
+   </property>
+  </action>
+  <action name="actionAutomatic_Phase_Correction_algorithm_2">
+   <property name="text">
+    <string>Automatic Phase Correction (algorithm 2)</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+A</string>
    </property>
   </action>
  </widget>
