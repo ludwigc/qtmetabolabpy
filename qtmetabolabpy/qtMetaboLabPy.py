@@ -2024,50 +2024,50 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             yticks = cv[0].axes.get_yticks()
             xticks = cv[0].axes.get_xticks()
-            if self.nd.cf.print_standard_colours:
-                p_cols = self.nd.print_colours
-                n_cols = self.nd.print_neg_colours
-                cols = []
-                cols_dict = {}
-                cols_dict_rgb = {}
-                orig_pos_col_rgb = []
-                orig_pos_col = []
-                orig_neg_col_rgb = []
-                orig_neg_col = []
-                for k in range(len(self.nd.nmrdat)):
-                    orig_pos_col_rgb.append([])
-                    orig_pos_col.append([])
-                    orig_neg_col_rgb.append([])
-                    orig_neg_col.append([])
-                    for l in range(len(self.nd.nmrdat[k])):
-                        orig_pos_col_rgb[k].append(self.nd.nmrdat[k][l].display.pos_col_rgb)
-                        orig_pos_col[k].append(self.nd.nmrdat[k][l].display.pos_col)
-                        orig_neg_col_rgb[k].append(self.nd.nmrdat[k][l].display.neg_col_rgb)
-                        orig_neg_col[k].append(self.nd.nmrdat[k][l].display.neg_col)
-                        if self.nd.nmrdat[k][l].display.pos_col == 'RGB':
-                            if self.nd.nmrdat[k][l].display.pos_col_rgb not in cols:
-                                cols.append(self.nd.nmrdat[k][l].display.pos_col_rgb)
-                                idx = len(cols) - 1
-                                cols_dict_rgb[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col_rgb
-                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
-                            else:
-                                idx = cols.index(self.nd.nmrdat[k][l].display.pos_col_rgb)
-                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+            #if self.nd.cf.print_standard_colours:
+            p_cols = self.nd.print_colours
+            n_cols = self.nd.print_neg_colours
+            cols = []
+            cols_dict = {}
+            cols_dict_rgb = {}
+            orig_pos_col_rgb = []
+            orig_pos_col = []
+            orig_neg_col_rgb = []
+            orig_neg_col = []
+            for k in range(len(self.nd.nmrdat)):
+                orig_pos_col_rgb.append([])
+                orig_pos_col.append([])
+                orig_neg_col_rgb.append([])
+                orig_neg_col.append([])
+                for l in range(len(self.nd.nmrdat[k])):
+                    orig_pos_col_rgb[k].append(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                    orig_pos_col[k].append(self.nd.nmrdat[k][l].display.pos_col)
+                    orig_neg_col_rgb[k].append(self.nd.nmrdat[k][l].display.neg_col_rgb)
+                    orig_neg_col[k].append(self.nd.nmrdat[k][l].display.neg_col)
+                    if self.nd.nmrdat[k][l].display.pos_col == 'RGB':
+                        if self.nd.nmrdat[k][l].display.pos_col_rgb not in cols:
+                            cols.append(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                            idx = len(cols) - 1
+                            cols_dict_rgb[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col_rgb
+                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                            self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
                         else:
-                            if self.nd.nmrdat[k][l].display.pos_col not in cols:
-                                cols.append(self.nd.nmrdat[k][l].display.pos_col)
-                                idx = len(cols) - 1
-                                cols_dict[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col
-                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
-                            else:
-                                idx = cols.index(self.nd.nmrdat[k][l].display.pos_col)
-                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                            idx = cols.index(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                            self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                    else:
+                        if self.nd.nmrdat[k][l].display.pos_col not in cols:
+                            cols.append(self.nd.nmrdat[k][l].display.pos_col)
+                            idx = len(cols) - 1
+                            cols_dict[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col
+                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                            self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                        else:
+                            idx = cols.index(self.nd.nmrdat[k][l].display.pos_col)
+                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
 
-                            self.nd.nmrdat[k][l].display.pos_col = 'RGB'
+                        self.nd.nmrdat[k][l].display.pos_col = 'RGB'
 
 
             cv[0].draw()
@@ -2101,6 +2101,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
             cv[0].axes.spines['left'].set_color(fg)
             cv[0].axes.spines['right'].set_color(fg)
             cv[0].axes.spines['top'].set_color(fg)
+            if self.cf.print_light_mode:
+                self.show_legend(mode='light')
+            else:
+                self.show_legend(mode='dark')
+
             if len(cv) > 1:
                 cv[1].figure.set_facecolor(bg)
                 cv[1].axes.set_facecolor(bg)
@@ -2345,14 +2350,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
             else:
                 self.load_light_mode()
 
-            if self.nd.cf.print_standard_colours:
+            #if self.nd.cf.print_standard_colours:
                 #if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 1:
-                for k in range(len(self.nd.nmrdat)):
-                    for l in range(len(self.nd.nmrdat[k])):
-                        self.nd.nmrdat[k][l].display.pos_col_rgb = orig_pos_col_rgb[k][l]
-                        self.nd.nmrdat[k][l].display.pos_col = orig_pos_col[k][l]
-                        self.nd.nmrdat[k][l].display.neg_col_rgb = orig_neg_col_rgb[k][l]
-                        self.nd.nmrdat[k][l].display.neg_col = orig_neg_col[k][l]
+            for k in range(len(self.nd.nmrdat)):
+                for l in range(len(self.nd.nmrdat[k])):
+                    self.nd.nmrdat[k][l].display.pos_col_rgb = orig_pos_col_rgb[k][l]
+                    self.nd.nmrdat[k][l].display.pos_col = orig_pos_col[k][l]
+                    self.nd.nmrdat[k][l].display.neg_col_rgb = orig_neg_col_rgb[k][l]
+                    self.nd.nmrdat[k][l].display.neg_col = orig_neg_col[k][l]
 
             cv[0].axes.set_yticks(yticks)
             cv[0].axes.set_ylim(ylim)
@@ -7338,7 +7343,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.save_config()
         # end set_legend
 
-    def show_legend(self):
+    def show_legend(self, mode=''):
         if len(self.set_cols) == 0:
             return
 
@@ -7355,9 +7360,19 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
 
         ll = self.w.MplWidget.canvas.axes.legend(class_select_unique, fontsize=self.cf.print_label_font_size, frameon=False, shadow=False)
-        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            for text in ll.get_texts():
-                text.set_color("white")
+        print(f'mode: {mode}')
+        if len(mode) == 0:
+            if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+                for text in ll.get_texts():
+                    text.set_color("white")
+
+        else:
+            if mode == 'dark':
+                for text in ll.get_texts():
+                    text.set_color("white")
+            else:
+                for text in ll.get_texts():
+                    text.set_color("black")
 
         self.w.MplWidget.canvas.draw()
         self.show_nmr_spectrum()
