@@ -367,6 +367,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.titleFile.textChanged.connect(self.change_title_file)
         self.w.samplesInComboBox.currentIndexChanged.connect(self.set_samples_in_combo_box)
         self.w.openWeb.activated.connect(self.open_metabolite_web)
+        self.w.plotLegend.stateChanged.connect(self.set_legend)
         #self.w.startNotebookButton.clicked.connect(self.start_notebook)
         #self.w.stopNotebookButton.clicked.connect(self.stop_notebook)
         self.w.runPreProcessingButton.clicked.connect(self.data_pre_processing)
@@ -613,6 +614,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_font_size()
         self.cf = nmrConfig.NmrConfig()
         self.cf.read_config()
+        self.w.plotLegend.setChecked(self.cf.plot_legend)
         self.w.plotTop.clicked.connect(self.update_plot_top)
         self.w.plotLeft.clicked.connect(self.update_plot_left)
         self.w.plotRight.clicked.connect(self.update_plot_right)
@@ -6286,6 +6288,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         if keep_zoom != -1:
             self.w.keepZoom.setChecked(keep_zoom)
+
+        if self.cf.plot_legend:
+            self.show_legend()
         # end plot_spc
 
     def plot_spc_disp(self):
@@ -7305,13 +7310,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.nd.pp.init_plot_colours()
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             title = self.nd.nmrdat[self.nd.s][k].title
-            idx1 = title.find(keyword)
+            idx1 = title.find(keyword + ' ')
             idx2 = title[idx1:].find(':')
             idx3 = title[idx1:].find('\n')
             class_select.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
             if title[idx1 + idx2 + 1:idx1 + idx3].strip() not in class_select_unique:
                 class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
-
 
         for k in range(len(class_select)):
             if len(class_select_unique) > 1:
@@ -7327,6 +7331,36 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.set_cols = ''
             self.set_standard_colours()
 
+        # end set_colours
+
+    def set_legend(self):
+        self.cf.plot_legend = self.w.plotLegend.isChecked()
+        self.cf.save_config()
+        # end set_legend
+
+    def show_legend(self):
+        if len(self.set_cols) == 0:
+            return
+
+        class_select = []
+        class_select_unique = []
+        self.nd.pp.init_plot_colours()
+        for k in range(len(self.nd.nmrdat[self.nd.s])):
+            title = self.nd.nmrdat[self.nd.s][k].title
+            idx1 = title.find(self.set_cols + ' ')
+            idx2 = title[idx1:].find(':')
+            idx3 = title[idx1:].find('\n')
+            class_select.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+            if title[idx1 + idx2 + 1:idx1 + idx3].strip() not in class_select_unique:
+                class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+
+        ll = self.w.MplWidget.canvas.axes.legend(class_select_unique, fontsize=self.cf.print_label_font_size, frameon=False, shadow=False)
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            for text in ll.get_texts():
+                text.set_color("white")
+
+        self.w.MplWidget.canvas.draw()
+        self.show_nmr_spectrum()
         # end set_colours
 
     def select_spectra(self, keyword=[], values=[]):

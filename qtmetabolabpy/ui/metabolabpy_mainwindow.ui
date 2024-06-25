@@ -135,6 +135,13 @@
        </spacer>
       </item>
       <item>
+       <widget class="QCheckBox" name="plotLegend">
+        <property name="text">
+         <string>plotLegend</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="keepZoom">
         <property name="text">
          <string>keepZoom |</string>
