@@ -6148,6 +6148,27 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.MplWidget.canvas.axes.clear()
             for s1 in range(len(self.nd.nmrdat)):
                 for k in range(len(self.nd.nmrdat[s1])):
+                    if k == e and s1 == s:
+                        d = self.nd.nmrdat[s][e].display
+                        if (d.pos_col == "RGB"):
+                            pos_col = d.pos_col_rgb
+                        else:
+                            pos_col = d.pos_col
+
+                        if (d.neg_col == "RGB"):
+                            neg_col = d.neg_col_rgb
+                        else:
+                            neg_col = d.neg_col
+
+                        pos_col = matplotlib.colors.to_hex(pos_col)
+                        neg_col = matplotlib.colors.to_hex(neg_col)
+                        xlabel = d.x_label + " [" + d.axis_type1 + "]"
+                        ylabel = d.y_label + " [" + d.axis_type2 + "]"
+                        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1,
+                                                          self.nd.nmrdat[self.nd.s][self.nd.e].spc[0].real,
+                                                          color=pos_col, linewidth=linewidth)
+
+
                     if ((k != e) or (s1 != s)) and (self.nd.nmrdat[s1][k].display.display_spc == True):
                         #d = self.nd.nmrdat[s1][k].display
                         if self.nd.nmrdat[s1][k].display.pos_col == "RGB":
@@ -6232,6 +6253,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 self.vertical_auto_scale()
                 self.keep_x_zoom = False
 
+            if self.cf.plot_legend:
+                self.show_legend()
 
         else:
             mm = np.max(np.abs(self.nd.nmrdat[self.nd.s][self.nd.e].spc.real))
@@ -6294,8 +6317,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if keep_zoom != -1:
             self.w.keepZoom.setChecked(keep_zoom)
 
-        if self.cf.plot_legend:
-            self.show_legend()
         # end plot_spc
 
     def plot_spc_disp(self):
@@ -7141,7 +7162,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             sum_value = 0
             for l in range(len(keywords)):
                 title = self.nd.nmrdat[self.nd.s][k].title
-                idx1 = title.find(keywords[l])
+                idx1 = title.find(keywords[l] + ' ')
                 idx2 = title[idx1:].find(':')
                 idx3 = title[idx1:].find('\n')
                 if title[idx1 + idx2 + 1:idx1 + idx3].strip() in classes[l]:
@@ -7295,7 +7316,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.nd.pp.class_select = []
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             title = self.nd.nmrdat[self.nd.s][k].title
-            idx1 = title.find(keyword)
+            idx1 = title.find(keyword + ' ')
             idx2 = title[idx1:].find(':')
             idx3 = title[idx1:].find('\n')
             self.nd.pp.class_select.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
@@ -7349,18 +7370,26 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         class_select = []
         class_select_unique = []
-        self.nd.pp.init_plot_colours()
+        title = self.nd.nmrdat[self.nd.s][self.nd.e].title
+        idx1 = title.find(self.set_cols + ' ')
+        idx2 = title[idx1:].find(':')
+        idx3 = title[idx1:].find('\n')
+        class_select.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+        if title[idx1 + idx2 + 1:idx1 + idx3].strip() not in class_select_unique:
+            class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+
+        #self.nd.pp.init_plot_colours()
         for k in range(len(self.nd.nmrdat[self.nd.s])):
-            title = self.nd.nmrdat[self.nd.s][k].title
-            idx1 = title.find(self.set_cols + ' ')
-            idx2 = title[idx1:].find(':')
-            idx3 = title[idx1:].find('\n')
-            class_select.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
-            if title[idx1 + idx2 + 1:idx1 + idx3].strip() not in class_select_unique:
-                class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+            if self.nd.nmrdat[self.nd.s][k].display.display_spc:
+                title = self.nd.nmrdat[self.nd.s][k].title
+                idx1 = title.find(self.set_cols + ' ')
+                idx2 = title[idx1:].find(':')
+                idx3 = title[idx1:].find('\n')
+                class_select.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
+                if title[idx1 + idx2 + 1:idx1 + idx3].strip() not in class_select_unique:
+                    class_select_unique.append(title[idx1 + idx2 + 1:idx1 + idx3].strip())
 
         ll = self.w.MplWidget.canvas.axes.legend(class_select_unique, fontsize=self.cf.print_label_font_size, frameon=False, shadow=False)
-        print(f'mode: {mode}')
         if len(mode) == 0:
             if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
                 for text in ll.get_texts():
@@ -7397,7 +7426,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             title = self.nd.nmrdat[self.nd.s][k].title
             idx4 = np.zeros(len(keyword))
             for l in range(len(keyword)):
-                idx1 = title.find(keyword[l])
+                idx1 = title.find(keyword[l] + ' ')
                 idx2 = title[idx1:].find(':')
                 idx3 = title[idx1:].find('\n')
                 idx4[l] = -1
