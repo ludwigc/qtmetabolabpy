@@ -10,6 +10,7 @@ matplotlib.rcParams['agg.path.chunksize'] = 64000  # pragma: no cover
 ## matplotlib.rc('ytick', labelsize=8)
 import platform  # pragma: no cover
 import os  # pragma: no cover
+import re
 
 
 
@@ -6470,18 +6471,28 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # print(selected_file)
         f_name = os.path.split(selected_file[0])[1]
-        data_path = os.path.split(os.path.split(selected_file[0])[0])[0]
-        exp_num = os.path.split(os.path.split(selected_file[0])[0])[1]
+        spc3d = re.compile('.+\d+.+')
+        if len(spc3d.findall(f_name)) == 0:
+            data_path = os.path.split(os.path.split(selected_file[0])[0])[0]
+            exp_num = os.path.split(os.path.split(selected_file[0])[0])[1]
+            ft_dir = ''
+        else:
+            data_path = os.path.split(os.path.split(os.path.split(selected_file[0])[0])[0])[0]
+            exp_num = os.path.split(os.path.split(os.path.split(selected_file[0])[0])[0])[1]
+            ft_dir = os.path.split(os.path.split(selected_file[0])[0])[1]
+
+        #print(f'data_path: {data_path}')
+        #print(f'exp_num: {exp_num}')
         if exp_num.find('.') > -1:
             exp_num = exp_num[:exp_num.find('.')]
 
-        self.read_nmrpipe_spcs([data_path], [exp_num], f_name)
+        self.read_nmrpipe_spcs([data_path], [exp_num], f_name, ft_dir)
         self.set_standard_colours()
         self.update_gui()
         self.reset_plot()
         # end read_nmrpipe_spc
 
-    def read_nmrpipe_spcs(self, data_path, data_sets, proc_data_name='test.dat'):
+    def read_nmrpipe_spcs(self, data_path, data_sets, proc_data_name='test.dat', ft_dir=''):
         z_fill = 25
         if (data_path[0] == 'interactive'):
             data_path = [QFileDialog.getExistingDirectory()]
@@ -6499,7 +6510,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 for k in range(len(folders)):
                     data_sets.append(int(folders[k]))
 
-            self.nd.read_nmrpipe_spcs(data_path, data_sets, proc_data_name)
+            self.nd.read_nmrpipe_spcs(data_path, data_sets, proc_data_name, ft_dir)
         # end read_nmrpipe_spcs
 
     def read_spcs(self, data_path, data_sets, dataset=1):
@@ -6832,6 +6843,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
             f.write(scriptText)
 
         # end open_script
+
+    def scale_1d(self, factor=1.0):
+        self.nd.nmrdat[self.nd.s][self.nd.e].fid *= factor
+        self.nd.nmrdat[self.nd.s][self.nd.e].spc *= factor
+        self.plot_spc()
 
     def scale_2d_spectrum_up(self):
         self.nd.nmrdat[self.nd.s][self.nd.e].display.min_level /= 1.1
