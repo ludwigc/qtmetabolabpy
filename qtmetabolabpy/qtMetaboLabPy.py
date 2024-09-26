@@ -863,6 +863,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.ginput_add_peak(2)
         # end add_peak
 
+    def add_tmsp(self, m0=1, r2=1, all=False):
+        if all:
+            self.nd.add_tmsp(m0=m0, r2=r2)
+        else:
+            self.nd.nmrdat[self.nd.s][self.nd.e].add_tmsp(m0=m0, r2=r2)
+
+        self.plot_spc()
+        # end add_tmsp
+
     def autofit_hsqc(self, metabolite_list=False):
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
@@ -1940,6 +1949,18 @@ class QtMetaboLabPy(object):  # pragma: no cover
             print("d{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.delay[index]))
 
         # end d
+
+    def export_bruker(self, all=True):
+        selected_directory = QFileDialog.getExistingDirectory()
+        if len(selected_directory[0]) == 0:
+            return
+
+        if all:
+            self.nd.export_bruker_1d(selected_directory, str(10 * (self.nd.e + 1)))
+        else:
+            self.nd.nmrdat[self.nd.s][self.nd.e].export_bruker_1d(selected_directory, str(10 * (self.nd.e + 1)))
+
+        # end export_bruker
 
     def increase_y_lim(self):
         ylim = self.w.MplWidget.canvas.axes.get_ylim()
