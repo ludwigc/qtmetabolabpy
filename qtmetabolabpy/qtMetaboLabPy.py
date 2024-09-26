@@ -3265,6 +3265,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def export_peak(self):
         hsqcAnalysis = False
+        peak_height = self.w.peakHeight.isChecked()
         if self.w.hsqcAnalysis.isChecked() == True:
             self.w.hsqcAnalysis.setChecked(False)
 
@@ -3305,16 +3306,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
             worksheet.write('A2', 'Sample #')
             worksheet.write('A3', 'Sample ID')
             tmsp_idx = -1
-            if self.nd.quantify:
-                for idx in range(len(self.nd.nmrdat[ds[k]][self.nd.e].peak_label)):
-                    if self.nd.nmrdat[ds[k]][self.nd.e].peak_label[idx].upper() == self.nd.internal_std.upper():
-                        tmsp_idx = idx
+            if not peak_height:
+                if self.nd.quantify:
+                    for idx in range(len(self.nd.nmrdat[ds[k]][self.nd.e].peak_label)):
+                        if self.nd.nmrdat[ds[k]][self.nd.e].peak_label[idx].upper() == self.nd.internal_std.upper():
+                            tmsp_idx = idx
 
-                if tmsp_idx == -1:
-                    self.nd.quantify = False
+                    if tmsp_idx == -1:
+                        self.nd.quantify = False
 
             for m in range(len(exps)):
-                worksheet.write(abc_string[m + 5] + '1', 'peak_int(exp ' + str(exps[m] + 1) + ')')
+                if peak_height:
+                    worksheet.write(abc_string[m + 5] + '1', 'peak_height(exp ' + str(exps[m] + 1) + ')')
+                else:
+                    worksheet.write(abc_string[m + 5] + '1', 'peak_int(exp ' + str(exps[m] + 1) + ')')
+
                 worksheet.write(abc_string[m + 5] + '2', str(exps[m] + 1))
                 worksheet.write(abc_string[m + 5] + '3', self.nd.nmrdat[ds[k]][exps[m]].title)
 
@@ -3324,25 +3330,29 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 worksheet.write('D' + str(l + 4), self.nd.nmrdat[self.nd.s][self.nd.e].start_peak[l])
                 worksheet.write('E' + str(l + 4), self.nd.nmrdat[self.nd.s][self.nd.e].end_peak[l])
                 for m in range(len(exps)):
-                    worksheet.write(abc_string[m + 5] + str(l + 4), self.nd.nmrdat[ds[k]][exps[m]].peak_int[l])
+                    if peak_height:
+                        worksheet.write(abc_string[m + 5] + str(l + 4), self.nd.nmrdat[ds[k]][exps[m]].peak_max[l])
+                    else:
+                        worksheet.write(abc_string[m + 5] + str(l + 4), self.nd.nmrdat[ds[k]][exps[m]].peak_int[l])
 
-            if self.nd.quantify:
-                worksheet.write('A' + str(4 + tmsp_idx), 'Reference compound')
-                worksheet.write('B' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.nd.internal_std + ' conc [mM]')
-                worksheet.write('C' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.w.tmspConc.text())
-                for m in range(len(exps)):
-                    worksheet.write(abc_string[m + 5] + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 5), 'conc. [mM]')
-                for l in range(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak)):
-                    worksheet.write('C' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), 'nProt')
-                    worksheet.write('D' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), self.nd.nmrdat[ds[k]][self.nd.e].n_protons[l])
-                    worksheet.write('E' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), self.nd.nmrdat[ds[k]][self.nd.e].peak_label[l])
+            if not peak_height:
+                if self.nd.quantify:
+                    worksheet.write('A' + str(4 + tmsp_idx), 'Reference compound')
+                    worksheet.write('B' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.nd.internal_std + ' conc [mM]')
+                    worksheet.write('C' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4), self.w.tmspConc.text())
                     for m in range(len(exps)):
-                        worksheet.write(abc_string[m + 5] + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l),
-                                        f'=C{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4}'
-                                        f'*D{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + tmsp_idx}'
-                                        f'*{abc_string[m + 5]}{l + 4}'
-                                        f'/(D{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l}'
-                                        f'*{abc_string[m + 5]}{tmsp_idx + 4})')
+                        worksheet.write(abc_string[m + 5] + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 5), 'conc. [mM]')
+                    for l in range(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak)):
+                        worksheet.write('C' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), 'nProt')
+                        worksheet.write('D' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), self.nd.nmrdat[ds[k]][self.nd.e].n_protons[l])
+                        worksheet.write('E' + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l), self.nd.nmrdat[ds[k]][self.nd.e].peak_label[l])
+                        for m in range(len(exps)):
+                            worksheet.write(abc_string[m + 5] + str(len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l),
+                                            f'=C{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 4}'
+                                            f'*D{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + tmsp_idx}'
+                                            f'*{abc_string[m + 5]}{l + 4}'
+                                            f'/(D{len(self.nd.nmrdat[self.nd.s][self.nd.e].start_peak) + 6 + l}'
+                                            f'*{abc_string[m + 5]}{tmsp_idx + 4})')
 
         workbook.close()
         # end export_peak

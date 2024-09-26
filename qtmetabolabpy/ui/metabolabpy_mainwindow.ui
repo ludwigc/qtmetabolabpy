@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1914</width>
-    <height>1004</height>
+    <height>1023</height>
    </rect>
   </property>
   <property name="font">
@@ -2470,17 +2470,48 @@
             <string notr="true"/>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_29">
-            <item row="0" column="0" colspan="2">
-             <widget class="QLabel" name="label_77">
-              <property name="font">
-               <font>
-                <pointsize>18</pointsize>
-                <kerning>false</kerning>
-               </font>
+            <item row="2" column="4">
+             <widget class="QLabel" name="label_127">
+              <property name="text">
+               <string>mM</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QPushButton" name="peakAddButton">
+              <property name="text">
+               <string>Add</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2" colspan="2">
+             <widget class="QLineEdit" name="tmspConc">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="text">
-               <string>Peak Picking</string>
+               <string>0.5</string>
               </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3" colspan="2">
+             <widget class="QComboBox" name="exportFormatCB">
+              <item>
+               <property name="text">
+                <string>.xlsx</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>.csv</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item row="2" column="0" colspan="2">
@@ -2509,71 +2540,6 @@
                </widget>
               </item>
              </layout>
-            </item>
-            <item row="2" column="2" colspan="2">
-             <widget class="QLineEdit" name="tmspConc">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>0.5</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="4">
-             <widget class="QLabel" name="label_127">
-              <property name="text">
-               <string>mM</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QPushButton" name="peakAddButton">
-              <property name="text">
-               <string>Add</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1" colspan="2">
-             <widget class="QCheckBox" name="intAllExps">
-              <property name="text">
-               <string>Int all exps</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="3" colspan="2">
-             <widget class="QComboBox" name="exportFormatCB">
-              <item>
-               <property name="text">
-                <string>.xlsx</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>.csv</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QPushButton" name="peakClearButton">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1" colspan="2">
-             <widget class="QCheckBox" name="quantify">
-              <property name="text">
-               <string>Quantify</string>
-              </property>
-             </widget>
             </item>
             <item row="4" column="3" colspan="2">
              <widget class="QPushButton" name="peakExportButton">
@@ -2622,6 +2588,47 @@
                 <string># Protons</string>
                </property>
               </column>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="label_77">
+              <property name="font">
+               <font>
+                <pointsize>18</pointsize>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="text">
+               <string>Peak Picking</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="2">
+             <widget class="QCheckBox" name="intAllExps">
+              <property name="text">
+               <string>Int all exps</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="2">
+             <widget class="QCheckBox" name="quantify">
+              <property name="text">
+               <string>Quantify</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QPushButton" name="peakClearButton">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QCheckBox" name="peakHeight">
+              <property name="text">
+               <string>peak height</string>
+              </property>
              </widget>
             </item>
            </layout>
@@ -7290,7 +7297,7 @@
      <x>0</x>
      <y>0</y>
      <width>1914</width>
-     <height>24</height>
+     <height>43</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
