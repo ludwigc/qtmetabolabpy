@@ -1950,13 +1950,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end d
 
-    def export_bruker(self, all=True):
+    def export_bruker_1d(self, all=True):
         selected_directory = QFileDialog.getExistingDirectory()
         if len(selected_directory[0]) == 0:
             return
 
         if all:
-            self.nd.export_bruker_1d(selected_directory, str(10 * (self.nd.e + 1)))
+            self.nd.export_bruker_1d(selected_directory)
         else:
             self.nd.nmrdat[self.nd.s][self.nd.e].export_bruker_1d(selected_directory, str(10 * (self.nd.e + 1)))
 
