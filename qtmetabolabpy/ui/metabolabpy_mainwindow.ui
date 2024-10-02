@@ -7407,6 +7407,7 @@
     <addaction name="separator"/>
     <addaction name="actionShow_SplashScreen"/>
     <addaction name="actionRestart_MetaboLabPy"/>
+    <addaction name="actionUpdate_MetaboLabPy_quits_software"/>
    </widget>
    <widget class="QMenu" name="menuCommand_Line">
     <property name="title">
@@ -7450,6 +7451,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionReset">
@@ -7948,7 +7952,7 @@
   </action>
   <action name="actionSet_light_mode_requires_restart">
    <property name="text">
-    <string>Set 'light' mode (requires restart)</string>
+    <string>Set 'light' mode (restarts QtMetaboLabPy)</string>
    </property>
    <property name="shortcut">
     <string>Alt+Shift+L</string>
@@ -7956,7 +7960,7 @@
   </action>
   <action name="actionSet_dark_mode_requires_restart">
    <property name="text">
-    <string>Set 'dark' mode (requires restart)</string>
+    <string>Set 'dark' mode (restarts QtMetaboLabPy)</string>
    </property>
    <property name="shortcut">
     <string>Alt+Shift+D</string>
@@ -8005,7 +8009,7 @@
   </action>
   <action name="actionSet_system_mode_requires_restart">
    <property name="text">
-    <string>Set 'system' mode (requires restart)</string>
+    <string>Set 'system' mode (restarts QtMetaboLabPy)</string>
    </property>
    <property name="shortcut">
     <string>Alt+Shift+S</string>
@@ -8021,7 +8025,7 @@
   </action>
   <action name="actionRestart_MetaboLabPy">
    <property name="text">
-    <string>Restart MetaboLabPy</string>
+    <string>Restart QtMetaboLabPy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -8089,6 +8093,11 @@
    </property>
    <property name="shortcut">
     <string>Meta+A</string>
+   </property>
+  </action>
+  <action name="actionUpdate_MetaboLabPy_quits_software">
+   <property name="text">
+    <string>Update MetaboLabPy (exits QtMetaboLabPy)</string>
    </property>
   </action>
  </widget>

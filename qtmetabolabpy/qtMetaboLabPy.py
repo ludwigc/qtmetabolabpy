@@ -447,7 +447,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionNext_command.triggered.connect(self.next_command)
         self.w.actionPrint.triggered.connect(self.print_spc)
         self.w.actionCorrect_Phase.triggered.connect(self.start_stop_ph_corr)
-        self.w.actionUpdate_MetaboLabPy_requires_restart.triggered.connect(self.update_metabolabpy)
+        self.w.actionUpdate_MetaboLabPy_quits_software.triggered.connect(self.update_metabolabpy)
         # self.w.actionZoomCorrect_Phase.triggered.connect(self.zoom_ph_corr)
         self.w.maResetButton.clicked.connect(self.hsqc_spin_sys_reset)
         self.w.zoomPhCorr1d.clicked.connect(self.zoom_ph_corr)
@@ -1882,15 +1882,16 @@ class QtMetaboLabPy(object):  # pragma: no cover
         subprocess.os.system('pip uninstall pylnk3 --yes')
         # end create_icon_win
 
-    def create_titles(self, dataset_label='', pos_label='', rack_label='', worksheet='', replace_orig_title=True, excel_name=''):
-        if dataset_label == '' or pos_label == '' or rack_label == '':
+    def create_titles(self, dataset_label='', pos_label='', rack_label='', worksheet='', replace_orig_title=True, excel_name='', autosampler='SampleJet'):
+        if dataset_label == '' or pos_label == '':
             msg = ''
             msg += '_____________________________________________________________________________MetaboLabPy Help__\n\n'
             msg += '    Usage:\n'
             msg += '        create_titles(dataset_label=<string>, pos_label=<string>, rack_label=<string>,\n'
-            msg += '           worksheet=<string>, replace_orig_title=True/False, excel_name=<string>)\n\n\n'
+            msg += '           worksheet=<string>, replace_orig_title=True/False, excel_name=<string>, autosampler=<string>)\n\n\n'
             msg += '        <string> for dataset_label, rack_label and pos_label refers to the Excel column\n'
-            msg += '        headers. All three arguments are mandatory. replace_orig_title can be set to either\n'
+            msg += '        headers. All three arguments are mandatory if autosampler is SampleJet. If autosampler is\n'\
+                   '        SampleCase, rack_label is optional. replace_orig_title can be set to either\n'
             msg += '        True or False. If the argument is True, the previously existing title file information\n'
             msg += '        will be discarded, if the argument if False, the previous title file information will be\n'
             msg += '        added to the end of the new title file information. This argument is optional, the\n'
@@ -1898,6 +1899,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
             msg += '        The excel_name argument should either be empty or a string containing path and file\n'
             msg += '        name information for the Excel spreadsheet. If the argument is empty, a GUI element\n'
             msg += '        pops up where the user can graphically choose the excel file. This is the default\n'
+            msg += '        autosampler can be set to SampleJet or SampleCase depending on the autosampler used.\n'
+            msg += '\n'
+            msg += '        For autosampler=SampleCase, use the pos_label column to fill in Bruker NMR experiment numbers\n'
+            msg += '        For this option, you do not need the rack_label column\n'
             msg += '\n_______________________________________________________________________________________________\n'
             print(msg)
             return
@@ -1927,14 +1932,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
             something_not_found = True
             print(f'pos_label: {pos_label} not found.')
 
-        if len(np.where(xls.columns.str.contains(rack_label))[0]) == 0:
-            something_not_found = True
-            print(f'rack_label: {rack_label} not found.')
+        if autosampler == 'SampleJet':
+            if len(np.where(xls.columns.str.contains(rack_label))[0]) == 0:
+                something_not_found = True
+                print(f'rack_label: {rack_label} not found.')
 
         if something_not_found:
             return
 
-        self.nd.create_titles(xls, dataset_label, pos_label, rack_label, replace_orig_title, excel_name)
+        self.nd.create_titles(xls, dataset_label, pos_label, rack_label, replace_orig_title, excel_name, autosampler)
         self.update_gui()
         self.w.nmrSpectrum.setCurrentIndex(7)
     # end create_titles
@@ -6787,7 +6793,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end reset_plot
 
-    def restart_metabolabpy(selfself):
+    def restart_metabolabpy(self):
         os.execl(sys.executable, sys.executable, *sys.argv)
         # end restart_metabolabpy
 
@@ -9261,6 +9267,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.nmrSpectrum.setCurrentIndex(12)
         # end tutorials
 
+    def update_metabolabpy(self):
+        os.execl(sys.executable, sys.executable, *['-m', 'pip', 'install', '--upgrade', 'metabolabpy', 'qtmetabolabpy', 'metabolabpytools'])
+        # end update_metabolabpy
+
+
     def update_plot_editor(self):
         self.w.plotTop.setChecked(self.cf.print_top_axis)
         if self.w.plotTop.isChecked():
@@ -9349,7 +9360,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         return "updated GUI"
         # end update_gui
 
-    def update_metabolabpy(self):
+    def update_metabolabpy1(self):
         code_out = io.StringIO()
         code_err = io.StringIO()
         sys.stdout = code_out
