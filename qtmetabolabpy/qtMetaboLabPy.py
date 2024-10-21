@@ -1859,12 +1859,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
         base_dir = os.path.split(nmr_dir)[0]
         icon_file = os.path.join(base_dir, 'icon', 'icon.ico')
         user_dir = os.environ.get('USERPROFILE')
-        desktop_dir = os.path.join(user_dir, 'Desktop')
+        #desktop_dir = os.path.join(user_dir, 'Desktop')
+        result = subprocess.run('powershell.exe [Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)', shell=True, capture_output=True)
+        desktop_dir = result.stdout.decode('ascii').replace('\r\n','')
         link_file = os.path.join(desktop_dir, 'MetaboLabPy.lnk')
         ml_bat = os.path.join(base_dir, 'ml.bat')
         ml_exec_bat = os.path.join(base_dir, 'ml_exec.bat')
         f = open(ml_bat, 'w')
-        f.write('start /min ' + ml_exec_bat)
+        f.write('start /min ' + ml_exec_bat.replace(' ', '" "'))
         f.close()
         f = open(ml_exec_bat, 'w')
         venv = sys.prefix.find('env')
@@ -1874,11 +1876,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         else:
             idx = sys.prefix.rfind('\\') + 1
             env = sys.prefix[idx:]
-            f.write(cnda[:-2] + ' activate ' + env + ' && qtmetabolabpy && exit')
+            f.write('"' + cnda[:-2] + '" activate ' + env + ' && qtmetabolabpy && exit')
 
         f.close()
         subprocess.os.system('pip install pylnk3')
-        subprocess.os.system('pylnk3 create ' + ml_bat + ' ' + link_file + ' -m Minimized --icon ' + icon_file)
+        subprocess.os.system('pylnk3 create "' + ml_bat + '" "' + link_file + '" -m Minimized --icon "' + icon_file + '"')
         subprocess.os.system('pip uninstall pylnk3 --yes')
         # end create_icon_win
 
