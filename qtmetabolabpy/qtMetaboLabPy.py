@@ -9277,7 +9277,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end tutorials
 
     def update_metabolabpy(self):
-        os.execl(sys.executable, sys.executable, *['-m', 'pip', 'install', '--upgrade', 'metabolabpy', 'qtmetabolabpy', 'metabolabpytools'])
+        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *['-m', 'pip', 'install', '--upgrade', 'metabolabpy', 'qtmetabolabpy', 'metabolabpytools'])
         # end update_metabolabpy
 
 
