@@ -1864,7 +1864,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         desktop_dir = result.stdout.decode('ascii').replace('\r\n','')
         link_file = os.path.join(desktop_dir, 'MetaboLabPy.lnk')
         app_data =  subprocess.run('powershell.exe [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)', shell=True, capture_output=True)
-        start_menu_entry = os.path.join(app_data, 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'MetaboLabPy')
+        start_menu_entry = os.path.join(app_data.stdout.decode('ascii').replace('\r\n',''), 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'MetaboLabPy')
         if not os.path.isdir(start_menu_entry):
             os.makedirs(start_menu_entry)
 
