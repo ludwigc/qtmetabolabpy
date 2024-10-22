@@ -6803,7 +6803,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end reset_plot
 
     def restart_metabolabpy(self):
-        os.execl(sys.executable, sys.executable, *sys.argv)
+        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
         # end restart_metabolabpy
 
     def save_button(self):
@@ -7588,7 +7588,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.mode = 'dark'
         self.cf.save_config()
         # restart program
-        # os.execv(sys.executable, ['python'] + sys.argv)
+        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
         # end save_config
 
     def set_disp_pars(self):
@@ -8220,6 +8220,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.read_config()
         self.cf.mode = 'light'
         self.cf.save_config()
+        # restart program
+        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
         # end save_config
 
     def set_ma_echo_time(self):
