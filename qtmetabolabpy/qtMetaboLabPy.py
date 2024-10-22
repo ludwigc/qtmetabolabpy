@@ -1863,6 +1863,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         result = subprocess.run('powershell.exe [Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)', shell=True, capture_output=True)
         desktop_dir = result.stdout.decode('ascii').replace('\r\n','')
         link_file = os.path.join(desktop_dir, 'MetaboLabPy.lnk')
+        app_data =  subprocess.run('powershell.exe [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)', shell=True, capture_output=True)
+        start_menu_entry = os.path.join(app_data, 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'MetaboLabPy')
+        if not os.path.isdir(start_menu_entry):
+            os.makedirs(start_menu_entry)
+
+        start_menu_entry = os.path.join(start_menu_entry, 'MetaboLabPy.lnk')
         ml_bat = os.path.join(base_dir, 'ml.bat')
         ml_exec_bat = os.path.join(base_dir, 'ml_exec.bat')
         f = open(ml_bat, 'w')
@@ -1881,6 +1887,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         f.close()
         subprocess.os.system('pip install pylnk3')
         subprocess.os.system('pylnk3 create "' + ml_bat + '" "' + link_file + '" -m Minimized --icon "' + icon_file + '"')
+        subprocess.os.system('pylnk3 create "' + ml_bat + '" "' + start_menu_entry + '" -m Minimized --icon "' + icon_file + '"')
         subprocess.os.system('pip uninstall pylnk3 --yes')
         # end create_icon_win
 
