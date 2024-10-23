@@ -7592,7 +7592,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.mode = 'dark'
         self.cf.save_config()
         ## restart program
-        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
+        if sys.platform == 'win' or sys.platform == 'win32' or sys.platform == 'win64':
+            ml_path = os.path.split(os.path.split(inspect.getmodule(nmrDataSet).__file__)[0])[0]
+            bat_file = os.path.join(ml_path, 'ml.bat')
+            os.excl(bat_file, bat_file.replace(' ', '" "'), *[])
+        else:
+            os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
         ## end save_config
 
     def set_disp_pars(self):
@@ -8229,7 +8234,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.mode = 'light'
         self.cf.save_config()
         # restart program
-        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
+        if sys.platform == 'win' or sys.platform == 'win32' or sys.platform == 'win64':
+            ml_path = os.path.split(os.path.split(inspect.getmodule(nmrDataSet).__file__)[0])[0]
+            bat_file = os.path.join(ml_path, 'ml.bat')
+            os.excl(bat_file, bat_file.replace(' ', '" "'), *[])
+        else:
+            os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
         # end save_config
 
     def set_ma_echo_time(self):
@@ -8419,7 +8429,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.cf.mode = 'system'
         self.cf.save_config()
         # restart program
-        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
+        if sys.platform == 'win' or sys.platform == 'win32' or sys.platform == 'win64':
+            ml_path = os.path.split(os.path.split(inspect.getmodule(nmrDataSet).__file__)[0])[0]
+            bat_file = os.path.join(ml_path, 'ml.bat')
+            os.excl(bat_file, bat_file.replace(' ', '" "'), *[])
+        else:
+            os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
         # end save_config
 
     def update_assigned_metabolites(self):
