@@ -7584,12 +7584,16 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end set_compress_pre_proc
 
     def set_dark_mode(self):
+        arg = sys.argv[0].replace('\\\\?\\','')
+        if sys.platform == 'win' or sys.platform == 'win32' or sys.platform == 'win64':
+            sys.argv[0] = arg + '-script.py'
+
         self.cf.read_config()
         self.cf.mode = 'dark'
         self.cf.save_config()
-        # restart program
+        ## restart program
         os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
-        # end save_config
+        ## end save_config
 
     def set_disp_pars(self):
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
@@ -8217,6 +8221,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end set_j_res
 
     def set_light_mode(self):
+        arg = sys.argv[0].replace('\\\\?\\','')
+        if sys.platform == 'win' or sys.platform == 'win32' or sys.platform == 'win64':
+            sys.argv[0] = arg + '-script.py'
+
         self.cf.read_config()
         self.cf.mode = 'light'
         self.cf.save_config()
@@ -8403,11 +8411,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end set_standard_colours
 
     def set_system_mode(self):
+        arg = sys.argv[0].replace('\\\\?\\','')
+        if sys.platform == 'win' or sys.platform == 'win32' or sys.platform == 'win64':
+            sys.argv[0] = arg + '-script.py'
+
         self.cf.read_config()
         self.cf.mode = 'system'
         self.cf.save_config()
         # restart program
-        # os.execv(sys.executable, ['python'] + sys.argv)
+        os.execl(sys.executable, sys.executable.replace(' ', '" "'), *sys.argv)
         # end save_config
 
     def update_assigned_metabolites(self):
