@@ -436,6 +436,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionPlot_spc.triggered.connect(self.plot_spc)
         self.w.actionSave.triggered.connect(self.save_button)
         self.w.actionLoad.triggered.connect(self.load_button)
+        self.w.actionCheck_mlpy_file.triggered.connect(self.check_file)
         self.w.actionImport_MetaboLab_mat.triggered.connect(self.load_mat)
         self.w.actionIncrease_YLim_2fold.triggered.connect(self.increase_y_lim)
         self.w.actionDecrease_YLim_2fold.triggered.connect(self.decrease_y_lim)
@@ -5043,6 +5044,40 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
         # end load_button
+
+    def check_file(self):
+        if len(self.cf.current_directory) > 0:
+            if os.path.isdir(self.cf.current_directory):
+                os.chdir(self.cf.current_directory)
+
+        selectedDirectory = QFileDialog.getExistingDirectory()
+        if (len(selectedDirectory) == 0):
+            return
+
+        msg = self.nd.check_file(selectedDirectory)
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        else:
+            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+
+        if (len(msg) > 0):
+            self.w.nmrSpectrum.setCurrentIndex(10)
+            code_out = io.StringIO()
+            code_err = io.StringIO()
+            sys.stdout = code_out
+            sys.stderr = code_err
+            print(msg)
+            self.w.console.setTextColor(txt_col)
+            self.w.console.append(code_out.getvalue())
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+            code_out.close()
+            code_err.close()
+            self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
+
+        # end check_file
 
     def load_config(self):
         self.cf.read_config()
