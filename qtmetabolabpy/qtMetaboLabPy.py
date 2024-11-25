@@ -2721,6 +2721,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     hsqc.read_metabolite_information(k)
                     hsqc.set_metabolite_information(k, hsqc.metabolite_information)
                     hsqc.hsqc_data[k].init_data(hsqc.metabolite_information)
+                    print(f'{k} - h1_shifts: {hsqc.hsqc_data[k].h1_shifts}, h1_index: {hsqc.hsqc_data[k].h1_index}')
                     for l in range(len(hsqc.hsqc_data[k].h1_shifts)):
                         x = hsqc.hsqc_data[k].h1_shifts[l]
                         y = hsqc.hsqc_data[k].c13_shifts[hsqc.hsqc_data[k].h1_index[l] - 1]
