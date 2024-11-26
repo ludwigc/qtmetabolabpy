@@ -2631,6 +2631,13 @@
               </property>
              </widget>
             </item>
+            <item row="5" column="0">
+             <widget class="QCheckBox" name="localBaselineCorrection">
+              <property name="text">
+               <string>Local BC</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="splineBaselineTab">

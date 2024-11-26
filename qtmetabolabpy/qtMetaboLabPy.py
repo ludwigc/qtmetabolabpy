@@ -467,6 +467,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.peakExportButton.clicked.connect(self.export_peak)
         self.w.quantify.stateChanged.connect(self.set_datasets_exps)
         self.w.intAllExps.stateChanged.connect(self.set_datasets_exps)
+        self.w.localBaselineCorrection.stateChanged.connect(self.set_datasets_exps)
         self.w.exportFormatCB.currentIndexChanged.connect(self.set_datasets_exps)
         self.w.hsqcAnalysis.stateChanged.connect(self.set_hsqc_analysis)
         self.w.multipletAnalysis.stateChanged.connect(self.set_multiplet_analysis)
@@ -6987,6 +6988,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
         else:
             self.nd.export_peak_excel = False
 
+        if self.w.localBaselineCorrection.isChecked() == True:
+            self.cf.local_baseline_correction = True
+            self.cf.save_config()
+        else:
+            self.cf.local_baseline_correction = False
+            self.cf.save_config()
+
         start_peak = self.nd.nmrdat[self.nd.s][self.nd.e].start_peak
         end_peak = self.nd.nmrdat[self.nd.s][self.nd.e].end_peak
         peak_label = self.nd.nmrdat[self.nd.s][self.nd.e].peak_label
@@ -8432,6 +8440,17 @@ class QtMetaboLabPy(object):  # pragma: no cover
             except:
                 self.w.tmspConc.setText('0.5')
                 self.nd.tmsp_conc = 0.5
+
+            self.w.localBaselineCorrection.stateChanged.disconnect()
+            if self.cf.local_baseline_correction is True:
+                self.w.localBaselineCorrection.setChecked(True)
+                self.cf.local_baseline_correction = True
+            else:
+                self.w.localBaselineCorrection.setChecked(False)
+                self.cf.local_baseline_correction = False
+
+            self.cf.save_config()
+            self.w.localBaselineCorrection.stateChanged.connect(self.set_datasets_exps)
 
             self.show_peak_picking()
             self.fill_peak_numbers()
