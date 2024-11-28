@@ -8412,6 +8412,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end set_pre_processing
 
+    def set_plot_all_ds(self):
+        for k in range(len(self.nd.nmrdat)):
+            if k != self.nd.s:
+                self.nd.nmrdat[k][self.nd.e].display.display_spc = True
+
+        self.plot_spc()
+        # end set_plot_all_ds
+
     def set_peak_picking(self):
         if (self.w.peakPicking.isChecked() == True):
             self.w.preprocessing.setChecked(False)
