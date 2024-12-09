@@ -1246,9 +1246,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.nd.ft()
         self.nd.auto_ref()
         self.nd.autophase1d_all()
-        self.w.baselineCorrection.setCurrentIndex(1)
-        self.nd.ft()
-        self.nd.baseline1d()
         self.plot_spc(True)
         self.set_proc_pars()
         self.show_version()
@@ -2083,30 +2080,31 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     orig_pos_col[k].append(self.nd.nmrdat[k][l].display.pos_col)
                     orig_neg_col_rgb[k].append(self.nd.nmrdat[k][l].display.neg_col_rgb)
                     orig_neg_col[k].append(self.nd.nmrdat[k][l].display.neg_col)
-                    if self.nd.nmrdat[k][l].display.pos_col == 'RGB':
-                        if self.nd.nmrdat[k][l].display.pos_col_rgb not in cols:
-                            cols.append(self.nd.nmrdat[k][l].display.pos_col_rgb)
-                            idx = len(cols) - 1
-                            cols_dict_rgb[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col_rgb
-                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                            self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                    if self.nd.cf.print_standard_colours:
+                        if self.nd.nmrdat[k][l].display.pos_col == 'RGB':
+                            if self.nd.nmrdat[k][l].display.pos_col_rgb not in cols:
+                                cols.append(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                                idx = len(cols) - 1
+                                cols_dict_rgb[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col_rgb
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                            else:
+                                idx = cols.index(self.nd.nmrdat[k][l].display.pos_col_rgb)
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
                         else:
-                            idx = cols.index(self.nd.nmrdat[k][l].display.pos_col_rgb)
-                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                            self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
-                    else:
-                        if self.nd.nmrdat[k][l].display.pos_col not in cols:
-                            cols.append(self.nd.nmrdat[k][l].display.pos_col)
-                            idx = len(cols) - 1
-                            cols_dict[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col
-                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                            self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
-                        else:
-                            idx = cols.index(self.nd.nmrdat[k][l].display.pos_col)
-                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
-                            self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                            if self.nd.nmrdat[k][l].display.pos_col not in cols:
+                                cols.append(self.nd.nmrdat[k][l].display.pos_col)
+                                idx = len(cols) - 1
+                                cols_dict[p_cols[idx]] = self.nd.nmrdat[k][l].display.pos_col
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.neg_col_rgb = n_cols[idx]
+                            else:
+                                idx = cols.index(self.nd.nmrdat[k][l].display.pos_col)
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
+                                self.nd.nmrdat[k][l].display.pos_col_rgb = p_cols[idx]
 
-                        self.nd.nmrdat[k][l].display.pos_col = 'RGB'
+                            self.nd.nmrdat[k][l].display.pos_col = 'RGB'
 
 
             cv[0].draw()
@@ -9302,6 +9300,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 self.w.zoomPhCorr1d.setVisible(False)
                 self.w.exitZoomPhCorr1d.setVisible(False)
                 self.update_gui()
+                self.nd.ft()
                 self.plot_spc()
                 self.set_zoom_off()
                 # self.set_zoom()
