@@ -1661,8 +1661,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end check_baseline_order
 
     def clear(self, kz2=False):
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+        #sys.stdout = sys.__stdout__
+        #sys.stderr = sys.__stderr__
         self.w.displayAssignedMetabolites.setChecked(False)
         self.w.displayLibraryShifts.setChecked(False)
         self.w.displaySelectedMetabolite.setChecked(False)
@@ -1694,14 +1694,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.setBox.setValue(0)
         self.w.setBox.valueChanged.connect(lambda: self.change_data_set_exp())
         self.w.expBox.valueChanged.connect(lambda: self.change_data_set_exp())
-        code_out = io.StringIO()
-        code_err = io.StringIO()
-        # try:
+        #code_out = io.StringIO()
+        #code_err = io.StringIO()
+        #try:
         #    sys.stdout = code_out
         #    sys.stderr = code_err
-        # except:
+        #except:
         #    pass
-        #
+
         kz = self.w.keepZoom.isChecked()
         if kz2:
             self.w.keepZoom.setChecked(False)
@@ -3603,20 +3603,25 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def get_disp_pars4(self):
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
-        d.n_levels = round(float(self.w.nLevels.text()))
+        if len(self.w.nLevels.text()) > 0:
+            d.n_levels = round(float(self.w.nLevels.text()))
         # end get_disp_pars4
 
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
 
     def get_disp_pars5(self):
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
-        d.min_level = float(self.w.minLevel.text())
+        if len(self.w.minLevel.text()) > 0:
+            d.min_level = float(self.w.minLevel.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
         # end get_disp_pars5
 
     def get_disp_pars6(self):
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
-        d.max_level = float(self.w.maxLevel.text())
+        if len(self.w.maxLevel.text()) > 0:
+            d.max_level = float(self.w.maxLevel.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
         # end get_disp_pars6
 
@@ -3642,13 +3647,17 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def get_disp_pars10(self):
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
-        d.spc_offset = float(self.w.spcOffset.text())
+        if len(self.w.spcOffset.text()) > 0:
+            d.spc_offset = float(self.w.spcOffset.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
         # end get_disp_pars10
 
     def get_disp_pars11(self):
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
-        d.spc_scale = float(self.w.spcScale.text())
+        if len(self.w.spcScale.text()) > 0:
+            d.spc_scale = float(self.w.spcScale.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
         # end get_disp_pars11
 
@@ -3920,109 +3929,145 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def get_proc_pars9(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.n_points[0] = int(self.w.zeroFilling.text())
+        if len(self.w.zeroFilling.text()) > 0:
+            p.n_points[0] = int(self.w.zeroFilling.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars9
 
     def get_proc_pars10(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.n_points[1] = int(self.w.zeroFilling_2.text())
+        if len(self.w.zeroFilling_2.text()) > 0:
+            p.n_points[1] = int(self.w.zeroFilling_2.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars10
 
     def get_proc_pars11(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.lb[0] = float(self.w.lb.text())
+        if len(self.w.lb.text()) > 0:
+            p.lb[0] = float(self.w.lb.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars11
 
     def get_proc_pars12(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.gb[0] = float(self.w.gb.text())
+        if len(self.w.gb.text()) > 0:
+            p.gb[0] = float(self.w.gb.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars12
 
     def get_proc_pars13(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ssb[0] = float(self.w.ssb.text())
+        if len(self.w.ssb.text()) > 0:
+            p.ssb[0] = float(self.w.ssb.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars13
 
     def get_proc_pars14(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.lb[1] = float(self.w.lb_2.text())
+        if len(self.w.lb_2.text()):
+            p.lb[1] = float(self.w.lb_2.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars14
 
     def get_proc_pars15(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.gb[1] = float(self.w.gb_2.text())
+        if len(self.w.gb_2.text()) > 0:
+            p.gb[1] = float(self.w.gb_2.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars15
 
     def get_proc_pars16(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ssb[1] = float(self.w.ssb_2.text())
+        if len(self.w.ssb_2.text()) > 0:
+            p.ssb[1] = float(self.w.ssb_2.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars16
 
     def get_proc_pars17(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ph0[0] = float(self.w.ph0.text())
+        if len(self.w.ph0.text()) > 0:
+            p.ph0[0] = float(self.w.ph0.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars17
 
     def get_proc_pars18(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ph1[0] = float(self.w.ph1.text())
+        if len(self.w.ph1.text()) > 0:
+            p.ph1[0] = float(self.w.ph1.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars18
 
     def get_proc_pars19(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ph0[1] = float(self.w.ph0_2.text())
+        if len(self.w.ph0_2.text()) > 0:
+            p.ph0[1] = float(self.w.ph0_2.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars19
 
     def get_proc_pars20(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ph1[1] = float(self.w.ph1_2.text())
+        if len(self.w.ph1_2.text()) > 0:
+            p.ph1[1] = float(self.w.ph1_2.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars20
 
     def get_proc_pars21(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.poly_order = int(self.w.polyOrder.text())
+        if len(self.w.polyOrder.text()) > 0:
+            p.poly_order = int(self.w.polyOrder.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars21
 
     def get_proc_pars22(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.conv_extrapolation_size[0] = int(self.w.extrapolationSize.text())
+        if len(self.w.extrapolationSize.text()) > 0:
+            p.conv_extrapolation_size[0] = int(self.w.extrapolationSize.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars22
 
     def get_proc_pars23(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.conv_window_size[0] = int(self.w.windowSize.text())
+        if len(self.w.windowSize.text()) > 0:
+            p.conv_window_size[0] = int(self.w.windowSize.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars23
 
     def get_proc_pars24(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.fid_offset_correction = int(self.w.fidOffsetCorrection.text())
+        if len(self.w.fidOffsetCorrection.text()) > 0:
+            p.fid_offset_correction = int(self.w.fidOffsetCorrection.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars24
 
     def get_proc_pars25(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.strip_start = int(self.w.stripTransformStart.text())
+        if len(self.w.stripTransformStart.text()) > 0:
+            p.strip_start = int(self.w.stripTransformStart.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars25
 
     def get_proc_pars26(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.strip_end = int(self.w.stripTransformEnd.text())
+        if len(self.w.stripTransformEnd.text()) > 0:
+            p.strip_end = int(self.w.stripTransformEnd.text())
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars26
 
@@ -4034,15 +4079,19 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def get_proc_pars28(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ww_start = int(self.w.wwStartLevel.text())
-        self.w.wwStartLevel.setText(str(p.ww_start))
+        if len(self.w.wwStartLevel.text()) > 0:
+            p.ww_start = int(self.w.wwStartLevel.text())
+            self.w.wwStartLevel.setText(str(p.ww_start))
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars28
 
     def get_proc_pars29(self):
         p = self.nd.nmrdat[self.nd.s][self.nd.e].proc
-        p.ww_zf = int(self.w.wwZeroFilling.text())
-        self.w.wwZeroFilling.setText(str(p.ww_zf))
+        if len(self.w.wwZeroFilling.text()) > 0:
+            p.ww_zf = int(self.w.wwZeroFilling.text())
+            self.w.wwZeroFilling.setText(str(p.ww_zf))
+
         self.nd.nmrdat[self.nd.s][self.nd.e].proc = p
         # end get_proc_pars29
 
@@ -7321,7 +7370,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end set_acq_pars
 
     def set_autobaseline(self):
-        self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
+        if self.nd.e > -1:
+            self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
         # end set_autobaseline
 
     def set_autobaseline_all(self):
@@ -7547,7 +7597,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.nd.e = new_exp
 
         self.update_gui()
-        self.set_colours(self.set_cols)
+        if self.cf.print_standard_colours:
+            self.set_colours(self.set_cols)
+
         self.plot_spc()
         # end select_spectra
 
