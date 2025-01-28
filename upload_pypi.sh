@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-twine upload -u __token__ -p $qml_token $1
+twine upload -u __token__ -p $pypi_token $1
