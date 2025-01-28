@@ -7055,6 +7055,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     # end set_fit_ma_chem_shifts
 
+    def set_fit_ph1(self, fit_ph1=True):
+        self.cf.fit_ph1 = fit_ph1
+        self.cf.save_config()
+        for k in range(len(self.nd.nmrdat)):
+            for l in range(len(self.nd.nmrdat[k])):
+                self.nd.nmrdat[k][l].cf.read_config()
+
+    # end set_fit_ph1
+
     def set_ma_autosim(self):
         hsqc = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc
         hsqc.autosim = self.w.maAutoSim.isChecked()
