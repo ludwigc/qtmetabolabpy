@@ -131,25 +131,32 @@ def main():  # pragma: no cover
 
     screen_width = app.screens()[0].geometry().width()
     screen_height = app.screens()[0].geometry().height()
-    w_width = 1600 #w.w.size().width()
-    w_height = w.w.size().height()
-    ww = min(w_width, screen_width)
-    wh = min(w_height, screen_height)
+    ww = w.w.size().width()
+    wh = w.w.size().height()
+    #ww = min(w_width, screen_width)
+    #wh = min(w_height, screen_height)
+    print(f'screen_width/height: {screen_width}/{screen_height}, ww/wh: {ww}/{wh}')
     w.show()
-    if ww < 1300:
-        w.w.showNormal()
-        w.w.move(0, 0)
-
+    #if ww < 1300:
+    #    w.w.showNormal()
+    #    w.w.move(0, 0)
+    #
     app.processEvents()
-    if w_width > screen_width:
-        w.w.setMaximumWidth(screen_width)
-        app.processEvents()
+    #if w_width > screen_width:
+    #    w.w.setMaximumWidth(screen_width)
+    #    app.processEvents()
+    #
+    #if w_height > screen_height:
+    #    w.w.setMaximumWidth(screen_height)
+    #    app.processEvents()
+    w.w.setMinimumSize(1280, 670)
+    if screen_width < ww or screen_height < wh:
+        #w.w.setMinimumSize(screen_width - 100, screen_height - 100)
+        w.w.setMaximumSize(screen_width, screen_height)
+        w.w.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+    ##    w.w.setFixedSize(ww, wh - 50)
 
-    if w_height > screen_height:
-        w.w.setMaximumWidth(screen_height)
-        app.processEvents()
-
-    w.w.resize(ww, wh)
+    #w.w.resize(ww, wh)
     app.processEvents()
     w.w.updateGeometry()
     app.processEvents()
