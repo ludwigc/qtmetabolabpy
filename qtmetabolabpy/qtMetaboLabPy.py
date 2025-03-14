@@ -7478,7 +7478,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.nd.pp.class_select = []
         for k in range(len(self.nd.nmrdat[self.nd.s])):
-            title = self.nd.nmrdat[self.nd.s][k].title
+            idx0 = self.nd.nmrdat[self.nd.s][k].title.find('Excel File ')
+            if idx0 > -1:
+                idx0 = self.nd.nmrdat[self.nd.s][k].title.find('\n') + 1
+            else:
+                idx0 = 0
+
+            title = self.nd.nmrdat[self.nd.s][k].title[idx0:]
             idx1 = title.find(keyword + ' ')
             idx2 = title[idx1:].find(':')
             idx3 = title[idx1:].find('\n')
@@ -7498,7 +7504,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
         class_select_unique = []
         self.nd.pp.init_plot_colours()
         for k in range(len(self.nd.nmrdat[self.nd.s])):
-            title = self.nd.nmrdat[self.nd.s][k].title
+            idx0 = self.nd.nmrdat[self.nd.s][k].title.find('Excel File ')
+            if idx0 > -1:
+                idx0 = self.nd.nmrdat[self.nd.s][k].title.find('\n') + 1
+            else:
+                idx0 = 0
+
+            title = self.nd.nmrdat[self.nd.s][k].title[idx0:]
             idx1 = title.find(keyword + ' ')
             idx2 = title[idx1:].find(':')
             idx3 = title[idx1:].find('\n')
@@ -7513,6 +7525,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 self.nd.nmrdat[self.nd.s][k].display.pos_col_rgb = self.nd.pp.plot_colours[col_idx]
 
 
+        print(keyword)
         if len(class_select_unique) > 1:
             self.set_cols = keyword
             self.plot_spc()
@@ -7586,7 +7599,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
         new_exp = -1
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             self.nd.nmrdat[self.nd.s][k].display.display_spc = False
-            title = self.nd.nmrdat[self.nd.s][k].title
+            idx0 = self.nd.nmrdat[self.nd.s][k].title.find('Excel File ')
+            if idx0 > -1:
+                idx0 = self.nd.nmrdat[self.nd.s][k].title.find('\n') + 1
+            else:
+                idx0 = 0
+
+            title = self.nd.nmrdat[self.nd.s][k].title[idx0:]
             idx4 = np.zeros(len(keyword))
             for l in range(len(keyword)):
                 idx1 = title.find(keyword[l] + ' ')
