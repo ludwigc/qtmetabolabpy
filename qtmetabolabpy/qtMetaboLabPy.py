@@ -986,6 +986,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end add_peak
 
+    def adaptive_lb(self):
+        self.nd.adaptive_lb()
+        self.plot_spc()
+
     def apply_2d_ph_corr(self):
         s = self.nd.s
         e = self.nd.e
@@ -2547,6 +2551,18 @@ class QtMetaboLabPy(object):  # pragma: no cover
             print("cpdprg{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.cpd_prog[index]))
 
         # end cpdprg
+
+    def fit_tmsp(self):
+        self.show_console()
+        self.update_gui()
+        self.nd.fit_tmsp()
+        # end fit_tmsp()
+
+    def fit_tmsp_all(self):
+        self.show_console()
+        self.update_gui()
+        self.nd.fit_tmsp_all()
+        # end fit_tmsp_all
 
     def gpnam(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.gp_name) - 1 or index < -1:
