@@ -2016,6 +2016,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end decrease_x_lim
 
+    def peakw_tmsp(self):
+        self.nd.peakw_tmsp()
+        # end peakw_tmsp
+
+    def peakw_tmsp_all(self):
+        self.nd.peakw_tmsp_all()
+        # end peakw_tmsp_all
+
     def pl(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.power_level) - 1 or index < -1:
             index = -1
