@@ -6707,6 +6707,11 @@
               <string>2D NMRPipe HSQC Example Script</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Adaptive Line Broadening</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>

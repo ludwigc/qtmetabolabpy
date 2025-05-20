@@ -2016,11 +2016,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end decrease_x_lim
 
-    def peakw_tmsp(self):
+    def peakw_tmsp(self, message=True):
         self.nd.peakw_tmsp()
         # end peakw_tmsp
 
-    def peakw_tmsp_all(self):
+    def peakw_tmsp_all(self, message=True):
         self.nd.peakw_tmsp_all()
         # end peakw_tmsp_all
 
@@ -2505,6 +2505,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.show_console()
         # end reshape_titles
 
+    def set_ref(self, ref_value='auto'):
+        self.nd.set_ref(ref_value)
+        # end set_ref
+
+    def set_ref_all(self, ref_value='auto'):
+        self.nd.set_ref_all(ref_value)
+        # end set_ref_all
+
     def sp(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power) - 1 or index < -1:
             index = -1
@@ -2560,13 +2568,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end cpdprg
 
-    def fit_tmsp(self):
+    def fit_tmsp(self, message=True):
         self.show_console()
         self.update_gui()
         self.nd.fit_tmsp()
         # end fit_tmsp()
 
-    def fit_tmsp_all(self):
+    def fit_tmsp_all(self, message=True):
         self.show_console()
         self.update_gui()
         self.nd.fit_tmsp_all()
@@ -5187,6 +5195,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         if (idx == 5):
             f_name = os.path.join(base_dir, "exampleScripts", "example2DNMRPipeScript.py")
+
+        if (idx == 6):
+            f_name = os.path.join(base_dir, "exampleScripts", "adaptiveLineBroadening.py")
 
         f = open(f_name, 'r')
         script_text = f.read()
