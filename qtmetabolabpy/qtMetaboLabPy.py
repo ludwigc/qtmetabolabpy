@@ -2016,12 +2016,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end decrease_x_lim
 
-    def peakw_tmsp(self, message=True):
-        self.nd.peakw_tmsp()
+    def peakw(self, ppm=0.0, message=True):
+        self.nd.peakw(ppm = ppm, message = message)
         # end peakw_tmsp
 
-    def peakw_tmsp_all(self, message=True):
-        self.nd.peakw_tmsp_all()
+    def peak_all(self, ppm=0.0, message=True):
+        self.nd.peakw_all(ppm = ppm, message = message)
         # end peakw_tmsp_all
 
     def pl(self, index=-1):
@@ -2568,16 +2568,16 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end cpdprg
 
-    def fit_tmsp(self, message=True):
+    def fitlw(self, ppm=0.0, message=True):
         self.show_console()
         self.update_gui()
-        self.nd.fit_tmsp()
+        self.nd.fitlw(ppm = ppm, message = message)
         # end fit_tmsp()
 
-    def fit_tmsp_all(self, message=True):
+    def fitlw_all(self, ppm=0.0, message=True):
         self.show_console()
         self.update_gui()
-        self.nd.fit_tmsp_all()
+        self.nd.fitlw_all(ppm = ppm, message = message)
         # end fit_tmsp_all
 
     def gpnam(self, index=-1):
