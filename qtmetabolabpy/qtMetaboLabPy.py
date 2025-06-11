@@ -867,6 +867,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def add_tmsp(self, m0=1, r2=1, all=False):
         if all:
+            self.ft_all()
             self.nd.add_tmsp(m0=m0, r2=r2)
         else:
             self.nd.nmrdat[self.nd.s][self.nd.e].add_tmsp(m0=m0, r2=r2)
