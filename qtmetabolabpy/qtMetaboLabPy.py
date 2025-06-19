@@ -2506,6 +2506,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.show_console()
         # end reshape_titles
 
+    def set_loadings_from_csv(self, file_name='', replace='', m0_factor=0.05, r2=1.0):
+        if len(file_name) == 0:
+            selected_file = QFileDialog.getOpenFileName(None, "Load .csv file", self.cf.current_directory, "CSV files (*.csv)")
+            file_name = selected_file[0]
+
+        self.nd.set_loadings_from_csv(file_name=file_name, replace=replace, m0_factor=m0_factor, r2=r2)
+        self.select_plot_clear()
+        self.nd.s = len(self.nd.nmrdat) - 1
+        self.nd.e = 0
+        self.plot_spc()
+        self.vertical_auto_scale()
+        self.update_gui()
+        # end set_loadings_from_csv
+
+
     def set_ref(self, ref_value='auto'):
         self.nd.set_ref(ref_value)
         # end set_ref
