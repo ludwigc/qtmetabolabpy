@@ -7429,16 +7429,18 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.acqPars.setText(acq_str)
         # end set_acq_pars
 
-    def set_autobaseline(self):
+    def set_autobaseline(self, alg='rolling_ball'):
         if self.nd.e > -1:
             self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg = alg
         # end set_autobaseline
 
-    def set_autobaseline_all(self):
+    def set_autobaseline_all(self, alg='rolling_ball'):
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             self.nd.nmrdat[self.nd.s][k].proc.autobaseline = True
+            self.nd.nmrdat[self.nd.s][k].proc.autobaseline_alg = alg
 
-        self.set_autobaseline()
+        self.set_autobaseline(alg=alg)
         # end set_autobaseline_all
 
     def unset_autobaseline_all(self):
