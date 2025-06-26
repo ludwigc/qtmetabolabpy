@@ -1085,7 +1085,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.change_data_set_exp()
         self.plot_spc(True)
         self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline = True
-        self.set_autobaseline()
+        self.set_autobaseline(alg=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg, lam=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam)
         #sys.stdout = sys.__stdout__
         #sys.stderr = sys.__stderr__
         #if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
@@ -1173,7 +1173,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         sys.stderr = code_err
         self.show_auto_baseline()
         self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline = True
-        self.set_autobaseline()
+        self.set_autobaseline(alg=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg, lam=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam)
         self.nd.ft_all()
         self.nd.auto_ref_all()
         self.nd.autobaseline1d_all()
@@ -3324,7 +3324,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.setBox.setValue(self.nd.s + 1)
         self.w.setBox.valueChanged.connect(lambda: self.change_data_set_exp())
         self.w.expBox.valueChanged.connect(lambda: self.change_data_set_exp())
-        self.set_autobaseline()
+        if self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline == True:
+            self.set_autobaseline(alg=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg, lam=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam)
+            self.set_autobaseline(alg=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg, lam=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam)
+
         # end exec_script
 
     def export_peak(self):
@@ -7429,10 +7432,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.acqPars.setText(acq_str)
         # end set_acq_pars
 
-    def set_autobaseline(self, alg='rolling_ball'):
+    def set_autobaseline(self, alg='rolling_ball', lam=1e6):
         if self.nd.e > -1:
             self.w.autobaselineBox.setChecked(self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline)
             self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg = alg
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam = lam
         # end set_autobaseline
 
     def set_autobaseline_all(self, alg='rolling_ball'):
@@ -7447,7 +7451,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             self.nd.nmrdat[self.nd.s][k].proc.autobaseline = False
 
-        self.set_autobaseline()
+        self.set_autobaseline(alg=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg, lam=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam)
         # end set_autobaseline_all
 
     def set_autobaseline2(self):
