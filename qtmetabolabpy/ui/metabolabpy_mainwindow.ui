@@ -6690,6 +6690,11 @@
             </item>
             <item>
              <property name="text">
+              <string>2D Bruker HSQC Example Script</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>Automatic Phase and Baseline Correction</string>
              </property>
             </item>

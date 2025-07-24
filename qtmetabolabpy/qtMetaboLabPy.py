@@ -5201,21 +5201,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
             f_name = os.path.join(base_dir, "exampleScripts", "example1DScript.py")
 
         if (idx == 1):
-            f_name = os.path.join(base_dir, "exampleScripts", "exampleAutoPhaseScript.py")
+            f_name = os.path.join(base_dir, "exampleScripts", "example2DHSQCScript.py")
 
         if (idx == 2):
-            f_name = os.path.join(base_dir, "exampleScripts", "exampleAutoBaselineScript.py")
+            f_name = os.path.join(base_dir, "exampleScripts", "exampleAutoPhaseScript.py")
 
         if (idx == 3):
-            f_name = os.path.join(base_dir, "exampleScripts", "example2DJresScript.py")
+            f_name = os.path.join(base_dir, "exampleScripts", "exampleAutoBaselineScript.py")
 
         if (idx == 4):
-            f_name = os.path.join(base_dir, "exampleScripts", "examplePreprocessingScript.py")
+            f_name = os.path.join(base_dir, "exampleScripts", "example2DJresScript.py")
 
         if (idx == 5):
-            f_name = os.path.join(base_dir, "exampleScripts", "example2DNMRPipeScript.py")
+            f_name = os.path.join(base_dir, "exampleScripts", "examplePreprocessingScript.py")
 
         if (idx == 6):
+            f_name = os.path.join(base_dir, "exampleScripts", "example2DNMRPipeScript.py")
+
+        if (idx == 7):
             f_name = os.path.join(base_dir, "exampleScripts", "adaptiveLineBroadening.py")
 
         f = open(f_name, 'r')
