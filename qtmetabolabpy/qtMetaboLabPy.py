@@ -3397,8 +3397,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 worksheet.write('D' + str(l + 4), self.nd.nmrdat[self.nd.s][self.nd.e].start_peak[l])
                 worksheet.write('E' + str(l + 4), self.nd.nmrdat[self.nd.s][self.nd.e].end_peak[l])
                 for m in range(len(exps)):
-                    print(f'm: {m}, l: {l}')
-                    print(f'self.nd.nmrdat[ds[k]][exps[m]].peak_max[l]: {self.nd.nmrdat[ds[k]][exps[m]].peak_max[l]}')
                     if peak_height:
                         worksheet.write(abc_string[m + 5] + str(l + 4), self.nd.nmrdat[ds[k]][exps[m]].peak_max[l])
                     else:

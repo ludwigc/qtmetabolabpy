@@ -839,10 +839,10 @@
                   <item>
                    <widget class="QSpinBox" name="segAlignRefSpc">
                     <property name="minimum">
-                     <number>-1</number>
+                     <number>-2</number>
                     </property>
                     <property name="value">
-                     <number>1</number>
+                     <number>-2</number>
                     </property>
                    </widget>
                   </item>
