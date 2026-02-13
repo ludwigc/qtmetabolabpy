@@ -1,7 +1,7 @@
 PySide6
 metabolabpy
 numpy
-scipy==1.13.1
+scipy
 matplotlib
 pyautogui
 qtmodern

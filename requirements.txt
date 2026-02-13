@@ -3,7 +3,7 @@
 PySide6
 metabolabpy
 numpy
-scipy==1.13.1
+scipy
 matplotlib
 #install on arm with: pip3 install ...
 pyautogui

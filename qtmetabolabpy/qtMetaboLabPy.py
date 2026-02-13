@@ -461,6 +461,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preprocessing.stateChanged.connect(self.set_pre_processing)
         self.w.peakPicking.stateChanged.connect(self.set_peak_picking)
         self.w.splinebaseline.stateChanged.connect(self.set_spline_baseline)
+        self.w.loadPeakList.clicked.connect(self.load_peak)
+        self.w.savePeakList.clicked.connect(self.save_peak)
         self.w.peakAddButton.clicked.connect(self.add_peak)
         self.w.peakClearButton.clicked.connect(self.clear_peak)
         self.w.peakWidget.cellChanged.connect(self.set_add_peak)
@@ -748,111 +750,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # self.set_hsqc()
         # end __init__
 
-    def reset_autobaseline(self):
-        s = self.nd.s
-        e = self.nd.e
-        self.nd.nmrdat[s][e].proc.autobaseline_alg = self.nd.default_baseline_alg
-        idx = self.nd.baseline_algs.index(self.nd.default_baseline_alg)
-        self.w.abslAlg.setCurrentIndex(idx)
-        self.w.abslHw.setText(str(self.nd.default_half_window))
-        self.w.abslShw.setText(str(self.nd.default_smooth_half_window))
-        self.w.abslAe.setText(str(self.nd.default_add_ext))
-        self.w.abslLam.setText(str(self.nd.default_lam))
-        self.w.abslMi.setText(str(self.nd.default_max_iter))
-        self.w.abslAlpha.setText(str(self.nd.default_alpha))
-        self.w.abslBeta.setText(str(self.nd.default_beta))
-        self.w.abslGamma.setText(str(self.nd.default_gamma))
-        self.w.abslBetaMult.setText(str(self.nd.default_beta_mult))
-        self.w.abslGammaMult.setText(str(self.nd.default_gamma_mult))
-        self.w.abslQuantile.setText(str(self.nd.default_quantile))
-        self.w.abslPolyOrder.setText(str(self.nd.default_poly_order))
-        self.nd.nmrdat[s][e].proc.autobaseline_half_window = self.nd.default_half_window
-        self.nd.nmrdat[s][e].proc.autobaseline_smooth_half_window = self.nd.default_smooth_half_window
-        self.nd.nmrdat[s][e].proc.autobaseline_add_ext = self.nd.default_add_ext
-        self.nd.nmrdat[s][e].proc.autobaseline_lam = self.nd.default_lam
-        self.nd.nmrdat[s][e].proc.autobaseline_max_iter = self.nd.default_max_iter
-        self.nd.nmrdat[s][e].proc.autobaseline_alpha = self.nd.default_alpha
-        self.nd.nmrdat[s][e].proc.autobaseline_beta = self.nd.default_beta
-        self.nd.nmrdat[s][e].proc.autobaseline_gamma = self.nd.default_gamma
-        self.nd.nmrdat[s][e].proc.autobaseline_beta_mult = self.nd.default_beta_mult
-        self.nd.nmrdat[s][e].proc.autobaseline_gamma_mult = self.nd.default_gamma_mult
-        self.nd.nmrdat[s][e].proc.autobaseline_quantile = self.nd.default_quantile
-        self.nd.nmrdat[s][e].proc.autobaseline_poly_order = self.nd.default_poly_order
-        # end reset_autobaseline
-
-    def set_autobaseline_pars(self):
-        if self.nd.e > -1:
-            alg = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg
-
-        self.w.abslAlg.clear()
-        self.w.abslAlg.addItems(self.nd.baseline_algs)
-        if self.nd.e > -1:
-            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg = alg
-
-        if self.nd.e == -1:
-            idx = self.nd.baseline_algs.index(self.nd.default_baseline_alg)
-            self.w.abslAlg.setCurrentIndex(idx)
-            self.w.abslHw.setText(str(self.nd.default_half_window))
-            self.w.abslShw.setText(str(self.nd.default_smooth_half_window))
-            self.w.abslAe.setText(str(self.nd.default_add_ext))
-            self.w.abslLam.setText(str(self.nd.default_lam))
-            self.w.abslMi.setText(str(self.nd.default_max_iter))
-            self.w.abslAlpha.setText(str(self.nd.default_alpha))
-            self.w.abslBeta.setText(str(self.nd.default_beta))
-            self.w.abslGamma.setText(str(self.nd.default_gamma))
-            self.w.abslBetaMult.setText(str(self.nd.default_beta_mult))
-            self.w.abslGammaMult.setText(str(self.nd.default_gamma_mult))
-            self.w.abslQuantile.setText(str(self.nd.default_quantile))
-            self.w.abslPolyOrder.setText(str(self.nd.default_poly_order))
-        else:
-            s = self.nd.s
-            e = self.nd.e
-            alg = self.nd.nmrdat[s][e].proc.autobaseline_alg
-            idx = self.nd.baseline_algs.index(alg)
-            self.w.abslAlg.setCurrentIndex(idx)
-            self.w.abslHw.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_half_window))
-            self.w.abslShw.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_smooth_half_window))
-            self.w.abslAe.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_add_ext))
-            self.w.abslLam.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_lam))
-            self.w.abslMi.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_max_iter))
-            self.w.abslAlpha.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_alpha))
-            self.w.abslBeta.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_beta))
-            self.w.abslGamma.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_gamma))
-            self.w.abslBetaMult.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_beta_mult))
-            self.w.abslGammaMult.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_gamma_mult))
-            self.w.abslQuantile.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_quantile))
-            self.w.abslPolyOrder.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_poly_order))
-
-        # end set_autobaseline_pars
-
-    def set_water_suppression(self, status=-1):
-        status1 = False
-        status2 = False
-        status3 = False
-        if status == 3:
-            status3 = True
-        elif status == 2:
-            status2 = True
-        elif status == 1:
-            status1 = True
-
-        self.w.label_74.setVisible(status3)
-        self.w.wwStartLevel.setVisible(status3)
-        self.w.label_100.setVisible(status3)
-        self.w.wwZeroFilling.setVisible(status3)
-        self.w.label_101.setVisible(status3)
-        self.w.wwWaveletType.setVisible(status3)
-        self.w.label_102.setVisible(status3)
-        self.w.wwNumber.setVisible(status3)
-        self.w.label_9.setVisible(status2)
-        self.w.polyOrder.setVisible(status2)
-        self.w.label_10.setVisible(status1)
-        self.w.winType.setVisible(status1)
-        self.w.label_11.setVisible(status1)
-        self.w.extrapolationSize.setVisible(status1)
-        self.w.label_12.setVisible(status1)
-        self.w.windowSize.setVisible(status1)
-
     def activate_command_line(self):
         if (self.w.cmdLine.hasFocus() == True):
             self.w.cmdLine.clearFocus()
@@ -860,6 +757,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.cmdLine.setFocus()
 
         # end activate_command_line
+
+    def adaptive_lb(self):
+        self.nd.adaptive_lb()
+        self.plot_spc()
 
     def add_peak(self):
         self.ginput_add_peak(2)
@@ -874,122 +775,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         self.plot_spc()
         # end add_tmsp
-
-    def autofit_hsqc(self, metabolite_list=False):
-        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
-        else:
-            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
-
-        code_out = io.StringIO()
-        code_err = io.StringIO()
-        sys.stdout = code_out
-        sys.stderr = code_err
-        print(f'fitting multiplets...')
-        if metabolite_list is False:
-            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
-        elif len(metabolite_list[0]) == 0:
-            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
-
-        if len(metabolite_list[0]) == 0:
-            return
-
-        if self.w.hsqcAnalysis.isChecked() == False:
-            self.w.hsqcAnalysis.setChecked(True)
-            self.w.hsqcAnalysis.setChecked(False)
-
-        no_peak_selected = False
-        if self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak == -1:
-            no_peak_selected = True
-            cur_peak = 1
-        else:
-            cur_peak = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak
-
-        text = self.nd.nmrdat[self.nd.s][self.nd.e].autofit_hsqc(metabolite_list)
-        print(text)
-        if no_peak_selected:
-            self.w.hsqcAnalysis.setChecked(False)
-            self.w.hsqcAnalysis.setChecked(True)
-            idx1 = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.metabolite_list.index(metabolite_list[0])
-            self.w.hsqcMetabolites.setCurrentIndex(self.w.hsqcMetabolites.model().index(idx1, 0))
-
-        self.set_hsqc_metabolite()
-        self.plot_metabolite_peak(cur_peak)
-        self.w.console.setTextColor(txt_col)
-        self.w.console.append(code_out.getvalue())
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-        code_out.close()
-        code_err.close()
-        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
-        # end autofit_hsqc
-
-    def autopick_hsqc(self, metabolite_list=False):
-        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
-            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
-        else:
-            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
-            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
-
-        code_out = io.StringIO()
-        code_err = io.StringIO()
-        sys.stdout = code_out
-        sys.stderr = code_err
-        if metabolite_list is False:
-            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
-        elif len(metabolite_list[0]) == 0:
-            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
-
-        print(f'autopick_hsqc: {metabolite_list}')
-        if len(metabolite_list[0]) == 0:
-            return
-
-        if self.w.hsqcAnalysis.isChecked() == False:
-            self.w.hsqcAnalysis.setChecked(True)
-            self.w.hsqcAnalysis.setChecked(False)
-
-        no_peak_selected = False
-        if self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak == -1:
-            no_peak_selected = True
-            cur_peak = 1
-        else:
-            cur_peak = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak
-
-        self.nd.nmrdat[self.nd.s][self.nd.e].autopick_hsqc(metabolite_list)
-        if no_peak_selected:
-            self.w.hsqcAnalysis.setChecked(False)
-            self.w.hsqcAnalysis.setChecked(True)
-            idx1 = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.metabolite_list.index(metabolite_list[0])
-            self.w.hsqcMetabolites.setCurrentIndex(self.w.hsqcMetabolites.model().index(idx1, 0))
-
-        self.set_hsqc_metabolite()
-        self.plot_metabolite_peak(cur_peak)
-        self.w.console.setTextColor(txt_col)
-        self.w.console.append(code_out.getvalue())
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-        code_out.close()
-        code_err.close()
-        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
-        # end autopick_hsqc
-
-    def clear_console(self):
-        self.nd.console = ""
-        self.w.console.setText("")
-        # end clear_console
-
-    def clear_peak(self):
-        self.nd.clear_peak()
-        self.w.peakWidget.setRowCount(0)
-        self.plot_spc()
-        # end add_peak
-
-    def adaptive_lb(self):
-        self.nd.adaptive_lb()
-        self.plot_spc()
 
     def apply_2d_ph_corr(self):
         s = self.nd.s
@@ -1203,6 +988,64 @@ class QtMetaboLabPy(object):  # pragma: no cover
         code_err.close()
         # end autobaseline1d_all
 
+    def autofit_hsqc(self, metabolite_list=False):
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        else:
+            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+
+        code_out = io.StringIO()
+        code_err = io.StringIO()
+        sys.stdout = code_out
+        sys.stderr = code_err
+        print(f'fitting multiplets...')
+        if metabolite_list is False:
+            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
+        elif len(metabolite_list[0]) == 0:
+            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
+
+        if len(metabolite_list[0]) == 0:
+            return
+
+        if self.w.hsqcAnalysis.isChecked() == False:
+            self.w.hsqcAnalysis.setChecked(True)
+            self.w.hsqcAnalysis.setChecked(False)
+
+        no_peak_selected = False
+        if self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak == -1:
+            no_peak_selected = True
+            cur_peak = 1
+        else:
+            cur_peak = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak
+
+        text = self.nd.nmrdat[self.nd.s][self.nd.e].autofit_hsqc(metabolite_list)
+        print(text)
+        if no_peak_selected:
+            self.w.hsqcAnalysis.setChecked(False)
+            self.w.hsqcAnalysis.setChecked(True)
+            idx1 = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.metabolite_list.index(metabolite_list[0])
+            self.w.hsqcMetabolites.setCurrentIndex(self.w.hsqcMetabolites.model().index(idx1, 0))
+
+        self.set_hsqc_metabolite()
+        self.plot_metabolite_peak(cur_peak)
+        self.w.console.setTextColor(txt_col)
+        self.w.console.append(code_out.getvalue())
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        code_out.close()
+        code_err.close()
+        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
+        # end autofit_hsqc
+
+    def automatic_referencing(self):
+        self.nd.auto_ref(True)
+        self.w.nmrSpectrum.setCurrentIndex(0)
+        self.change_data_set_exp()
+        self.plot_spc(True)
+        # end automatic_referencing
+
     def autophase1d(self, width=128, num_windows=1024, max_peaks=1000, noise_fact=20):
         if width == False:
             width = 128
@@ -1288,28 +1131,71 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     # end autophase1d_hsqcinclude_water
 
-    def auto_ref(self, tmsp=True):
+    def autopick_hsqc(self, metabolite_list=False):
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            txt_col = QColor.fromRgbF(1.0, 1.0, 1.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.5, 0.5, 1.0)
+        else:
+            txt_col = QColor.fromRgbF(0.0, 0.0, 0.0, 1.0)
+            err_col = QColor.fromRgbF(1.0, 0.0, 0.0, 1.0)
+
+        code_out = io.StringIO()
+        code_err = io.StringIO()
+        sys.stdout = code_out
+        sys.stderr = code_err
+        if metabolite_list is False:
+            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
+        elif len(metabolite_list[0]) == 0:
+            metabolite_list = [self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_metabolite]
+
+        print(f'autopick_hsqc: {metabolite_list}')
+        if len(metabolite_list[0]) == 0:
+            return
+
+        if self.w.hsqcAnalysis.isChecked() == False:
+            self.w.hsqcAnalysis.setChecked(True)
+            self.w.hsqcAnalysis.setChecked(False)
+
+        no_peak_selected = False
+        if self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak == -1:
+            no_peak_selected = True
+            cur_peak = 1
+        else:
+            cur_peak = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak
+
+        self.nd.nmrdat[self.nd.s][self.nd.e].autopick_hsqc(metabolite_list)
+        if no_peak_selected:
+            self.w.hsqcAnalysis.setChecked(False)
+            self.w.hsqcAnalysis.setChecked(True)
+            idx1 = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.metabolite_list.index(metabolite_list[0])
+            self.w.hsqcMetabolites.setCurrentIndex(self.w.hsqcMetabolites.model().index(idx1, 0))
+
+        self.set_hsqc_metabolite()
+        self.plot_metabolite_peak(cur_peak)
+        self.w.console.setTextColor(txt_col)
+        self.w.console.append(code_out.getvalue())
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        code_out.close()
+        code_err.close()
+        self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
+        # end autopick_hsqc
+
+    def autoref(self, tmsp=True):
         self.nd.auto_ref(tmsp)
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
         self.plot_spc(True)
-        return "autoref"
-        # end autoref
+        return "auto_ref"
+        # end auto_ref
 
-    def auto_ref_all(self, tmsp=True):
+    def autoref_all(self, tmsp=True):
         self.nd.auto_ref_all(tmsp)
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
         self.plot_spc(True)
         return "autoref"
         # end autoref
-
-    def automatic_referencing(self):
-        self.nd.auto_ref(True)
-        self.w.nmrSpectrum.setCurrentIndex(0)
-        self.change_data_set_exp()
-        self.plot_spc(True)
-        # end automatic_referencing
 
     def baseline1d(self):
         self.nd.baseline1d()
@@ -1753,6 +1639,17 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.coefficientOfDetermination.setPalette(palette)
         # end clear_assigned_hsqc
 
+    def clear_console(self):
+        self.nd.console = ""
+        self.w.console.setText("")
+        # end clear_console
+
+    def clear_peak(self):
+        self.nd.clear_peak()
+        self.w.peakWidget.setRowCount(0)
+        self.plot_spc()
+        # end add_peak
+
     def clear_spline_points(self):
         for k in range(len(self.nd.nmrdat[self.nd.s])):
             self.xdata = []
@@ -2021,7 +1918,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.nd.peakw(ppm = ppm, message = message)
         # end peakw_tmsp
 
-    def peak_all(self, ppm=0.0, message=True):
+    def peakw_all(self, ppm=0.0, message=True):
         self.nd.peakw_all(ppm = ppm, message = message)
         # end peakw_tmsp_all
 
@@ -2487,6 +2384,38 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def pulprog(self):
         print(f'pulprog: {self.nd.nmrdat[self.nd.s][self.nd.e].acq.pul_prog_name}')
 
+    def reset_autobaseline(self):
+        s = self.nd.s
+        e = self.nd.e
+        self.nd.nmrdat[s][e].proc.autobaseline_alg = self.nd.default_baseline_alg
+        idx = self.nd.baseline_algs.index(self.nd.default_baseline_alg)
+        self.w.abslAlg.setCurrentIndex(idx)
+        self.w.abslHw.setText(str(self.nd.default_half_window))
+        self.w.abslShw.setText(str(self.nd.default_smooth_half_window))
+        self.w.abslAe.setText(str(self.nd.default_add_ext))
+        self.w.abslLam.setText(str(self.nd.default_lam))
+        self.w.abslMi.setText(str(self.nd.default_max_iter))
+        self.w.abslAlpha.setText(str(self.nd.default_alpha))
+        self.w.abslBeta.setText(str(self.nd.default_beta))
+        self.w.abslGamma.setText(str(self.nd.default_gamma))
+        self.w.abslBetaMult.setText(str(self.nd.default_beta_mult))
+        self.w.abslGammaMult.setText(str(self.nd.default_gamma_mult))
+        self.w.abslQuantile.setText(str(self.nd.default_quantile))
+        self.w.abslPolyOrder.setText(str(self.nd.default_poly_order))
+        self.nd.nmrdat[s][e].proc.autobaseline_half_window = self.nd.default_half_window
+        self.nd.nmrdat[s][e].proc.autobaseline_smooth_half_window = self.nd.default_smooth_half_window
+        self.nd.nmrdat[s][e].proc.autobaseline_add_ext = self.nd.default_add_ext
+        self.nd.nmrdat[s][e].proc.autobaseline_lam = self.nd.default_lam
+        self.nd.nmrdat[s][e].proc.autobaseline_max_iter = self.nd.default_max_iter
+        self.nd.nmrdat[s][e].proc.autobaseline_alpha = self.nd.default_alpha
+        self.nd.nmrdat[s][e].proc.autobaseline_beta = self.nd.default_beta
+        self.nd.nmrdat[s][e].proc.autobaseline_gamma = self.nd.default_gamma
+        self.nd.nmrdat[s][e].proc.autobaseline_beta_mult = self.nd.default_beta_mult
+        self.nd.nmrdat[s][e].proc.autobaseline_gamma_mult = self.nd.default_gamma_mult
+        self.nd.nmrdat[s][e].proc.autobaseline_quantile = self.nd.default_quantile
+        self.nd.nmrdat[s][e].proc.autobaseline_poly_order = self.nd.default_poly_order
+        # end reset_autobaseline
+
     def reshape_title(self, n_rows=2):
         return_text = self.nd.reshape_title(n_rows)
         if return_text != 'Succesfully reshaped title':
@@ -2505,6 +2434,51 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.update_gui()
             self.show_console()
         # end reshape_titles
+
+    def set_autobaseline_pars(self):
+        if self.nd.e > -1:
+            alg = self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg
+
+        self.w.abslAlg.clear()
+        self.w.abslAlg.addItems(self.nd.baseline_algs)
+        if self.nd.e > -1:
+            self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg = alg
+
+        if self.nd.e == -1:
+            idx = self.nd.baseline_algs.index(self.nd.default_baseline_alg)
+            self.w.abslAlg.setCurrentIndex(idx)
+            self.w.abslHw.setText(str(self.nd.default_half_window))
+            self.w.abslShw.setText(str(self.nd.default_smooth_half_window))
+            self.w.abslAe.setText(str(self.nd.default_add_ext))
+            self.w.abslLam.setText(str(self.nd.default_lam))
+            self.w.abslMi.setText(str(self.nd.default_max_iter))
+            self.w.abslAlpha.setText(str(self.nd.default_alpha))
+            self.w.abslBeta.setText(str(self.nd.default_beta))
+            self.w.abslGamma.setText(str(self.nd.default_gamma))
+            self.w.abslBetaMult.setText(str(self.nd.default_beta_mult))
+            self.w.abslGammaMult.setText(str(self.nd.default_gamma_mult))
+            self.w.abslQuantile.setText(str(self.nd.default_quantile))
+            self.w.abslPolyOrder.setText(str(self.nd.default_poly_order))
+        else:
+            s = self.nd.s
+            e = self.nd.e
+            alg = self.nd.nmrdat[s][e].proc.autobaseline_alg
+            idx = self.nd.baseline_algs.index(alg)
+            self.w.abslAlg.setCurrentIndex(idx)
+            self.w.abslHw.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_half_window))
+            self.w.abslShw.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_smooth_half_window))
+            self.w.abslAe.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_add_ext))
+            self.w.abslLam.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_lam))
+            self.w.abslMi.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_max_iter))
+            self.w.abslAlpha.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_alpha))
+            self.w.abslBeta.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_beta))
+            self.w.abslGamma.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_gamma))
+            self.w.abslBetaMult.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_beta_mult))
+            self.w.abslGammaMult.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_gamma_mult))
+            self.w.abslQuantile.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_quantile))
+            self.w.abslPolyOrder.setText(str(self.nd.nmrdat[s][e].proc.autobaseline_poly_order))
+
+        # end set_autobaseline_pars
 
     def set_loadings_from_csv(self, file_name='', replace='', m0_factor=0.05, r2=1.0):
         if len(file_name) == 0:
@@ -2528,6 +2502,34 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def set_ref_all(self, ref_value='auto'):
         self.nd.set_ref_all(ref_value)
         # end set_ref_all
+
+    def set_water_suppression(self, status=-1):
+        status1 = False
+        status2 = False
+        status3 = False
+        if status == 3:
+            status3 = True
+        elif status == 2:
+            status2 = True
+        elif status == 1:
+            status1 = True
+
+        self.w.label_74.setVisible(status3)
+        self.w.wwStartLevel.setVisible(status3)
+        self.w.label_100.setVisible(status3)
+        self.w.wwZeroFilling.setVisible(status3)
+        self.w.label_101.setVisible(status3)
+        self.w.wwWaveletType.setVisible(status3)
+        self.w.label_102.setVisible(status3)
+        self.w.wwNumber.setVisible(status3)
+        self.w.label_9.setVisible(status2)
+        self.w.polyOrder.setVisible(status2)
+        self.w.label_10.setVisible(status1)
+        self.w.winType.setVisible(status1)
+        self.w.label_11.setVisible(status1)
+        self.w.extrapolationSize.setVisible(status1)
+        self.w.label_12.setVisible(status1)
+        self.w.windowSize.setVisible(status1)
 
     def sp(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.shaped_power) - 1 or index < -1:
@@ -2572,6 +2574,46 @@ class QtMetaboLabPy(object):  # pragma: no cover
             print("spoffs{} = {}".format(index, self.nd.nmrdat[self.nd.s][self.nd.e].acq.spoffs[index]))
 
         # end spoffs
+
+    def start_notebook(self):
+        try:
+            subprocess.Popen.kill(self.process)
+            sleep(2)
+        except:
+            pass
+
+        #if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+        #    jupyterthemes.install_theme('chesterish')
+        #else:
+        #    jupyterthemes.install_theme('grade3')
+        #
+        #nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
+        #base_dir = os.path.split(nmr_dir)[0]
+        #jupyter_path = os.path.join(base_dir, "nmr", "jupyter")
+        jupyter_path = os.path.join("/Users/ludwigc", "jupyter")
+        self.process = subprocess.Popen(['jupyter-notebook', '--notebookdir=', f'{jupyter_path}', '&'])
+        #jobs = []
+        #print("-----------------")
+        #self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--ip=127.0.0.1', '--port=9997'],))
+        ##self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--no-browser', '--ip=127.0.0.1', '--port=9997', '--NotebookApp.token=''', '--NotebookApp.password='''],))
+        #print('=======================')
+        #jobs.append(self.process)
+        #print('#########################')
+        #self.process.start()
+        #print('//////////////////////////')
+        #sleep(2)
+        #print('__________________________')
+        #self.w.helpView.setUrl('http://127.0.0.1:9997')
+        #self.w.nmrSpectrum.setCurrentIndex(12)
+        # end startNotebook
+
+    def stop_notebook(self):
+        try:
+            subprocess.Popen.kill(self.process)
+            sleep(2)
+        except:
+            pass
+    #    # end stop_notebook
 
     def cpdprg(self, index=-1):
         if index > len(self.nd.nmrdat[self.nd.s][self.nd.e].acq.cpd_prog) - 1 or index < -1:
@@ -3329,6 +3371,28 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.set_autobaseline(alg=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_alg, lam=self.nd.nmrdat[self.nd.s][self.nd.e].proc.autobaseline_lam)
 
         # end exec_script
+
+    def load_peak(self):
+        selected_file = QFileDialog.getOpenFileName(None, "Load Excel file", self.cf.current_directory,
+                                                    "Excel files (*.xlsx)")
+        selected_file = selected_file[0]
+        if (len(selected_file) > 0):
+            self.nd.load_peaks(selected_file)
+            self.fill_peak_numbers()
+            self.plot_spc()
+        else:
+            return
+
+        # end load_peak
+
+    def save_peak(self):
+        f_name = QFileDialog.getSaveFileName(None, "Save Excel file", "", "*.xlsx", "*.xlsx")
+        f_name = f_name[0]
+        if len(f_name) == 0:
+            return
+
+        self.nd.save_peaks(f_name)
+        # end save_peak
 
     def export_peak(self):
         hsqcAnalysis = False
