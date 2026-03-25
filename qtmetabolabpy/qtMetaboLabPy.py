@@ -1777,7 +1777,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         f.close()
         f = open(ml_exec_bat, 'w')
         venv = sys.prefix.find('env')
-        cnda = subprocess.check_output('where conda').decode()
+        try:
+            cnda = subprocess.check_output('where conda').decode()
+        except:
+            cnda = subprocess.check_output('where mamba').decode()
+
         if venv == -1:
             f.write('qtmetabolabpy && exit')
         else:
