@@ -3,8 +3,10 @@ MANIFEST.in
 README.rst
 requirements.txt
 setup.py
+qtmetabolabpy/.DS_Store
 qtmetabolabpy/__init__.py
 qtmetabolabpy/__main__.py
+qtmetabolabpy/__main__.spec
 qtmetabolabpy/qtMetaboLabPy.py
 qtmetabolabpy.egg-info/PKG-INFO
 qtmetabolabpy.egg-info/SOURCES.txt

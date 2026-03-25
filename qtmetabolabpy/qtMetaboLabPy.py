@@ -5240,6 +5240,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
             code_out.close()
             code_err.close()
             self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
+        else:
+            self.w.nmrSpectrum.setCurrentIndex(10)
+            code_out = io.StringIO()
+            code_err = io.StringIO()
+            sys.stdout = code_out
+            sys.stderr = code_err
+            print('MetaboLabPy file has consistent structure')
+            self.w.console.setTextColor(txt_col)
+            self.w.console.append(code_out.getvalue())
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+            code_out.close()
+            code_err.close()
+            self.w.console.verticalScrollBar().setValue(self.w.console.verticalScrollBar().maximum())
+
 
         # end check_file
 
