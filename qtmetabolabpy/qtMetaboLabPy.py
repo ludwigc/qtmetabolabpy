@@ -6711,12 +6711,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.nd.read_spc(ds_name, exp_name)
             self.set_j_res()
             self.nd.ft()
+            self.nd.e = len(self.nd.nmrdat[self.nd.s]) - 1
             if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 0:
                 self.nd.auto_ref(True)
             else:
                 self.nd.auto_ref(False)
 
-            self.nd.e = len(self.nd.nmrdat[self.nd.s]) - 1
             self.nd.auto_ref()
             self.plot_spc()
             self.w.keepZoom.setChecked(kz)
@@ -7158,6 +7158,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def script_editor(self):
         self.w.nmrSpectrum.setCurrentIndex(9)
         # end script_editor
+
+    def set_auto_ref(self, automatic=True):
+        if automatic:
+            self.nd.nmrdat[self.nd.s][self.nd.e].ref = 'automatic'
+        else:
+            self.nd.nmrdat[self.nd.s][self.nd.e].ref = 'manual'
+
+        self.nd.auto_ref()
+        self.plot_spc()
+        # end set_auto_ref
+
+    def set_bruker_ref(self):
+        self.nd.nmrdat[self.nd.s][self.nd.e].ref = 'manual'
+        self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[0] -= self.nd.nmrdat[self.nd.s][self.nd.e].ppm1[0] - self.nd.nmrdat[self.nd.s][self.nd.e].proc.offset[0]
+        self.nd.nmrdat[self.nd.s][self.nd.e].calc_ppm()
+        self.plot_spc()
+        # end set_bruker_ref
+
 
     def set_datasets_exps(self):
         if self.w.quantify.isChecked() == True:
