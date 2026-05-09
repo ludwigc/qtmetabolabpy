@@ -6712,12 +6712,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.set_j_res()
             self.nd.ft()
             self.nd.e = len(self.nd.nmrdat[self.nd.s]) - 1
-            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 0:
-                self.nd.auto_ref(True)
-            else:
-                self.nd.auto_ref(False)
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim < 2:
+                if self.nd.nmrdat[self.nd.s][self.nd.e].acq.manufacturer == "Bruker":
+                    self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[0] = self.nd.nmrdat[self.nd.s][self.nd.e].proc.offset[0]
+                    self.nd.nmrdat[self.nd.s][self.nd.e].ref_point[0] = self.nd.nmrdat[self.nd.s][self.nd.e].proc.n_points[0] - 1
+                    self.nd.nmrdat[self.nd.s][self.nd.e].calc_ppm()
 
-            self.nd.auto_ref()
+            else:
+                self.nd.auto_ref()
+
             self.plot_spc()
             self.w.keepZoom.setChecked(kz)
             self.set_proc_pars()
