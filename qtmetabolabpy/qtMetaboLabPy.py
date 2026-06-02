@@ -6709,6 +6709,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             ds_name = selected_directory[:idx]
             exp_name = selected_directory[idx + 1:]
             self.nd.read_spc(ds_name, exp_name)
+            print(self.nd.nmrdat[0][0].ref)
             self.set_j_res()
             self.nd.ft()
             self.nd.e = len(self.nd.nmrdat[self.nd.s]) - 1
@@ -6744,7 +6745,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # print(selected_file)
         f_name = os.path.split(selected_file[0])[1]
+        extension = f_name[f_name.find('.'):]
         spc3d = re.compile('.+\d+.+')
+        read3d = False
         if len(spc3d.findall(f_name)) == 0:
             data_path = os.path.split(os.path.split(selected_file[0])[0])[0]
             exp_num = os.path.split(os.path.split(selected_file[0])[0])[1]
@@ -6753,13 +6756,17 @@ class QtMetaboLabPy(object):  # pragma: no cover
             data_path = os.path.split(os.path.split(os.path.split(selected_file[0])[0])[0])[0]
             exp_num = os.path.split(os.path.split(os.path.split(selected_file[0])[0])[0])[1]
             ft_dir = os.path.split(os.path.split(selected_file[0])[0])[1]
+            f_name = f_name[:re.search(r"\d", f_name).start()]
+            read3d = True
 
-        #print(f'data_path: {data_path}')
-        #print(f'exp_num: {exp_num}')
         if exp_num.find('.') > -1:
             exp_num = exp_num[:exp_num.find('.')]
 
-        self.read_nmrpipe_spcs([data_path], [exp_num], f_name, ft_dir)
+        if read3d:
+            self.nd.read_nmrpipe3d(data_path, exp_num, f_name, ft_dir, extension)
+        else:
+            self.read_nmrpipe_spcs([data_path], [exp_num], f_name, ft_dir)
+
         self.set_standard_colours()
         self.update_gui()
         self.reset_plot()
