@@ -802,15 +802,28 @@ class QtMetaboLabPy(object):  # pragma: no cover
         ph0 = ((self.ph_corr.ph0_2d[self.ph_corr.dim] + 180.0) % 360.0) - 180.0
         ph1 = self.ph_corr.ph1_2d[self.ph_corr.dim]
         if self.nd.nmrdat[s][e].proc.phase_inversion is False:
-            self.nd.nmrdat[s][e].phase2a(ph0, ph1, self.ph_corr.dim)
+            if self.nd.nmrdat[s][e].dim == 3:
+                for k in range(len(self.nd.nmrdat[s])):
+                    self.nd.nmrdat[s][k].phase2a(ph0, ph1, self.ph_corr.dim)
+            else:
+                self.nd.nmrdat[s][e].phase2a(ph0, ph1, self.ph_corr.dim)
         else:
-            self.nd.nmrdat[s][e].phase2a(-ph0, -ph1, self.ph_corr.dim)
+            if self.nd.nmrdat[s][e].dim == 3:
+                for k in range(len(self.nd.nmrdat[s])):
+                    self.nd.nmrdat[s][k].phase2a(-ph0, -ph1, self.ph_corr.dim)
+            else:
+                self.nd.nmrdat[s][e].phase2a(-ph0, -ph1, self.ph_corr.dim)
 
         ph0 = ((ph0 + self.nd.nmrdat[s][e].proc.ph0[self.ph_corr.dim] + 180.0) % 360.0) - 180.0
         ph1 = ph1 + self.nd.nmrdat[s][e].proc.ph1[self.ph_corr.dim]
 
         self.nd.nmrdat[s][e].proc.ph0[self.ph_corr.dim] = ph0
         self.nd.nmrdat[s][e].proc.ph1[self.ph_corr.dim] = ph1
+        if self.nd.nmrdat[s][e].dim == 3:
+            for k in range(len(self.nd.nmrdat[s])):
+                self.nd.nmrdat[s][k].proc.ph0[self.ph_corr.dim] = ph0
+                self.nd.nmrdat[s][k].proc.ph1[self.ph_corr.dim] = ph1
+
         self.ph_corr.ph0_2d[self.ph_corr.dim] = 0
         self.ph_corr.ph1_2d[self.ph_corr.dim] = 0
         self.ph_corr.spc = np.array([[]], dtype='complex')
@@ -929,7 +942,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         sys.stdout = code_out
         sys.stderr = code_err
         self.show_auto_baseline()
-        self.nd.nmrdat[self.nd.s][self.nd.e].autobaseline2d(poly_order, threshold)
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                self.nd.nmrdat[self.nd.s][k].autobaseline2d(poly_order, threshold)
+        else:
+            self.nd.nmrdat[self.nd.s][self.nd.e].autobaseline2d(poly_order, threshold)
+
         self.show_version()
         self.w.nmrSpectrum.setCurrentIndex(0)
         self.change_data_set_exp()
@@ -3724,14 +3742,23 @@ class QtMetaboLabPy(object):  # pragma: no cover
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
         if len(self.w.nLevels.text()) > 0:
             d.n_levels = round(float(self.w.nLevels.text()))
-        # end get_disp_pars4
+
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                self.nd.nmrdat[self.nd.s][k].display.n_levels = round(float(self.w.nLevels.text()))
 
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
+        # end get_disp_pars4
+
 
     def get_disp_pars5(self):
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
         if len(self.w.minLevel.text()) > 0:
             d.min_level = float(self.w.minLevel.text())
+
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                self.nd.nmrdat[self.nd.s][k].display.min_level = float(self.w.minLevel.text())
 
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
         # end get_disp_pars5
@@ -3740,6 +3767,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         d = self.nd.nmrdat[self.nd.s][self.nd.e].display
         if len(self.w.maxLevel.text()) > 0:
             d.max_level = float(self.w.maxLevel.text())
+
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                self.nd.nmrdat[self.nd.s][k].display.max_level = float(self.w.maxLevel.text())
 
         self.nd.nmrdat[self.nd.s][self.nd.e].display = d
         # end get_disp_pars6
@@ -4747,15 +4778,25 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 xy[0][1],
                 1)
             self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[1] = self.temp_ref_shift[1]
+            spcno = self.nd.e
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+                spcno = 0
+
             self.nd.nmrdat[self.nd.s][self.nd.e].proc.ref_point[0] = self.nd.nmrdat[self.nd.s][self.nd.e].ref_point[0] * \
                                                                      self.nd.nmrdat[self.nd.s][self.nd.e].proc.n_points[
                                                                          0] / (len(
-                self.nd.nmrdat[self.nd.s][self.nd.e].fid[0]) * self.nd.nmrdat[self.nd.s][self.nd.e].proc.mult_factor[0])
+                self.nd.nmrdat[self.nd.s][spcno].fid[0]) * self.nd.nmrdat[self.nd.s][self.nd.e].proc.mult_factor[0])
             self.nd.nmrdat[self.nd.s][self.nd.e].proc.ref_point[1] = self.nd.nmrdat[self.nd.s][self.nd.e].ref_point[1] * \
                                                                      self.nd.nmrdat[self.nd.s][self.nd.e].proc.n_points[
                                                                          1] / (len(
                 self.nd.nmrdat[self.nd.s][self.nd.e].fid) * self.nd.nmrdat[self.nd.s][self.nd.e].proc.mult_factor[1])
             self.nd.nmrdat[self.nd.s][self.nd.e].calc_ppm()
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+                for k in range(len(self.nd.nmrdat[self.nd.s])):
+                    self.nd.nmrdat[self.nd.s][k].ref_point = self.nd.nmrdat[self.nd.s][self.nd.e].ref_point
+                    self.nd.nmrdat[self.nd.s][k].ref_shift = self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift
+                    self.nd.nmrdat[self.nd.s][k].calc_ppm()
+
             self.reset_plot()
 
     def on_g_input_2d_click(self, event):
@@ -6240,7 +6281,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         neg_col = matplotlib.colors.to_hex(neg_col)
         xlabel = d.x_label + " C" + str(c13_index) + "H" + str(h1_index) + h1_suffix + " [" + d.axis_type1 + "]"
         ylabel = d.y_label + " C" + str(c13_index) + "H" + str(h1_index) + h1_suffix + " [" + d.axis_type2 + "]"
-        mm = np.max(np.abs(self.nd.nmrdat[self.nd.s][self.nd.e].spc.real))
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            mmax = []
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                mmax.append(np.max(np.abs(self.nd.nmrdat[self.nd.s][k].spc.real)))
+
+            mm = np.max(np.array(mmax))
+        else:
+            mm = np.max(np.abs(self.nd.nmrdat[self.nd.s][self.nd.e].spc.real))
+
         pos_lev = np.linspace(d.min_level * mm, d.max_level * mm, d.n_levels)
         neg_lev = np.linspace(-d.max_level * mm, -d.min_level * mm, d.n_levels)
         self.w.hsqcPeak.canvas.axes.clear()
@@ -6528,7 +6577,14 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 self.show_legend()
 
         else:
-            mm = np.max(np.abs(self.nd.nmrdat[self.nd.s][self.nd.e].spc.real))
+            if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+                mmax = []
+                for k in range(len(self.nd.nmrdat[self.nd.s])):
+                    mmax.append(np.max(np.abs(self.nd.nmrdat[self.nd.s][k].spc.real)))
+                    mm = np.max(np.array(mmax))
+            else:
+                mm = np.max(np.abs(self.nd.nmrdat[self.nd.s][self.nd.e].spc.real))
+
             pos_lev = np.linspace(d.min_level * mm, d.max_level * mm, d.n_levels)
             neg_lev = np.linspace(-d.max_level * mm, -d.min_level * mm, d.n_levels)
             self.w.MplWidget.canvas.axes.clear()
@@ -7132,6 +7188,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def scale_2d_spectrum_up(self):
         self.nd.nmrdat[self.nd.s][self.nd.e].display.min_level /= 1.1
         self.nd.nmrdat[self.nd.s][self.nd.e].display.max_level /= 1.1
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                self.nd.nmrdat[self.nd.s][k].display.min_level = self.nd.nmrdat[self.nd.s][self.nd.e].display.min_level
+                self.nd.nmrdat[self.nd.s][k].display.max_level = self.nd.nmrdat[self.nd.s][self.nd.e].display.max_level
+
         self.set_disp_pars()
         self.plot_spc()
         # end scale_2d_spectrum_up
@@ -7139,6 +7200,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def scale_2d_spectrum_down(self):
         self.nd.nmrdat[self.nd.s][self.nd.e].display.min_level *= 1.1
         self.nd.nmrdat[self.nd.s][self.nd.e].display.max_level *= 1.1
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            for k in range(len(self.nd.nmrdat[self.nd.s])):
+                self.nd.nmrdat[self.nd.s][k].display.min_level = self.nd.nmrdat[self.nd.s][self.nd.e].display.min_level
+                self.nd.nmrdat[self.nd.s][k].display.max_level = self.nd.nmrdat[self.nd.s][self.nd.e].display.max_level
+
         self.set_disp_pars()
         self.plot_spc()
         # end scale_2d_spectrum_down
