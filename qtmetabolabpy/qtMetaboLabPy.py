@@ -4791,6 +4791,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
                                                                          1] / (len(
                 self.nd.nmrdat[self.nd.s][self.nd.e].fid) * self.nd.nmrdat[self.nd.s][self.nd.e].proc.mult_factor[1])
             self.nd.nmrdat[self.nd.s][self.nd.e].calc_ppm()
+            self.nd.nmrdat[self.nd.s][self.nd.e].ref_point[2] = self.nd.e
+            if len(self.temp_ref_shift) < 3:
+                self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[2] = self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[0]
+            else:
+                self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift[2] = self.temp_ref_shift[2]
             if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
                 for k in range(len(self.nd.nmrdat[self.nd.s])):
                     self.nd.nmrdat[self.nd.s][k].ref_point = self.nd.nmrdat[self.nd.s][self.nd.e].ref_point
@@ -6960,7 +6965,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc()
         # end reference1d_all_2
 
-    def reference2d(self, ref_shift=[0.0, 0.0], peak_number=-1):
+    def reference2d(self, ref_shift=[0.0, 0.0, 0.0], peak_number=-1):
         if peak_number == -1 and not isinstance(ref_shift, str):
             self.temp_ref_shift = ref_shift
             self.w.MplWidget.canvas.setFocus()
