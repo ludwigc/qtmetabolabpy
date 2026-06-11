@@ -4801,6 +4801,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                     self.nd.nmrdat[self.nd.s][k].ref_point = self.nd.nmrdat[self.nd.s][self.nd.e].ref_point
                     self.nd.nmrdat[self.nd.s][k].ref_shift = self.nd.nmrdat[self.nd.s][self.nd.e].ref_shift
                     self.nd.nmrdat[self.nd.s][k].calc_ppm()
+                self.nd.calc_ppm3()
 
             self.reset_plot()
 
@@ -6292,20 +6293,31 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 mmax.append(np.max(np.abs(self.nd.nmrdat[self.nd.s][k].spc.real)))
 
             mm = np.max(np.array(mmax))
+            hsqc = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc
+            cm = hsqc.cur_metabolite
+            cp = hsqc.cur_peak - 1
+            if len(hsqc.hsqc_data[cm].h1_picked[cp]) < 1:
+                h1_shift = hsqc.hsqc_data[cm].h1_shifts[cp]
+            else:
+                h1_shift = np.mean(hsqc.hsqc_data[cm].h1_picked[cp])
+
+            print(f'h1_shift: {h1_shift}, ppm3: {self.nd.ppm3}')
+            e = np.where(np.abs(self.nd.ppm3 - h1_shift) == np.min(np.abs(self.nd.ppm3 - h1_shift)))[0][0]
         else:
             mm = np.max(np.abs(self.nd.nmrdat[self.nd.s][self.nd.e].spc.real))
+            e = self.nd.e
 
         pos_lev = np.linspace(d.min_level * mm, d.max_level * mm, d.n_levels)
         neg_lev = np.linspace(-d.max_level * mm, -d.min_level * mm, d.n_levels)
         self.w.hsqcPeak.canvas.axes.clear()
         self.w.hsqcPeak.canvas.axes.contour(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1[h1_pts1:h1_pts2],
                                             self.nd.nmrdat[self.nd.s][self.nd.e].ppm2[c13_pts1:c13_pts2],
-                                            self.nd.nmrdat[self.nd.s][self.nd.e].spc[c13_pts1:c13_pts2,
+                                            self.nd.nmrdat[self.nd.s][e].spc[c13_pts1:c13_pts2,
                                             h1_pts1:h1_pts2].real, pos_lev, colors=pos_col,
                                             linestyles='solid', antialiased=True)
         self.w.hsqcPeak.canvas.axes.contour(self.nd.nmrdat[self.nd.s][self.nd.e].ppm1[h1_pts1:h1_pts2],
                                             self.nd.nmrdat[self.nd.s][self.nd.e].ppm2[c13_pts1:c13_pts2],
-                                            self.nd.nmrdat[self.nd.s][self.nd.e].spc.real[c13_pts1:c13_pts2,
+                                            self.nd.nmrdat[self.nd.s][e].spc.real[c13_pts1:c13_pts2,
                                             h1_pts1:h1_pts2], neg_lev, colors=neg_col,
                                             linestyles='solid', antialiased=True)
         self.w.hsqcPeak.canvas.axes.autoscale()
@@ -6366,7 +6378,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         h1_pts = len(self.nd.nmrdat[self.nd.s][self.nd.e].spc[0]) - self.nd.nmrdat[self.nd.s][self.nd.e].ppm2points(
             h1_pos, 0) - 1
         self.w.hsqcMultiplet.canvas.axes.plot(self.nd.nmrdat[self.nd.s][self.nd.e].ppm2[c13_pts1:c13_pts2],
-                                              self.nd.nmrdat[self.nd.s][self.nd.e].spc.real[c13_pts1:c13_pts2, h1_pts],
+                                              self.nd.nmrdat[self.nd.s][e].spc.real[c13_pts1:c13_pts2, h1_pts],
                                               color=col1, linewidth=2)
         if len(hd.sim_spc[spin_number - 1]) > 0:
             self.w.hsqcMultiplet.canvas.axes.plot(self.nd.nmrdat[self.nd.s][self.nd.e].ppm2[c13_pts1:c13_pts2],
