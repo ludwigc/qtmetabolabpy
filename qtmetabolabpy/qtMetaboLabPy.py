@@ -3231,6 +3231,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if n_buttons == 0:
             return
 
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            n_buttons = n_buttons * n_buttons
+
         existing_buttons = len(self.w.peakSelection.children()) - 1
         self.delete_buttons(n_buttons)
         self.create_buttons(n_buttons)
@@ -6262,8 +6265,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         c13_index = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.hsqc_data[metabolite_name].c13_index[
             hd.h1_index[spin_number - 1] - 1]
         h1_suffix = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.hsqc_data[metabolite_name].h1_suffix[spin_number - 1]
-        h1_beg = h1_centre + self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_h
-        h1_end = h1_centre - self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_h
+        h_factor = 1.0
+        if self.nd.nmrdat[self.nd.s][self.nd.e].dim == 3:
+            h_factor = 3.0
+
+        h1_beg = h1_centre + self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_h * h_factor
+        h1_end = h1_centre - self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_h * h_factor
         c13_beg = c13_centre + self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_c * scale
         c13_end = c13_centre - self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_c * scale
         h1_pts = len(self.nd.nmrdat[self.nd.s][self.nd.e].spc[0])
@@ -6348,7 +6355,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
                 delta_y = self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.range_c * scale
                 factor = 0.05
                 for k in range(len(xdata)):
-                    self.w.hsqcPeak.canvas.axes.plot([xdata[k] - factor * delta_x, xdata[k] + factor * delta_x],
+                    self.w.hsqcPeak.canvas.axes.plot([xdata[k] - factor * delta_x * h_factor, xdata[k] + factor * delta_x * h_factor],
                                                      [ydata[k], ydata[k]], color=col2, linewidth=4)
                     self.w.hsqcPeak.canvas.axes.plot([xdata[k], xdata[k]],
                                                      [ydata[k] - factor * delta_y, ydata[k] + factor * delta_y],
@@ -6585,7 +6592,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
             # self.w.MplWidget.canvas.toolbar.update()
             self.w.MplWidget.canvas.draw()
-            if (self.keep_x_zoom == True):
+            if self.keep_x_zoom == True:
                 self.w.MplWidget.canvas.axes.set_xlim(xlim)
                 self.vertical_auto_scale()
                 self.keep_x_zoom = False
@@ -6970,6 +6977,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # end reference1d_all
 
     def reference1d_all_2(self):
+        print(f'self.xdata[0]: {self.xdata[0]}, self.temp_shift: {self.temp_shift}')
         self.nd.reference1d_all(self.xdata[0], self.temp_shift, self.find_maximum)
         self.xdata = []
         self.ydata = []
