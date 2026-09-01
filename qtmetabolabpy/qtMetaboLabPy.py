@@ -341,6 +341,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preProcPeak.setVisible(False)
         self.w.hsqcAnalysis.setVisible(False)
         self.w.multipletAnalysis.setVisible(False)
+        self.w.stocsy.setVisible(False)
         #self.w.isotopomerAnalysis.setVisible(False)
         self.w.nmrSpectrum.setTabEnabled(1, False)
         self.w.nmrSpectrum.setTabEnabled(2, False)
@@ -459,6 +460,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.y0LE.returnPressed.connect(self.set_var_y0)
         self.w.actionRead_NMR_Spectrum.triggered.connect(self.read_nmr_spc)
         self.w.preprocessing.stateChanged.connect(self.set_pre_processing)
+        self.w.stocsy.stateChanged.connect(self.set_stocsy)
+        self.w.stocsy_area.cellChanged.connect(self.set_stocsy_area_tab)
         self.w.peakPicking.stateChanged.connect(self.set_peak_picking)
         self.w.splinebaseline.stateChanged.connect(self.set_spline_baseline)
         self.w.loadPeakList.clicked.connect(self.load_peak)
@@ -508,6 +511,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.actionToggle_FullScreen.triggered.connect(self.show_main_window)
         self.w.setBox.valueChanged.connect(self.change_data_set_exp)
         self.w.setBox.setKeyboardTracking(False)
+        self.w.stocsyRefExp.valueChanged.connect(self.set_stocsy_ref_exp)
+        self.w.stocsyRefExp.setKeyboardTracking(False)
         self.w.expBox.valueChanged.connect(self.change_data_set_exp)
         self.w.expBox.setKeyboardTracking(False)
         self.w.maFitChemShifts.stateChanged.connect(self.set_fit_ma_chem_shifts)
@@ -1311,6 +1316,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.spcLabel.textChanged.connect(self.get_disp_pars14)
         # end connect
 
+    def set_stocsy_ref_exp(self):
+        self.nd.stocsy_ref_exp = self.w.stocsyRefExp.value() - 1
+        self.plot_stocsy_spc()
+        # end change_stocsy_ref_exp
+
     def change_data_set_exp(self):
         self.disconnect()
         self.w.cmdLine.setFocus()
@@ -1584,6 +1594,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preprocessing.setVisible(False)
         self.w.peakPicking.setChecked(False)
         self.w.peakPicking.setVisible(False)
+        self.w.stocsy.setChecked(False)
+        self.w.stocsy.setVisible(False)
         self.w.splinebaseline.setChecked(False)
         self.w.splinebaseline.setVisible(False)
         self.w.MplWidget.canvas.axes.clear()
@@ -4977,6 +4989,13 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_spc(True)
         # end hide_pre_processing
 
+    def hide_stocsy(self):
+        self.w.stocsyTab.setHidden(True)
+        self.w.preProcPeak.setTabEnabled(3, False)
+        self.w.preProcPeak.setHidden(True)
+        self.plot_spc(True)
+        # end hide_pre_processing
+
     def hide_peak_picking(self):
         self.w.peakPickingTab.setHidden(True)
         self.w.preProcPeak.setTabEnabled(1, False)
@@ -5019,6 +5038,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preProcPeak.setTabEnabled(0, False)
         self.w.preProcPeak.setTabEnabled(1, True)
         self.w.preProcPeak.setTabEnabled(2, False)
+        self.w.preProcPeak.setTabEnabled(3, False)
         self.w.peakWidget.setHidden(False)
         self.w.peakAddButton.setHidden(False)
         self.w.peakClearButton.setHidden(False)
@@ -5039,6 +5059,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preProcPeak.setTabEnabled(0, False)
         self.w.preProcPeak.setTabEnabled(1, False)
         self.w.preProcPeak.setTabEnabled(2, True)
+        self.w.preProcPeak.setTabEnabled(3, False)
         self.w.splineBaselineTW.setHidden(False)
         self.w.label_98.setHidden(False)
         self.w.label_99.setHidden(False)
@@ -6754,6 +6775,46 @@ class QtMetaboLabPy(object):  # pragma: no cover
         # self.w.MplWidget.canvas.toolbar.update()
         self.w.MplWidget.canvas.draw()
 
+    def plot_stocsy_spc(self):
+        self.keep_zoom = self.w.keepZoom.isChecked()
+        xlim = self.w.MplWidget.canvas.axes.get_xlim()
+        ylim = self.w.MplWidget.canvas.axes.get_ylim()
+        self.w.nmrSpectrum.setCurrentIndex(0)
+        self.w.MplWidget.canvas.axes.clear()
+        s = self.nd.s
+        if self.nd.stocsy_ref_exp < 0:
+            self.nd.stocsy_ref_exp = self.nd.e
+
+        e = self.nd.stocsy_ref_exp
+        start_ppm = self.nd.nmrdat[s][e].stocsy_start_ppm
+        stop_ppm = self.nd.nmrdat[s][e].stocsy_end_ppm
+        print(f'start_ppm: {start_ppm}, stop_ppm: {stop_ppm}')
+        if (start_ppm < max(self.nd.nmrdat[s][e].ppm1)) & (stop_ppm > min(self.nd.nmrdat[s][e].ppm1)):
+            self.w.MplWidget.canvas.axes.axvspan(start_ppm, stop_ppm,
+                                                 alpha=1.0, color='gray')
+
+        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][e].ppm1,
+                                          self.nd.nmrdat[self.nd.s][e].spc[0].real)#, color=plotCol)
+
+        d = self.nd.nmrdat[self.nd.s][self.nd.e].display
+        xlabel = d.x_label + " [" + d.axis_type1 + "]"
+        if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
+            bg = (42 / 255, 42 / 255, 42 / 255)
+            fg = (255 / 255, 255 / 255, 255 / 255)
+        else:
+            bg = (255 / 255, 255 / 255, 255 / 255)
+            fg = (0 / 255, 0 / 255, 0 / 255)
+
+        self.w.MplWidget.canvas.axes.set_xlabel(xlabel, color=fg)
+        self.w.MplWidget.canvas.axes.autoscale()
+        self.w.MplWidget.canvas.axes.invert_xaxis()
+        if (self.keep_zoom == True):
+            self.w.MplWidget.canvas.axes.set_xlim(xlim)
+            self.w.MplWidget.canvas.axes.set_ylim(ylim)
+
+        # self.w.MplWidget.canvas.toolbar.update()
+        self.w.MplWidget.canvas.draw()
+
     def plot_spline_baseline(self):
         self.plot_spc(True, True)
         # end plot_spline_baseline
@@ -7383,6 +7444,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if self.w.splinebaseline.isChecked():
             self.w.peakPicking.setChecked(False)
             self.w.preprocessing.setChecked(False)
+            self.w.stocsy.setChecked(False)
             self.show_spline_baseline()
             self.set_spline_average_points()
             self.set_linear_spline_points()
@@ -8031,6 +8093,51 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_hsqc_pars18()
         self.set_hsqc_pars19()
         # end set_hsqc
+
+    def set_stocsy_area_button(self):
+        print('hello')
+        # end set_stocsy_area_button
+
+    def set_stocsy_area_tab(self):
+        start_ppm = 999
+        stop_ppm = -999
+        if self.w.stocsy_area.item(0,0) != None:
+            if len(self.w.stocsy_area.item(0,0).text()) > 0:
+                start_ppm = round(float(self.w.stocsy_area.item(0,0).text()), 3)
+
+        if self.w.stocsy_area.item(0,1) != None:
+            if len(self.w.stocsy_area.item(0,1).text()) > 0:
+                stop_ppm = round(float(self.w.stocsy_area.item(0,1).text()), 3)
+
+        ppms = [start_ppm, stop_ppm]
+
+        if (min(self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].ppm1) < min(ppms)) & (max(self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].ppm1) > max(ppms)):
+            ppms = [start_ppm, stop_ppm]
+        else:
+            ppms = []
+
+        if len(ppms) == 0:
+            self.w.stocsy_area.cellChanged.disconnect()
+            if start_ppm > max(self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].ppm1):
+                self.w.stocsy_area.item(0,0).setText('')
+                self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].stocsy_start_ppm = 999
+
+            if stop_ppm < min(self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].ppm1):
+                self.w.stocsy_area.item(0,1).setText('')
+                self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].stocsy_end_ppm = -999
+
+            self.w.stocsy_area.cellChanged.connect(self.set_stocsy_area_tab)
+            self.plot_stocsy_spc()
+            return
+
+        self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].stocsy_start_ppm = max(ppms)
+        self.nd.nmrdat[self.nd.s][self.nd.stocsy_ref_exp].stocsy_end_ppm = min(ppms)
+        self.w.stocsy_area.cellChanged.disconnect()
+        self.w.stocsy_area.item(0,0).setText(str(max(ppms)))
+        self.w.stocsy_area.item(0,1).setText(str(min(ppms)))
+        self.w.stocsy_area.cellChanged.connect(self.set_stocsy_area_tab)
+        self.plot_stocsy_spc()
+        # end set_stocsy_area_tab
 
     def set_add_peak(self):
         if (self.nd.peak_fill == False):
@@ -8738,6 +8845,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if (self.w.preprocessing.isChecked() == True):
             self.w.peakPicking.setChecked(False)
             self.w.splinebaseline.setChecked(False)
+            self.w.stocsy.setChecked(False)
             # self.w.peakPickingTab.setHidden(True)
             self.w.preProcPeak.setCurrentIndex(0)
             if len(self.nd.nmrdat[self.nd.s]) != len(self.nd.pp.class_select):
@@ -8749,6 +8857,25 @@ class QtMetaboLabPy(object):  # pragma: no cover
         else:
             self.hide_pre_processing()
             self.w.preProcPeak.setHidden(True)
+
+        # end set_pre_processing
+
+    def set_stocsy(self):
+        if (self.w.stocsy.isChecked() == True):
+            self.w.peakPicking.setChecked(False)
+            self.w.splinebaseline.setChecked(False)
+            self.w.preprocessing.setChecked(False)
+            self.w.preProcPeak.setCurrentIndex(3)
+            if self.nd.stocsy_ref_exp < 0:
+                self.nd.stocsy_ref_exp = self.nd.e
+
+            self.w.stocsyRefExp.valueChanged.disconnect()
+            self.w.stocsyRefExp.setValue(self.nd.stocsy_ref_exp + 1)
+            self.w.stocsyRefExp.valueChanged.connect(self.set_stocsy_ref_exp)
+            self.show_stocsy()
+        else:
+            self.hide_stocsy()
+            #self.w.preProcPeak.setHidden(True)
 
         # end set_pre_processing
 
@@ -8764,6 +8891,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         if (self.w.peakPicking.isChecked() == True):
             self.w.preprocessing.setChecked(False)
             self.w.splinebaseline.setChecked(False)
+            self.w.stocsy.setChecked(False)
             # self.w.preProcessingTab.setHidden(True)
             self.w.preProcPeak.setCurrentIndex(1)
             self.w.intAllExps.stateChanged.disconnect()
@@ -9480,6 +9608,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preProcPeak.setTabEnabled(0, True)
         self.w.preProcPeak.setTabEnabled(1, False)
         self.w.preProcPeak.setTabEnabled(2, False)
+        self.w.preProcPeak.setTabEnabled(3, False)
         self.w.preProcessingGroupBox.setHidden(False)
         self.w.preProcessingSelect.setHidden(False)
         self.w.preProcessingWidget.setHidden(False)
@@ -9489,6 +9618,24 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_export_method()
         # self.set_select_class()
         self.plot_spc_pre_proc()
+        # end show_pre_processing
+
+    def show_stocsy(self):
+        self.w.stocsyTab.setHidden(False)
+        self.w.preProcPeak.setHidden(False)
+        self.w.preProcessingTab.setHidden(True)
+        self.w.peakPickingTab.setHidden(True)
+        self.w.preProcPeak.setTabEnabled(0, False)
+        self.w.preProcPeak.setTabEnabled(1, False)
+        self.w.preProcPeak.setTabEnabled(2, False)
+        self.w.preProcPeak.setTabEnabled(3, True)
+        self.w.preProcessingGroupBox.setHidden(True)
+        self.w.preProcessingSelect.setHidden(True)
+        self.w.preProcessingWidget.setHidden(True)
+        self.w.runPreProcessingButton.setHidden(True)
+        self.w.resetPreProcessingButton.setHidden(True)
+        self.w.writeScriptButton.setHidden(True)
+        self.plot_stocsy_spc()
         # end show_pre_processing
 
     def show_pulse_program(self):
@@ -9775,6 +9922,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.preprocessing.setVisible(True)
             self.w.peakPicking.setVisible(True)
             self.w.splinebaseline.setVisible(True)
+            self.w.stocsy.setVisible(True)
         else:
             self.w.preprocessing.setChecked(False)
             self.w.preprocessing.setVisible(False)
@@ -9782,6 +9930,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.peakPicking.setVisible(False)
             self.w.splinebaseline.setChecked(False)
             self.w.splinebaseline.setVisible(False)
+            self.w.stocsy.setChecked(False)
+            self.w.stocsy.setVisible(False)
 
         if self.nd.nmrdat[self.nd.s][self.nd.e].dim > 1:
             if self.nd.nmrdat[self.nd.s][self.nd.e].acq.pul_prog_name.find("hsqc") > 0 or self.nd.nmrdat[self.nd.s][
