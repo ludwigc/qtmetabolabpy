@@ -462,6 +462,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.preprocessing.stateChanged.connect(self.set_pre_processing)
         self.w.stocsy.stateChanged.connect(self.set_stocsy)
         self.w.stocsy_area.cellChanged.connect(self.set_stocsy_area_tab)
+        self.w.stocsyButton.clicked.connect(self.calc_stocsy)
+        self.w.thresholdText.textChanged.connect(self.set_stocsy_threshold)
         self.w.peakPicking.stateChanged.connect(self.set_peak_picking)
         self.w.splinebaseline.stateChanged.connect(self.set_spline_baseline)
         self.w.loadPeakList.clicked.connect(self.load_peak)
@@ -1334,6 +1336,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def set_stocsy_ref_exp(self):
         self.nd.stocsy_ref_exp = self.w.stocsyRefExp.value() - 1
         self.set_stocsy_area_tw()
+        self.set_stocsy()
         self.plot_stocsy_spc()
         # end change_stocsy_ref_exp
 
@@ -6868,6 +6871,10 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][e].ppm1,
                                           self.nd.nmrdat[self.nd.s][e].spc[0].real, color=pos_col)
 
+        if len(self.nd.nmrdat[self.nd.s][e].stocsy_spc) > 0:
+            self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][e].ppm1,
+                                              self.nd.nmrdat[self.nd.s][e].stocsy_spc)
+
         xlabel = d.x_label + " [" + d.axis_type1 + "]"
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             bg = (42 / 255, 42 / 255, 42 / 255)
@@ -8165,6 +8172,12 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_hsqc_pars19()
         # end set_hsqc
 
+    def set_stocsy_threshold(self):
+        s = self.nd.s
+        e = self.nd.stocsy_ref_exp
+        self.nd.nmrdat[s][e].stocsy_threshold = float(self.w.thresholdText.text())
+        # end set_stocsy_threshold
+
     def set_stocsy_area_tab(self):
         start_ppm = 999
         stop_ppm = -999
@@ -8927,6 +8940,45 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
         # end set_pre_processing
 
+    def calc_stocsy(self):
+        s = self.nd.s
+        e = self.nd.stocsy_ref_exp
+        start_ppm = self.nd.nmrdat[s][e].stocsy_start_ppm
+        end_ppm = self.nd.nmrdat[s][e].stocsy_end_ppm
+        threshold = self.nd.nmrdat[s][e].stocsy_threshold
+        if start_ppm > np.max(self.nd.nmrdat[s][e].ppm1):
+            return
+
+        if end_ppm < np.min(self.nd.nmrdat[s][e].ppm1):
+            return
+
+        nexp = len(self.nd.nmrdat[s])
+        npts = len(self.nd.nmrdat[s][e].ppm1)
+        mat = np.array([[]])
+        mat.resize(nexp, npts)
+        for k in range(nexp):
+            mat[k] = np.copy(self.nd.nmrdat[s][k].spc[0].real)
+
+        mat = np.copy(mat / np.max(mat))
+        mat = np.copy(mat - np.mean(mat, 0))
+        mat3 = np.copy(np.var(mat, 0))
+        spcvar = np.array([[]])
+        spcvar.resize(nexp, npts)
+        for k in range(nexp):
+            spcvar[k] = np.copy(mat3)
+
+        mat[np.where(spcvar != 0)] /= np.sqrt(spcvar[np.where(spcvar != 0)])
+        start_point = int(npts - self.nd.nmrdat[s][0].ppm2points(start_ppm))
+        end_point = int(npts - self.nd.nmrdat[s][0].ppm2points(end_ppm))
+        npts2 = end_point - start_point
+        cx = np.array([[]])
+        cx.resize(npts2, npts)
+        cx = np.matmul(mat.transpose(), mat.transpose()[start_point:end_point].transpose()).transpose() / (nexp - 1)
+        stocsy = np.sum(cx, 0) / npts2
+        self.nd.nmrdat[s][e].stocsy_spc = np.copy(self.nd.nmrdat[s][e].spc[0].real * stocsy * (np.abs(stocsy) > threshold))
+        self.plot_stocsy_spc()
+        # end calc_stocsy
+
     def set_stocsy(self):
         if (self.w.stocsy.isChecked() == True):
             self.w.peakPicking.setChecked(False)
@@ -8939,6 +8991,21 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.w.stocsyRefExp.valueChanged.disconnect()
             self.w.stocsyRefExp.setValue(self.nd.stocsy_ref_exp + 1)
             self.w.stocsyRefExp.valueChanged.connect(self.set_stocsy_ref_exp)
+            s = self.nd.s
+            e = self.nd.stocsy_ref_exp
+            self.w.stocsy_area.cellChanged.connect(self.set_stocsy_area_tab)
+            if self.nd.nmrdat[s][e].stocsy_start_ppm < np.max(self.nd.nmrdat[s][e].ppm1):
+                self.w.stocsy_area.item(0, 0).setText(str(self.nd.nmrdat[s][e].stocsy_start_ppm))
+            else:
+                self.w.stocsy_area.item(0, 0).setText('')
+
+            if self.nd.nmrdat[s][e].stocsy_end_ppm > np.min(self.nd.nmrdat[s][e].ppm1):
+                self.w.stocsy_area.item(0, 1).setText(str(self.nd.nmrdat[s][e].stocsy_end_ppm))
+            else:
+                self.w.stocsy_area.item(0, 1).setText('')
+
+            self.w.thresholdText.setText(str(self.nd.nmrdat[s][e].stocsy_threshold))
+            self.w.stocsy_area.cellChanged.connect(self.set_stocsy_area_tab)
             self.show_stocsy()
         else:
             self.hide_stocsy()
