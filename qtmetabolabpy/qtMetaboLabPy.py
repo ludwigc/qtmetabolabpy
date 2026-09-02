@@ -614,6 +614,8 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.quitButton.clicked.connect(self.quit_app)
         self.w.saveButton.clicked.connect(self.save_button)
         self.w.loadButton.clicked.connect(self.load_button)
+        self.w.stocsySetArea.clicked.connect(self.add_stocsy_area)
+        self.w.stocsyClearArea.clicked.connect(self.clear_stocsy_area)
         self.w.exportPathSelectButton.clicked.connect(self.set_export_table)
         self.w.actionQuit.triggered.connect(self.quit_app)
         self.w.dispPlotButton.clicked.connect(self.plot_spc_disp)
@@ -770,6 +772,19 @@ class QtMetaboLabPy(object):  # pragma: no cover
     def add_peak(self):
         self.ginput_add_peak(2)
         # end add_peak
+
+    def add_stocsy_area(self):
+        self.ginput_add_stocsy_area(2)
+        # end add_stocsy_area
+
+    def clear_stocsy_area(self):
+        s = self.nd.s
+        e = self.nd.stocsy_ref_exp
+        self.nd.nmrdat[s][e].stocsy_start_ppm = 999
+        self.nd.nmrdat[s][e].stocsy_end_ppm = -999
+        self.set_stocsy_area_tw()
+        self.plot_stocsy_spc()
+        # end add_stocsy_area
 
     def add_tmsp(self, m0=1, r2=1, all=False):
         if all:
@@ -1318,6 +1333,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
 
     def set_stocsy_ref_exp(self):
         self.nd.stocsy_ref_exp = self.w.stocsyRefExp.value() - 1
+        self.set_stocsy_area_tw()
         self.plot_stocsy_spc()
         # end change_stocsy_ref_exp
 
@@ -4559,6 +4575,47 @@ class QtMetaboLabPy(object):  # pragma: no cover
             self.plot_spc()
             # self.set_exclude_pre_proc()
 
+    def on_g_input_click_add_stocsy_area(self, event):
+        self.cur_clicks += 1
+        if self.cur_clicks < self.n_clicks:
+            self.xdata.append(event.xdata)
+            self.ydata.append(event.ydata)
+        else:
+            self.xdata.append(event.xdata)
+            self.ydata.append(event.ydata)
+            self.n_clicks = 1
+            self.cur_clicks = 0
+            cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_click_add_stocsy_area)
+            cid = self.w.MplWidget.canvas.mpl_disconnect(cid)
+            cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_click_add_stocsy_area)
+            cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+            s = self.nd.s
+            e = self.nd.stocsy_ref_exp
+            self.nd.nmrdat[s][e].stocsy_start_ppm = round(max(self.xdata), 3)
+            self.nd.nmrdat[s][e].stocsy_end_ppm = round(min(self.xdata), 3)
+            self.set_stocsy_area_tw()
+            self.xdata = []
+            self.ydata = []
+            self.plot_stocsy_spc()
+
+    def set_stocsy_area_tw(self):
+        s = self.nd.s
+        e = self.nd.stocsy_ref_exp
+        self.w.stocsy_area.cellChanged.disconnect()
+        if self.nd.nmrdat[s][e].stocsy_start_ppm < max(self.nd.nmrdat[s][e].ppm1):
+            self.w.stocsy_area.item(0, 0).setText(str(self.nd.nmrdat[s][e].stocsy_start_ppm))
+        else:
+            self.w.stocsy_area.item(0, 0).setText('')
+
+        if self.nd.nmrdat[s][e].stocsy_end_ppm > min(self.nd.nmrdat[s][e].ppm1):
+            self.w.stocsy_area.item(0, 1).setText(str(self.nd.nmrdat[s][e].stocsy_end_ppm))
+        else:
+            self.w.stocsy_area.item(0, 1).setText('')
+
+        self.w.stocsy_area.cellChanged.connect(self.set_stocsy_area_tab)
+        self.plot_stocsy_spc()
+        # end set_stocsy_area_tw
+
     def on_g_input_hsqc2_click(self, event):
         self.cur_clicks += 1
         if self.cur_clicks < self.n_clicks:
@@ -4900,6 +4957,15 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.n_clicks = n_clicks
         cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_click_add_peak)
         cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_click_add_peak)
+        cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
+        # end ginput_add_peak
+
+    def ginput_add_stocsy_area(self, n_clicks=2):
+        self.w.MplWidget.canvas.setFocus()
+        self.show_nmr_spectrum()
+        self.n_clicks = n_clicks
+        cid = self.w.MplWidget.canvas.mpl_connect('button_press_event', self.on_g_input_click_add_stocsy_area)
+        cid2 = self.w.MplWidget.canvas.mpl_connect('button_release_event', self.on_g_input_click_add_stocsy_area)
         cid2 = self.w.MplWidget.canvas.mpl_disconnect(cid2)
         # end ginput_add_peak
 
@@ -6788,15 +6854,20 @@ class QtMetaboLabPy(object):  # pragma: no cover
         e = self.nd.stocsy_ref_exp
         start_ppm = self.nd.nmrdat[s][e].stocsy_start_ppm
         stop_ppm = self.nd.nmrdat[s][e].stocsy_end_ppm
-        print(f'start_ppm: {start_ppm}, stop_ppm: {stop_ppm}')
         if (start_ppm < max(self.nd.nmrdat[s][e].ppm1)) & (stop_ppm > min(self.nd.nmrdat[s][e].ppm1)):
             self.w.MplWidget.canvas.axes.axvspan(start_ppm, stop_ppm,
                                                  alpha=1.0, color='gray')
 
-        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][e].ppm1,
-                                          self.nd.nmrdat[self.nd.s][e].spc[0].real)#, color=plotCol)
+        d = self.nd.nmrdat[s][e].display
+        if (d.pos_col == "RGB"):
+            pos_col = d.pos_col_rgb
+        else:
+            pos_col = d.pos_col
 
-        d = self.nd.nmrdat[self.nd.s][self.nd.e].display
+        pos_col = matplotlib.colors.to_hex(pos_col)
+        self.w.MplWidget.canvas.axes.plot(self.nd.nmrdat[self.nd.s][e].ppm1,
+                                          self.nd.nmrdat[self.nd.s][e].spc[0].real, color=pos_col)
+
         xlabel = d.x_label + " [" + d.axis_type1 + "]"
         if self.cf.mode == 'dark' or (self.cf.mode == 'system' and darkdetect.isDark()):
             bg = (42 / 255, 42 / 255, 42 / 255)
@@ -8093,10 +8164,6 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.set_hsqc_pars18()
         self.set_hsqc_pars19()
         # end set_hsqc
-
-    def set_stocsy_area_button(self):
-        print('hello')
-        # end set_stocsy_area_button
 
     def set_stocsy_area_tab(self):
         start_ppm = 999

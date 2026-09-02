@@ -494,7 +494,7 @@
            </font>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="preProcessingTab">
            <attribute name="title">
@@ -3091,7 +3091,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="stocsyClearArea">
                 <property name="text">
                  <string>Clear Area</string>
                 </property>
@@ -7539,7 +7539,7 @@
      <x>0</x>
      <y>0</y>
      <width>2041</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
