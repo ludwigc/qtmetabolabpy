@@ -4,7 +4,7 @@ import matplotlib  # pragma: no cover
 import inspect   # pragma: no cover
 import importlib   # pragma: no cover
 
-matplotlib.use("Agg")  # pragma: no cover
+matplotlib.use("QtAgg")  # pragma: no cover
 matplotlib.rcParams['agg.path.chunksize'] = 64000  # pragma: no cover
 ## matplotlib.rc('xtick', labelsize=8)
 ## matplotlib.rc('ytick', labelsize=8)
