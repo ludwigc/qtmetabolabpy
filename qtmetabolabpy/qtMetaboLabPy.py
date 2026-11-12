@@ -2643,8 +2643,11 @@ class QtMetaboLabPy(object):  # pragma: no cover
         #nmr_dir = os.path.split(inspect.getmodule(nmrDataSet).__file__)[0]
         #base_dir = os.path.split(nmr_dir)[0]
         #jupyter_path = os.path.join(base_dir, "nmr", "jupyter")
-        jupyter_path = os.path.join("/Users/ludwigc", "jupyter")
-        self.process = subprocess.Popen(['jupyter-notebook', '--notebookdir=', f'{jupyter_path}', '&'])
+        #jupyter_path = os.path.join("/Users/ludwigc", "jupyter")
+        #self.process = subprocess.Popen(['jupyter-notebook', '--notebookdir=', f'{jupyter_path}', '&'])
+        p_name = os.path.split(sys.executable)[0]
+        jupyter_name = os.path.join(p_name, 'jupyter-lab')
+        self.process = subprocess.Popen([jupyter_name]) #, '--notebookdir=', f'{jupyter_path}', '&'])
         #jobs = []
         #print("-----------------")
         #self.process = multiprocess.Process(target=notebookapp.main,args=([jupyter_path, '--ip=127.0.0.1', '--port=9997'],))
