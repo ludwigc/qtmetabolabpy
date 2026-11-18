@@ -5736,39 +5736,64 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.console.anchorClicked.connect(self.html)
         self.w.console.moveCursor(QTextCursor.MoveOperation.End)
         self.w.console.setOpenExternalLinks(True)
-        text = '<br />Useful References:<br /><br />'
+        text = '<br />Useful References:<br />_____________________________________________________________________________________________________<br /><br />'
+        text += 'Software: <br /><br />'
         ref = 'https://doi.org/10.3390/metabo15010048'
-        text += f'MetaboLabPy&nbsp;&nbsp;&nbsp;&nbsp;: <a href="{ref}">{ref}</a><br />'
+        text += 4 * '&nbsp;' + 'MetaboLabPy' + 15 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1007/BF00197809'
+        text += 4 * '&nbsp;' + 'NMRPipe' + 19 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1002/anie.201100370'
+        ref2 = 'https://doi.org/10.1016/j.pnmrs.2011.02.002'
+        text += 4 * '&nbsp;' + 'qMDD' + 22 * '&nbsp;' + f': <a href="{ref}">{ref}</a> & <a href="{ref2}">{ref2}</a><br />'
+        ref = 'https://doi.org/10.1093/nar/gkae253'
+        text += 4 * '&nbsp;' + 'MetaboAnalyst' + 13 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br /><br /><br />'
+        text += 'Pulse Sequences: <br /><br />'
         ref = 'https://doi.org/10.1002/cmr.a.20223'
-        text += f'NOESY-presat&nbsp;&nbsp;&nbsp;: <a href="{ref}">{ref}</a><br />'
+        text += 4 * '&nbsp;' + 'NOESY-presat' + 14 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1006/jmra.1995.1047'
+        text += 4 * '&nbsp;' + 'Excitation Sculpting' + 6 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1002/pca.1186'
+        text += 4 * '&nbsp;' + '2D-Jres' + 19 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1021/ja00052a088'
+        text += 4 * '&nbsp;' + 'HSQC' + 22 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1016/j.jare.2014.10.003'
+        text += 4 * '&nbsp;' + 'TOCSY' + 21 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1002/mrc.2362'
+        text += 4 * '&nbsp;' + 'HSQC-TOCSY' + 16 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br /><br /><br />'
+        text += 'Data pre-processing: <br /><br />'
         ref = 'https://doi.org/10.1021/ac051632c'
-        text += f'PQN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <a href="{ref}">{ref}</a><br />'
+        text += 4 * '&nbsp;' + 'PQN' + 23 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
         ref = 'https://doi.org/10.1186/1471-2164-7-142'
-        text += f'Pareto Scaling&nbsp;: <a href="{ref}">{ref}</a><br />'
+        text += 4 * '&nbsp;' + 'Pareto Scaling' + 12 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1002/mrc.2501'
+        text += 4 * '&nbsp;' + 'generalised Log-transform' + '&nbsp;' + f': <a href="{ref}">{ref}</a><br /><br /><br />'
+        text += 'Databases: <br /><br />'
+        ref = 'https://doi.org/10.1093/nar/gkac1050'
+        text += 4 * '&nbsp;' + 'BMRB' + 22 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1093/nar/gkab1062'
+        text += 4 * '&nbsp;' + 'HMDB' + 22 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1093/nar/gkt1067'
+        text += 4 * '&nbsp;' + 'SMPDB' + 21 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1007/s11306-011-0347-7'
+        text += 4 * '&nbsp;' + 'BML' + 23 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1093/nar/gkag1042'
+        text += 4 * '&nbsp;' + 'KEGG' + 22 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1002/mrc.4263'
+        text += 4 * '&nbsp;' + 'NMRShiftDB2' + 15 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1021/acs.analchem.5b02311'
+        text += 4 * '&nbsp;' + 'SpinCouple' + 16 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br /><br /><br />'
+        text += 'Tracing: <br /><br />'
+        ref = 'https://doi.org/10.1002/anie.201611634'
+        text += 4 * '&nbsp;' + 'CANMS' + 21 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.12688/wellcomeopenres.13387.2'
+        text += 4 * '&nbsp;' + 'HS-TrAM' + 19 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1002/mrc.5089'
+        text += 4 * '&nbsp;' + 'Optimised Sampling' + 8 * '&nbsp;' + f': <a href="{ref}">{ref}</a><br /><br /><br />'
         text += '<br /><br />'
         self.w.console.insertHtml(text)
-        # CANMS  https://doi.org/10.1002/anie.201611634
-        # NMRPipe  10.1007/BF00197809
-        # qMDD 10.1002/anie.201100370
-        # qMDD https://doi.org/10.1016/j.pnmrs.2011.02.002
-        # excitation sculpting 10.1006/jmra.1995.1047
-        # CPMG https://www.sfu.ca/phys/431/references/nmr/carr_purcell_spin_echo_PhysRev1954.pdf
-        # HS-TrAM  10.12688/wellcomeopenres.13387.2
-        # optimised non-uniform sampling https://doi.org/10.1002/mrc.5089Digital Object Identifier (DOI)
-        # HMDB 10.1093/nar/gkab1062
-        # BMRB 10.1093/nar/gkac1050
-        # MetaboAnalyst 10.1093/nar/gkae253
-        # BML 10.1007/s11306-011-0347-7
-        # SMPDB https://doi.org/10.1093/nar/gkt1067
-        # KEGG 10.1093/nar/gkag1042
-        # NMRShiftDB2  10.1002/mrc.4263
-        # SpinCouple https://doi.org/10.1021/acs.analchem.5b02311
-        # HSQC https://doi.org/10.1021/ja00052a088
-        # TOCSY 10.1016/j.jare.2014.10.003
-        # HSQC-TOCSY  10.1002/mrc.2362
         return
     # end metabolomics_references
-    
+
     def next_command(self):
         if (self.w.cmdLine.hasFocus() == True):
             if (self.nd.cmd_idx < len(self.nd.cmd_buffer)):
