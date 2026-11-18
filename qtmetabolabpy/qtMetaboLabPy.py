@@ -34,6 +34,8 @@ try:
 except:
     pass
 
+from PySide6.QtGui import QTextCursor, QTextDocument
+
 try:
     from PySide6.QtWebEngineWidgets import QWebEngineView  # pragma: no cover
     from PySide6.QtWebEngineCore import QWebEngineSettings, QWebEngineUrlSchemeHandler  # pragma: no cover
@@ -426,6 +428,7 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.thLineWidthLE.returnPressed.connect(self.set_noise_reg_pre_proc)
         self.w.bucketPpmLE.returnPressed.connect(self.set_bucket_ppm_pre_proc)
         self.w.bucketDataPointsLE.returnPressed.connect(self.set_bucket_points_pre_proc)
+        self.w.actionReferences.triggered.connect(self.metabolomics_references)
         self.w.actionAutomatic_Referencing.triggered.connect(self.automatic_referencing)
         self.w.actionRestart_MetaboLabPy.triggered.connect(self.restart_metabolabpy)
         self.w.actionVertical_AutoScale.triggered.connect(self.vertical_auto_scale)
@@ -5096,9 +5099,9 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.w.correctAllButton.setHidden(True)
         # end hide_spline_baseline
 
-    def html(self, url=''):
-        if len(url) == 0:
-            url = "https://ludwigc.github.io/metabolabpy"
+    def html(self, url):
+        #if len(url) == 0:
+        #    url = "https://ludwigc.github.io/metabolabpy"
 
         self.w.helpView.setUrl(url)
         self.w.nmrSpectrum.setCurrentIndex(12)
@@ -5728,6 +5731,44 @@ class QtMetaboLabPy(object):  # pragma: no cover
         self.plot_metabolite_peak(self.nd.nmrdat[self.nd.s][self.nd.e].hsqc.cur_peak)
         # end metabolite_reset
 
+    def metabolomics_references(self):
+        self.show_console()
+        self.w.console.anchorClicked.connect(self.html)
+        self.w.console.moveCursor(QTextCursor.MoveOperation.End)
+        self.w.console.setOpenExternalLinks(True)
+        text = '<br />Useful References:<br /><br />'
+        ref = 'https://doi.org/10.3390/metabo15010048'
+        text += f'MetaboLabPy&nbsp;&nbsp;&nbsp;&nbsp;: <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1002/cmr.a.20223'
+        text += f'NOESY-presat&nbsp;&nbsp;&nbsp;: <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1021/ac051632c'
+        text += f'PQN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <a href="{ref}">{ref}</a><br />'
+        ref = 'https://doi.org/10.1186/1471-2164-7-142'
+        text += f'Pareto Scaling&nbsp;: <a href="{ref}">{ref}</a><br />'
+        text += '<br /><br />'
+        self.w.console.insertHtml(text)
+        # CANMS  https://doi.org/10.1002/anie.201611634
+        # NMRPipe  10.1007/BF00197809
+        # qMDD 10.1002/anie.201100370
+        # qMDD https://doi.org/10.1016/j.pnmrs.2011.02.002
+        # excitation sculpting 10.1006/jmra.1995.1047
+        # CPMG https://www.sfu.ca/phys/431/references/nmr/carr_purcell_spin_echo_PhysRev1954.pdf
+        # HS-TrAM  10.12688/wellcomeopenres.13387.2
+        # optimised non-uniform sampling https://doi.org/10.1002/mrc.5089Digital Object Identifier (DOI)
+        # HMDB 10.1093/nar/gkab1062
+        # BMRB 10.1093/nar/gkac1050
+        # MetaboAnalyst 10.1093/nar/gkae253
+        # BML 10.1007/s11306-011-0347-7
+        # SMPDB https://doi.org/10.1093/nar/gkt1067
+        # KEGG 10.1093/nar/gkag1042
+        # NMRShiftDB2  10.1002/mrc.4263
+        # SpinCouple https://doi.org/10.1021/acs.analchem.5b02311
+        # HSQC https://doi.org/10.1021/ja00052a088
+        # TOCSY 10.1016/j.jare.2014.10.003
+        # HSQC-TOCSY  10.1002/mrc.2362
+        return
+    # end metabolomics_references
+    
     def next_command(self):
         if (self.w.cmdLine.hasFocus() == True):
             if (self.nd.cmd_idx < len(self.nd.cmd_buffer)):

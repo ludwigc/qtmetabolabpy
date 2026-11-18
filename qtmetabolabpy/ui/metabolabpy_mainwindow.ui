@@ -7563,7 +7563,7 @@
      <x>0</x>
      <y>0</y>
      <width>2041</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -7689,6 +7689,7 @@
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
     <addaction name="actionCheck_mlpy_file"/>
+    <addaction name="actionReferences"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlot"/>
@@ -8374,6 +8375,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+C</string>
+   </property>
+  </action>
+  <action name="actionReferences">
+   <property name="text">
+    <string>References</string>
    </property>
   </action>
  </widget>
